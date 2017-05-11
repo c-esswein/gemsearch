@@ -1,7 +1,11 @@
 var tracks = db.getCollection('tracks');
 var playlists = db.getCollection('playlists');
 
+var totalCounter = 0;
+var missingCounter = 0;
 playlists.find({}).forEach(function(playlist){ 
+    totalCounter++;
+
     playlist.tracks.forEach(function(pTrack) {
         var track = tracks.findOne({'uri': pTrack.track_uri});
         
@@ -9,6 +13,7 @@ playlists.find({}).forEach(function(playlist){
             pTrack.track_id = track._id;
         } else {
             print("Track not found: " + pTrack.track_uri + " for Playlist: " + playlist._id);
+            missingCounter++;
         }
     });
     
@@ -17,3 +22,6 @@ playlists.find({}).forEach(function(playlist){
         { "$set": { "tracks": playlist.tracks } }
     );
 });
+
+print('Total: ' + totalCounter);
+print('Missing: ' + missingCounter);
