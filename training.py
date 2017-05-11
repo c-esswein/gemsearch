@@ -1,8 +1,10 @@
 from pprint import pprint
 import json
+
+from sklearn.preprocessing import MinMaxScaler
+
 import keras
 import tensorflow as tf
-
 from keras.models import Sequential  
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
@@ -13,12 +15,19 @@ import numpy as np
 np.random.seed(1234)
 
 # ---- config -----
-dataInputFile = 'keras-test/data/playlist-data.json'
-
+#dataInputFile = 'data/playlist-data.json'
+dataInputFile = 'data/playlist-data-10000.json'
+network_config = {
+    'epochs': 100,
+    'ratio': 0.75,
+    'sequence_length': 4
+}
 # ---- / config -----
 
+scaler = MinMaxScaler(feature_range=(0, 1), copy=False)
+
 # returns feature vector for track
-def getTrackFeatures(track):
+def extract_features(track):
     omitKeys = ['_id', 'track_id']
     data = []
     for key, value in track.items():
@@ -26,14 +35,21 @@ def getTrackFeatures(track):
             data.append(value)
     return data
 
+# normalizes features
+def normalize_data(playlists):
+    s = playlists.shape
+    trackView = playlists.reshape(s[0] * s[1], s[2])
+
+    scaler.fit_transform(trackView)
+
 # creates test and training data
-def getData(sequence_length=4, training_ratio=0.9):
+def get_data(sequence_length, training_ratio):
     with open(dataInputFile, "r", encoding="utf-8") as data_file:
         data = json.load(data_file)
 
     # map tracks to features array
     playlists = list(map(lambda playlist: 
-            list(map(lambda track: getTrackFeatures(track), playlist['tracks'])), 
+            list(map(lambda track: extract_features(track), playlist['tracks'])), 
         data))
 
     playlists = np.array(playlists)
@@ -44,6 +60,8 @@ def getData(sequence_length=4, training_ratio=0.9):
     # TODO check value type
     playlists = pad_sequences(playlists, maxlen=sequence_length, dtype='float32')
 
+    normalize_data(playlists)
+    
     row = round(training_ratio * playlists.shape[0])
     train = playlists[:row, :]
     X_train = train[:, :-1]
@@ -55,7 +73,7 @@ def getData(sequence_length=4, training_ratio=0.9):
     return [X_train, y_train, X_test, y_test]
 
 # creates keras model
-def createKerasModel(inputShape):    
+def create_model(inputShape):    
     data_dim = inputShape[2]
     timesteps = inputShape[1]
 
@@ -71,28 +89,28 @@ def createKerasModel(inputShape):
     model.add(Dropout(0.2))
     model.add(Dense(units=data_dim))
     model.add(Activation("linear"))
-    model.compile(loss="mse", optimizer="rmsprop", metrics=['accuracy'])
+    model.compile(loss="mse", optimizer="rmsprop", metrics=['mse', 'mae', 'cosine'])
 
     # model.summary()
 
     return model
 
-def run_network(model=None, data=None, sequence_length=12):
+def run_network(model=None, data=None, sequence_length=network_config['sequence_length']):
     import time
 
-    epochs = 2
-    ratio = 0.9
+    epochs = network_config['epochs']
+    ratio = network_config['ratio']
     
     if data is None:
         print('Loading data... ')
-        X_train, y_train, X_test, y_test = getData(sequence_length, ratio)
+        X_train, y_train, X_test, y_test = get_data(sequence_length, ratio)
     else:
         X_train, y_train, X_test, y_test = data
     
     print('\nData Loaded. Compiling...\n')
 
     if model is None:
-        model = createKerasModel(X_train.shape)
+        model = create_model(X_train.shape)
 
     global_start_time = time.time()
 
@@ -105,18 +123,18 @@ def run_network(model=None, data=None, sequence_length=12):
     finally:
         print('Training duration (s) : ', time.time() - global_start_time)
     
-    evaluateModel(model, X_test, y_test)
+    evaluate_model(model, X_test, y_test)
 
     # print predicted
     predicted = model.predict(X_test)
     print('\nPredicted result:')
-    json.dumps(y_test[0].tolist())
-    json.dumps(predicted[0].tolist())
+    print(json.dumps(y_test[0].tolist()))
+    print(json.dumps(predicted[0].tolist()))
 
     return model
 
 # evaluates model
-def evaluateModel(model, X_test, y_test):
+def evaluate_model(model, X_test, y_test):
     print('\nEvaluate Model')
     scores = model.evaluate(X_test, y_test, batch_size=32)
     scoresLbld = list(zip(model.metrics_names, scores))
