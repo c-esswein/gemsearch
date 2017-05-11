@@ -7,6 +7,9 @@ class Storage:
     client = MongoClient()
     db = client.get_database(DB_NAME)
 
+    def getDb(self):
+        return self.db
+
     def getCollection(self, collectionName):
         return self.db[collectionName];
 
