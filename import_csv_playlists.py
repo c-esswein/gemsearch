@@ -15,7 +15,7 @@ playLists = dict()
     # 'track_uri': row[1],
     # 'name': row[2],
 
-for row in readCsv('keras-test/data/playlist.csv'):
+for row in readCsv('data/playlist.csv'):
     playlistKey = row[0] + '_' + row[2]
     if not playlistKey in playLists:
         playLists[playlistKey] = {

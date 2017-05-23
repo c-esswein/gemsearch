@@ -1,11 +1,14 @@
+"""
+Generates json training set from mongodb
+"""
 from pprint import pprint
 import json
 from Playlists import Playlists
 from Storage import Storage
 from JSONEncoder import JSONEncoder
 
-# loads playlists from file containing array of playlist keys
-def loadPlaylistsFromKeyFile(filePath='keras-test/data/small-playlist-selection.json'):
+# loads playlist keys from file
+def loadPlaylistsFromKeyFile(filePath='data/small-playlist-selection.json'):
     with open(filePath, "r", encoding="utf-8") as data_file:
         data = json.load(data_file)
     
@@ -41,7 +44,7 @@ def storeResultInFile(result, filePath):
 
 
 storage = Storage()
-playlists = storage.getCollection('tmp_playlists_cleaned').find({}).limit(500)
+playlists = storage.getCollection('tmp_playlists_cleaned').find({}).limit(2)
 
 result = loadTrackFeatures(playlists)
-storeResultInFile(result, 'keras-test/data/playlist-data-full.json')
+storeResultInFile(result, 'data/playlist-data-2.json')

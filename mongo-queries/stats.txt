@@ -21,7 +21,7 @@ Playlist Dataset:
     Total Tracks in Playlists without data: 150.127
 
     Playlists with missing tracks:
-    21.157
+    CHECK 21.157
 
     Tracks per Playlist:
         12 tracks are most common (in 1332 playlists)
@@ -30,6 +30,14 @@ Playlist Dataset:
         690 (3.2%)
         maxCount: 13
         avgCount: 2,42
+
+    Single Artist in Playlist:
+        10.177 -> 0,48%
+
+     Playlist with multiple Artists & more than 3 tracks:
+        10.672
+
+
 
 # Audio data
 total audio 587.400
