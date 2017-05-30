@@ -5,6 +5,9 @@ from Storage import Storage
 class Tracks:
     storage = Storage()
 
+    def getTracks(self):
+        return self.storage.getCollection('tracks')
+
     def getTrackById(self, trackId):
         return self.storage.getCollection('tracks').find_one({"_id": trackId})
 
