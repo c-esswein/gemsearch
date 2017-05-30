@@ -3,14 +3,20 @@ from ge_calc import GeCalc
 
 app = Flask(__name__)
 
-geCalc = GeCalc('')
+#geCalc = GeCalc('')
+geCalc = GeCalc('graph-embedding/')
 
 @app.route("/api/query")
 def query():
     ids = request.args.get('ids')
 
+    if ids is None:
+        return jsonify([])        
+
+    idList = ids.split('|')
+
     try:
-        result = geCalc.query_by_ids(ids)
+        result = geCalc.query_by_ids(idList)
         return jsonify(result)
     except ValueError:
         return jsonify([])

@@ -77,17 +77,26 @@ class GeCalc:
         return None
 
     def query_by_ids(self, ids, typeFilter = None):
-        # TODO multiplie ids
-        pprint(ids)
-        searchItem = self.get_item_by_item_id(ids)
-        searchLbl = searchItem['embeddingKey']
-        try:
-            searchIndex = self.embeddingLbl.index(int(searchLbl))
-        except ValueError:
-            pprint('search item not in graph')
-            raise ValueError
+        searchVec = None
 
-        searchVec = self.embedding[searchIndex]
+        if len(ids) < 1:
+            return []
+
+        for id in ids:
+            searchItem = self.get_item_by_item_id(id)
+            searchLbl = searchItem['embeddingKey']
+            try:
+                searchIndex = self.embeddingLbl.index(int(searchLbl))
+            except ValueError:
+                pprint('search item not in graph')
+                raise ValueError
+            
+            if searchVec is not None:
+                searchVec = searchVec + self.embedding[searchIndex]
+                pprint(self.embedding[searchIndex])
+            else:
+                searchVec = self.embedding[searchIndex]
+
 
         result = find_similar_vecs(searchVec, self.embedding)
         result_items = self.get_items_from_embedding_indices(result, typeFilter)
