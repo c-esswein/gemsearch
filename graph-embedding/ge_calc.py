@@ -27,10 +27,23 @@ def read_v_file(file_name):
             edge = line.strip().split()
             embeddingLbl.append(int(edge[0]))
             pointV = []
-            for v in edge[0:]:
+            for v in edge[1:]:
                 pointV.append(float(v))
             points.append(pointV)
     return embeddingLbl, np.array(points)
+
+
+def read_graph_file(file_name):
+    connections = []
+    with open(file_name, 'r') as f:
+        for line in f:
+            edge = line.strip().split()
+            pointV = []
+            for v in edge:
+                pointV.append(int(v))
+            connections.append(pointV)
+    return connections
+
 
 def cos_cdist(matrix, vector):
     """
@@ -53,6 +66,7 @@ class GeCalc:
         self.load_data(storage_prefix)
 
     def load_data(self, prefix):
+        self.prefix = prefix
         embeddingLbl, embedding = read_v_file(prefix + 'test.adj')
         lookup = read_type_file(prefix + 'types-all.csv')
 
@@ -104,9 +118,37 @@ class GeCalc:
 
         return result_items[:limit]
 
+    def get_graph_data(self):
+        # todo real 3d vecs
+        return self.embedding[:,0:3].flatten()
+
+    def get_lbl_mapping(self):
+        return list(map(lambda lbl: self.get_item_info(lbl), self.embeddingLbl))
+
+    def get_graph(self):
+        nodes = read_graph_file(self.prefix + 'graph_200p-cleaned.txt')
+
+        # transform lables into indices of embedding
+        def get_i(lbl):
+            return self.embeddingLbl.index(lbl)
+        return list(map(lambda lbls: [get_i(lbls[0]), get_i(lbls[1])], nodes))
+
+    # remove unusued entries
+    def clean_graph(self):
+        graph = self.get_graph()
+        pprint(len(graph))
+
+        with open(self.prefix + 'graph_200p-cleaned.txt', 'w') as outfile:
+            for pair in graph:
+                if pair[0] in self.embeddingLbl and pair[1] in self.embeddingLbl:
+                    outfile.write(str(pair[0])+' '+str(pair[1]) + '\n')
+
+        return "done"
+
+
 if __name__ == '__main__':
     ge = GeCalc('graph-embedding/')
-
+    '''
     searchId = ['5730d9b5a90a9a398dff540b']
 
     print('Search for:\n')
@@ -116,3 +158,7 @@ if __name__ == '__main__':
     result_items = ge.query_by_ids(searchId, ['track'])
     for item in result_items:
         pprint(item)
+    '''
+
+    pprint(ge.get_graph())
+    #pprint(ge.clean_graph())

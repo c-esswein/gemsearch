@@ -29,5 +29,19 @@ def get_object_id(id):
     else:
         return jsonify([])
 
+@app.route("/api/graph")
+def get_graph_data():
+    return jsonify({
+        'nodes': geCalc.get_graph_data().tolist(),
+        'mapping': geCalc.get_lbl_mapping(),
+        'graph': geCalc.get_graph()
+    })
+
+@app.route("/api/nodes")
+def get_graph_nodes():
+    return jsonify({
+        'graph': geCalc.get_graph()
+    })
+
 if __name__ == "__main__":
     app.run()
