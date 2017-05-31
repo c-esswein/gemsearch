@@ -18,12 +18,12 @@ with open('data/types-all.csv', 'w', encoding="utf-8") as typeFile:
     lookupDict = {}
     
     # get uid and write type info
-    def getId(uidObj, type, name):
+    def getId(uidObj, type, name, uri = ""):
         global idCounter
         uid = str(uidObj)
         if not uid in lookupDict:
             lookupDict[uid] = idCounter
-            typeWriter.writerow([idCounter, type, uid, name])
+            typeWriter.writerow([idCounter, type, uid, name, uri])
             idCounter += 1
         
         return str(lookupDict[uid])
@@ -31,14 +31,19 @@ with open('data/types-all.csv', 'w', encoding="utf-8") as typeFile:
     with open('data/graph_200p.txt', 'w') as outfile:
         for playlist in playlists:
             userId = getId(playlist['username'], 'user', playlist['username'])
-            outfile.write(userId+' '+getId(playlist['_id'], 'playlist', playlist['name']) + '\n')
+            playlistId = getId(playlist['_id'], 'playlist', playlist['name'])
+            
+            outfile.write(userId+' '+playlistId + '\n')
+
             for track in playlist['tracks']:
                 trackData = tracksRepo.getTrackById(track['track_id'])
                 
                 artists = []
                 for artist in trackData['artists']:
-                    outfile.write(userId+' '+getId(artist['id'], 'artist', artist['name']) + '\n')
+                    artistId = getId(artist['id'], 'artist', artist['name'], artist['uri'])
+                    outfile.write(userId+' '+artistId+ '\n')
                     artists.append(artist['name'])
                 
                 artistName = ' ++ '.join(artists)
-                outfile.write(userId+' '+getId(track['track_id'], 'track', trackData['name'] + ' by: ' + artistName) + '\n')
+                trackId = getId(track['track_id'], 'track', trackData['name'] + ' by: ' + artistName, trackData['uri'])
+                outfile.write(userId+' '+trackId+ '\n')

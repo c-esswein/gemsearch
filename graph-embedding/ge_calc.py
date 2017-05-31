@@ -13,7 +13,8 @@ def read_type_file(file_name):
                 'embeddingKey': row[0],
                 'type': row[1],
                 'id': row[2],
-                'name': row[3]
+                'name': row[3],
+                'uri': row[4]
             }
     return lookup
 
@@ -76,7 +77,7 @@ class GeCalc:
                 return self.lookup[lblKey]
         return None
 
-    def query_by_ids(self, ids, typeFilter = None):
+    def query_by_ids(self, ids, typeFilter = None, limit = 20):
         searchVec = None
 
         if len(ids) < 1:
@@ -101,17 +102,17 @@ class GeCalc:
         result = find_similar_vecs(searchVec, self.embedding)
         result_items = self.get_items_from_embedding_indices(result, typeFilter)
 
-        return result_items
+        return result_items[:limit]
 
 if __name__ == '__main__':
     ge = GeCalc('graph-embedding/')
 
-    searchId = '5730d9b5a90a9a398dff540b'
+    searchId = ['5730d9b5a90a9a398dff540b']
 
     print('Search for:\n')
     pprint(ge.get_item_by_item_id(searchId))
 
     print('\nResults:\n')
-    result_items = ge.query_by_ids(searchId)
+    result_items = ge.query_by_ids(searchId, ['track'])
     for item in result_items:
         pprint(item)
