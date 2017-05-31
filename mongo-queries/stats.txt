@@ -3,6 +3,9 @@ Playlist Dataset:
     Total Playlists:
     21.323
 
+    Total Artists:
+    83.789
+
     Total Tracks in Playlists:
     1.527.008
 
