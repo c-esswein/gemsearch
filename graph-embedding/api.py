@@ -34,7 +34,7 @@ def get_graph_data():
     return jsonify({
         'nodes': geCalc.get_graph_data().tolist(),
         'mapping': geCalc.get_lbl_mapping(),
-        'graph': geCalc.get_graph()
+        'graph': geCalc.get_graph().tolist()
     })
 
 @app.route("/api/nodes")

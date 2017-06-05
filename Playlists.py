@@ -6,6 +6,9 @@ from Tracks import Tracks
 class Playlists:
     storage = Storage()
 
+    def getCollection(self):
+        return self.storage.getCollection('playlists')
+
     def getPlaylist(self, id):
         return self.storage.getCollection('playlists').find_one({"_id": id})
         

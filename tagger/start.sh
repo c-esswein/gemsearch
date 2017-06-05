@@ -1,0 +1,1 @@
+nohup python3 last_fm_tagger-script.py &

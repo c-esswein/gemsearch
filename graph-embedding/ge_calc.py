@@ -131,7 +131,8 @@ class GeCalc:
         # transform lables into indices of embedding
         def get_i(lbl):
             return self.embeddingLbl.index(lbl)
-        return list(map(lambda lbls: [get_i(lbls[0]), get_i(lbls[1])], nodes))
+        arr = list(map(lambda lbls: [get_i(lbls[0]), get_i(lbls[1])], nodes))
+        return np.array(arr).flatten()
 
     # remove unusued entries
     def clean_graph(self):

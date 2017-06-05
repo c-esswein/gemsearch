@@ -1,2 +1,0 @@
-
-- Normalize Data while generating
