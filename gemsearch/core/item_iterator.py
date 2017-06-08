@@ -16,19 +16,22 @@ class ItemIterator:
     def __init__(self, limit = 10):
         self.limit = limit
 
-    # get uid and write type info
-    def getId(self, uidObj, type, name, uri = ""):
+    def getId(self, uidObj, type, name, obj = {}):
+        '''Returns unique int identifier
+        '''
         uid = str(uidObj)
         if not uid in self.lookupDict:
             self.lookupDict[uid] = self.idCounter
-            self.newItemId([self.idCounter, type, uid, name, uri])
+            self.newItemId(self.idCounter, uid, type, name, obj)
             self.idCounter += 1
         
         return str(self.lookupDict[uid])
     
-    def newItemId(self, data):
+    def newItemId(self, idCounter, uidObj, type, name, obj = {}):
+        '''called when new item is iterated
+        '''
         for typeHandler in self.typeHandlers:
-            typeHandler.addItem(data)
+            typeHandler.addItem(idCounter, uidObj, type, name, obj)
 
     def iterate(self, typeHandlers):
         ''' Generator with all items in db.
@@ -41,8 +44,8 @@ class ItemIterator:
         featureId = self.getId('feature--valence', 'feature', 'feature--valence')
             
         for playlist in playlists:
-            userId = self.getId(playlist['username'], 'user', playlist['username'])
-            playlistId = self.getId(playlist['_id'], 'playlist', playlist['name'])
+            userId = self.getId(playlist['username'], 'user', playlist['username'], {})
+            playlistId = self.getId(playlist['_id'], 'playlist', playlist['name'], playlist)
             
             yield {
                 'type': 'user-playlist',
@@ -53,7 +56,7 @@ class ItemIterator:
             # --- tracks ---
             for track in playlist['tracks']:
                 trackData = tracksRepo.getTrackById(track['track_id'])
-                trackId = self.getId(track['track_id'], 'track', trackData['name'], trackData['uri'])
+                trackId = self.getId(track['track_id'], 'track', trackData['name'], trackData)
                 
                 yield {
                     'type': 'playlist-track',
@@ -80,7 +83,7 @@ class ItemIterator:
                 # --- artists ---
                 artists = []
                 for artist in trackData['artists']:
-                    artistId = self.getId(artist['id'], 'artist', artist['name'], artist['uri'])
+                    artistId = self.getId(artist['id'], 'artist', artist['name'], artist)
                     artists.append(artist['name'])
 
                     yield {
@@ -97,7 +100,7 @@ class ItemIterator:
                 # --- tags ---
                 if 'tags' in trackData:
                     for tag in trackData['tags']:
-                        tagId = self.getId(tag['name'], 'tag', tag['name'])
+                        tagId = self.getId(tag['name'], 'tag', tag['name'], tag)
 
                         yield {
                             'type': 'track-tag',

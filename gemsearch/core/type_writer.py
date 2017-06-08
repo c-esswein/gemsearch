@@ -7,10 +7,16 @@ class TypeWriter:
     def __init__(self, pathPrefix):
         self.pathPrefix = pathPrefix
         
-        typeFile = open(pathPrefix + 'types.csv', 'w', encoding="utf-8")
-        self.typeWriter = csv.writer(typeFile, delimiter=',', lineterminator='\n',
+        self.typeFile = open(pathPrefix + 'types.csv', 'w', encoding="utf-8")
+        self.typeWriter = csv.writer(self.typeFile, delimiter=',', lineterminator='\n',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
-    def addItem(self, data):
-        print('AAAAADDD')
-        self.typeWriter.writerow(data)
+    def addItem(self, idCounter, uidObj, type, name, obj = {}):
+        uri = ''
+        if 'uri' in obj:
+            uri = obj['uri']
+            
+        self.typeWriter.writerow([idCounter, uidObj, type, name, uri])
+
+    def close_type_handler(self):
+        self.typeFile.close()

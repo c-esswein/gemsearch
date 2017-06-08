@@ -2,4 +2,4 @@
 __pycache__
 .vscode/settings.json
 skip_ids.py
-gemsearch/embedding/gem
+/gem

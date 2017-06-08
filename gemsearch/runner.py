@@ -7,6 +7,7 @@ from gemsearch.core.type_writer import TypeWriter
 from gemsearch.graph.classic_graph_generator import ClassicGraphGenerator
 from gemsearch.embedding.default_embedding import DefaultEmbedding
 from gemsearch.evaluation.default_evaluator import DefaultEvaluator
+from gemsearch.evaluation.playlist_query_evaluator import PlaylistQueryEvaluator
 
 dataDir = 'data/tmp_test/'
 
@@ -14,12 +15,20 @@ dataDir = 'data/tmp_test/'
 if not os.path.exists(dataDir):
     os.makedirs(dataDir)
 
+# TODO:
+    # - store playlists, query
+    # - hide tags - evaluate
+
+playlistQueryEvaluator = PlaylistQueryEvaluator(dataDir)
+
 run_pipeline(
     dataDir,
-    ItemIterator(10), # optional: limit types
-    typeHandlers = [TypeWriter(dataDir)],
-    graphGenerator = ClassicGraphGenerator(dataDir),
-    embedding = DefaultEmbedding(),
-    evaluations = [DefaultEvaluator()]
+    iterator = {
+        'iterator': ItemIterator(10), # optional: limit types,
+        'typeHandlers': [TypeWriter(dataDir), playlistQueryEvaluator],
+        'generators': [ClassicGraphGenerator(dataDir)],
+    },
+    embeddings = [DefaultEmbedding()],
+    evaluations = [DefaultEvaluator(), playlistQueryEvaluator]
 )
 

@@ -3,10 +3,10 @@ from gemsearch.graph.graph_generator import GraphGenerator
 
 class ClassicGraphGenerator(GraphGenerator):
 
-    def processItem(self, item):
+    def generateItem(self, item):
         #print(item['type'])
-        if item['type'] == 'user-playlist':
-            self.write_connection(item['user'], item['playlist'])
+        #if item['type'] == 'user-playlist':
+        #    self.write_connection(item['user'], item['playlist'])
         if item['type'] == 'track-features':
             for feature in item['features']:
                 self.write_connection(feature['id'], item['track'], feature['val'])
@@ -16,4 +16,5 @@ class ClassicGraphGenerator(GraphGenerator):
             self.write_connection(item['track'], item['tag'])
         if item['type'] == 'playlist-track':
             self.write_connection(item['playlist'], item['track'])
+            self.write_connection(item['user'], item['track'])
 
