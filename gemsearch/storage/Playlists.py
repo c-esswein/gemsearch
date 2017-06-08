@@ -1,7 +1,7 @@
 from pprint import pprint
 from bson.objectid import ObjectId
-from Storage import Storage
-from Tracks import Tracks
+from gemsearch.storage.Storage import Storage
+from gemsearch.storage.Tracks import Tracks
 
 class Playlists:
     storage = Storage()

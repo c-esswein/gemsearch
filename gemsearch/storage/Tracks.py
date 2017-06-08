@@ -1,6 +1,6 @@
 from pprint import pprint
 from bson.objectid import ObjectId
-from Storage import Storage
+from .Storage import Storage
 
 class Tracks:
     storage = Storage()

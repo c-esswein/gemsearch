@@ -1,0 +1,13 @@
+
+- Spotify Album Genre
+
+
+
+Notes:
+- Graph has to be fully connected!! and sorted (in file)!?
+
+
+Evaluation:
+- number of dimension
+- which embedding method
+- features in graph?

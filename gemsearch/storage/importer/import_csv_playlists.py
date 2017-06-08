@@ -1,6 +1,6 @@
 import csv
 from pprint import pprint
-from Storage import Storage
+from gemsearch.storage.Storage import Storage
 
 def readCsv(filename):
     with open(filename, "r", encoding="utf-8") as csvfile:
