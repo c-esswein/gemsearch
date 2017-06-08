@@ -29,7 +29,7 @@ def call_api(url):
     if response.status_code != 200:
         if 'reason' in response:
             print(response['reason'])
-    raise Exception('Cannot call API: {}'.format(response.status_code))
+        raise Exception('Cannot call API: {}'.format(response.status_code))
 
     return response
 
@@ -47,7 +47,7 @@ def get_tags(artistName, trackName):
          'api_key': API_KEY,
          'format': 'json'
     })
-    url = 'http://ws.audiosdcrobbler.com/2.0/?' + queryStr
+    url = 'http://ws.audioscrobbler.com/2.0/?' + queryStr
     
     response = call_api(url).json()
     if "error" in response:

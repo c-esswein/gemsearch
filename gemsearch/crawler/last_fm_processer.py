@@ -23,7 +23,7 @@ def generate_list(exportFileName, limit = 1000):
     tracks = trackCol.find({ 
         'tags' : { '$exists': False }, 
         '_id': { '$nin': SKIP_IDS }  # exclude blacklisted
-        }).limit(limit)
+        }).limit(limit)#.skip(limit*3)
 
     with open(exportFileName, 'w', encoding="utf-8") as typeFile:
         typeWriter = csv.writer(typeFile, delimiter=',', lineterminator='\n',
@@ -51,7 +51,7 @@ def import_update_file(filePath):
 
 if __name__ == '__main__':
     
-    generate_list('data/last_fm_missing.csv', 100000)
+    generate_list('data/last_fm_missing-next2.csv', 100000)
     #import_update_file('data/last_fm_result.json')
 
     print("done")
