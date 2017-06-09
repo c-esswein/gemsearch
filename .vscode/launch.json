@@ -47,7 +47,7 @@
             "request": "launch",
             "stopOnEntry": false,
             "pythonPath": "${config:python.pythonPath}",
-            "module": "gemsearch.query.${fileBasenameNoExtension}",
+            "module": "gemsearch.embedding.${fileBasenameNoExtension}",
             //"module": "gemsearch.runner",
             "cwd": "${workspaceRoot}",
             "env": {},

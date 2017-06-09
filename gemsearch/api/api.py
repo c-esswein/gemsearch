@@ -1,10 +1,10 @@
 from flask import Flask, jsonify, request
-from ge_calc import GeCalc
+
+from gemsearch.embedding.ge_calc import GeCalc
 
 app = Flask(__name__)
 
-#geCalc = GeCalc('')
-geCalc = GeCalc('graph-embedding/')
+geCalc = GeCalc('data/working')
 
 @app.route("/api/query")
 def query():

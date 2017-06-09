@@ -1,5 +1,7 @@
 from pprint import pprint
 
+from gemsearch.query.elastic_search import extract_query_from_name
+
 ''' is a evaluator and typeHandler
 '''
 class PlaylistQueryEvaluator:

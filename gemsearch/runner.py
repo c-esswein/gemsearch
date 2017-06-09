@@ -5,7 +5,7 @@ from gemsearch.core.runner import run_pipeline
 from gemsearch.core.item_iterator import ItemIterator
 from gemsearch.core.type_writer import TypeWriter
 from gemsearch.graph.classic_graph_generator import ClassicGraphGenerator
-from gemsearch.embedding.default_embedding import DefaultEmbedding
+from gemsearch.embedding.default_embedder import DefaultEmbedder
 from gemsearch.evaluation.default_evaluator import DefaultEvaluator
 from gemsearch.evaluation.playlist_query_evaluator import PlaylistQueryEvaluator
 
@@ -28,7 +28,7 @@ run_pipeline(
         'typeHandlers': [TypeWriter(dataDir), playlistQueryEvaluator],
         'generators': [ClassicGraphGenerator(dataDir)],
     },
-    embeddings = [DefaultEmbedding()],
+    embeddings = [DefaultEmbedder()],
     evaluations = [DefaultEvaluator(), playlistQueryEvaluator]
 )
 
