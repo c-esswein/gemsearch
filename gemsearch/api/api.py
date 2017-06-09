@@ -11,13 +11,20 @@ geCalc = GeCalc('data/tmp_test_1/')
 def query():
     ids = request.args.get('ids')
 
-    if ids is None:
-        return jsonify([])        
+    if ids is None or ids == '':
+        return jsonify({
+            'success': True,
+            'data': []
+        })    
 
     idList = ids.split('|')
 
+    types = request.args.get('types')
+    if types is not None:
+        types = types.split('|')
+
     try:
-        result = geCalc.query_by_ids(idList)
+        result = geCalc.query_by_ids(idList, types)
         return jsonify({
             'success': True,
             'data': result
