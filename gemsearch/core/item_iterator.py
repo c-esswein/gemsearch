@@ -2,7 +2,6 @@
 """
 
 from gemsearch.storage.Storage import Storage
-from gemsearch.storage.Playlists import Playlists
 from gemsearch.storage.Tracks import Tracks
 
 # TODO integrate albums
@@ -100,7 +99,7 @@ class ItemIterator:
                 # --- tags ---
                 if 'tags' in trackData:
                     for tag in trackData['tags']:
-                        tagId = self.getId(tag['name'], 'tag', tag['name'], tag)
+                        tagId = self.getId('tag::'+tag['name'], 'tag', tag['name'], tag)
 
                         yield {
                             'type': 'track-tag',

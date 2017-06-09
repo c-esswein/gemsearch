@@ -26,8 +26,10 @@ def embed_graph(em, graphFile, embeddingFile = None):
     ''' Embeds given graph with embedding method.
     '''
     graph = graph_util.loadGraphFromEdgeListTxt(graphFile)
+    print('Graph with {} nodes and {} edges'.format(graph.number_of_nodes(), graph.number_of_edges()))
 
     Y, t = em.learn_embedding(graph, is_weighted=True, no_python=False)
+    print('%% embedding took: {}s'.format(t))
 
     if embeddingFile is not None:
         store_embedding(embeddingFile, Y)
@@ -39,7 +41,7 @@ def store_embedding(file_name, embedding):
     '''
     np.savetxt(file_name, embedding)
 
-# not used currently, use numpy.loadtxt() instead
+# not used currently, use np.loadtxt() instead
 def loadEmbedding(file_name):
     with open(file_name, 'r') as f:
         n, d = f.readline().strip().split()
@@ -51,6 +53,6 @@ def loadEmbedding(file_name):
     return X
 
 if __name__ == '__main__':
-    embedder = DefaultEmbedding()
+    embedder = DefaultEmbedder()
     embedder.start_embedding('data/tmp_test/')
     
