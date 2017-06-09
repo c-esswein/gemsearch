@@ -6,8 +6,6 @@ es = Elasticsearch()
 def search(queryStr):
         # "match_all": {}
     res = es.search(index="_all", body={"query": 
-        #{"query_string":{"query":"machine gun","analyze_wildcard":True}}
-        #{"match" : {"name" : "machina"}}
         {"match" : {"name" : {"query": queryStr, "fuzziness": "AUTO"}}}
         #{"match_phrase" : {"name" : "machine gun"}}
         #{"match_phrase": { "name": { "query": "machina gun", "slop": 3 } } }
@@ -15,10 +13,23 @@ def search(queryStr):
     #print("Got %d Hits:" % res['hits']['total'])
     return [hit for hit in res['hits']['hits']]
 
-def suggest():
+def suggest(prefix):
+    '''res = es.search(index="_all", body={
+        "suggest": {
+            "name-suggest" : {
+                "prefix" : prefix,
+                "completion" : {
+                    "field" : "name",
+                    "fuzzy" : {
+                        "fuzziness" : 2
+                    }
+                }
+            }
+        }
+    })'''
     res = es.search(index="_all", body={
         "suggest": {
-            "text" : "machina gun",
+            "text" : "t",
             "my-suggest-1" : {
                 "term" : {
                     "field" : "name"
@@ -26,8 +37,7 @@ def suggest():
             }
         }
     })
-    #print("Got %d Hits:" % res['suggest']['total'])
-    pprint(res['suggest'])
+    pprint(res)
 
 def tester():
     from gemsearch.storage.Storage import Storage
@@ -46,4 +56,5 @@ def extract_query_from_name(name):
 
 
 if __name__ == '__main__':
-    tester()
+    pprint(search('ni'))
+    #suggest('ni')

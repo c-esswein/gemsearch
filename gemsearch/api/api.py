@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request
 
 from gemsearch.embedding.ge_calc import GeCalc
+from gemsearch.query.elastic_search import search as es_search
 
 app = Flask(__name__)
 
-geCalc = GeCalc('data/working')
+geCalc = GeCalc('data/tmp_test_1/')
 
 @app.route("/api/query")
 def query():
@@ -17,17 +18,46 @@ def query():
 
     try:
         result = geCalc.query_by_ids(idList)
-        return jsonify(result)
-    except ValueError:
-        return jsonify([])
+        return jsonify({
+            'success': True,
+            'data': result
+        })
+    except ValueError as exc:
+        return jsonify({
+            'success': False,
+            'errors': [
+                str(exc)
+            ]
+        })
 
 @app.route("/api/object/<id>")
 def get_object_id(id):
     result = geCalc.get_item_by_item_id(id)
     if result is not None:
-        return jsonify([result])
+        return jsonify({
+            'success': True,
+            'data': [result]
+        })
     else:
-        return jsonify([])
+        return jsonify({
+            'success': True,
+            'data': []
+        })
+
+@app.route("/api/suggest/<term>")
+def suggest_item(term):
+    result = es_search(term)
+    resultItems = map(lambda item: {
+        'id': item['_id'],
+        'type': item['_type'],
+        'name': item['_source']['name']
+    }, result)
+    return jsonify({
+        'success': True,
+        'data': list(resultItems)
+    })
+
+# ------- graph routes -------
 
 @app.route("/api/graph")
 def get_graph_data():

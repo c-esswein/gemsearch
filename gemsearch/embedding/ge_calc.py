@@ -51,7 +51,7 @@ class GeCalc:
         for id in ids:
             searchItem = self.get_item_by_item_id(id)
             if searchItem is None:
-                raise Exception('item id not found: ' + id)
+                raise ValueError('item id not found: ' + id)
             itemVec = self.embedding[searchItem['embeddingIndex']]
             
             if searchVec is not None:
