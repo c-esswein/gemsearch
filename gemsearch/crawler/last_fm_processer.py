@@ -43,15 +43,15 @@ def import_update_file(filePath):
     with open(filePath, 'r') as f:
         for line in f:
             dict_obj = json.loads(line)
-            trackCol.update_one({
-                '_id': dict_obj['trackId']}, 
-                {'$set': {'tags': dict_obj['tags']}
-            })
+            trackCol.update_one(
+                {'_id': ObjectId(dict_obj['trackId'])}, 
+                {'$set': {'tags': dict_obj['tags']}}
+            )
             print('Updated: ' + dict_obj['trackId'])
 
 if __name__ == '__main__':
     
-    generate_list('data/last_fm_missing-next2.csv', 100000)
-    #import_update_file('data/last_fm_result.json')
+    #generate_list('data/last_fm_missing-next2.csv', 100000)
+    import_update_file('data/import/last_fm_result_1.json')
 
     print("done")
