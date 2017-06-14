@@ -99,13 +99,16 @@ class ItemIterator:
                 # --- tags ---
                 if 'tags' in trackData:
                     for tag in trackData['tags']:
-                        tagId = self.getId('tag::'+tag['name'], 'tag', tag['name'], tag)
+                        tagUid = 'tag::'+tag['name']
+                        tagId = self.getId(tagUid, 'tag', tag['name'], tag)
 
                         yield {
                             'type': 'track-tag',
                             'user': userId,
                             'playlist': playlistId,
                             'track': trackId,
+                            'trackUid': track['track_id'],
                             'tag': tagId,
+                            'tagUid': tagUid,
                             'tagName': tag
                         }

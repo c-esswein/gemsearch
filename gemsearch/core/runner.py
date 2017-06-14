@@ -1,6 +1,16 @@
 from time import time
+import sys
+import codecs
+from pprint import pprint
 
 from gemsearch.embedding.ge_calc import GeCalc
+
+# use utf-8 for stdout (playlist names contain sometimes strange chars)
+if sys.stdout.encoding != 'utf-8':
+  sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+if sys.stderr.encoding != 'utf-8':
+  sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+
 
 def run_pipeline(dataDir, iterator, embeddings, evaluations):
     print('=== started pipeline ===')
@@ -9,7 +19,8 @@ def run_pipeline(dataDir, iterator, embeddings, evaluations):
     # create items
     for item in iterator['iterator'].iterate(iterator['typeHandlers']):
         for generator in iterator['generators']:
-            generator.generateItem(item)
+            if generator.generateItem(item) == True:
+                item['trainingOnly'] = True
     
     # close handlers
     for generator in iterator['generators']:
@@ -29,8 +40,11 @@ def run_pipeline(dataDir, iterator, embeddings, evaluations):
         # evaluation
         print('\n=== evaluation ===')
         for evaluation in evaluations:
-            print('run evaluation: ' + evaluation.name)
+            print('\n>>> run evaluation: ' + evaluation.name)
+            # try:
             evaluation.evaluate(ge)
+            # except Exception as e:
+                # print('Evaluation crashed')
 
     print('\n=== finished pipeline ===')
     print('%% total time: {}s'.format(time() - startTime))

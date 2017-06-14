@@ -6,6 +6,10 @@ class GraphGenerator:
     def __init__(self, pathPrefix):
         self.pathPrefix = pathPrefix
 
+    def generateItem(self, item):
+        if not 'trainingOnly' in item or not item['trainingOnly']:
+            self.generateGraphItem(item)
+
     def write_connection(self, item1, item2, weight = 1):
         #print(item1, item2, weight)
         self.edges.append((item1, item2, weight))

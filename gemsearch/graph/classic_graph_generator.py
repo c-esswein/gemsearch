@@ -3,7 +3,7 @@ from gemsearch.graph.graph_generator import GraphGenerator
 
 class ClassicGraphGenerator(GraphGenerator):
 
-    def generateItem(self, item):
+    def generateGraphItem(self, item):
         #print(item['type'])
         #if item['type'] == 'user-playlist':
         #    self.write_connection(item['user'], item['playlist'])
