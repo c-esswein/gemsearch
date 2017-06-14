@@ -8,6 +8,7 @@ import requests
 from pprint import pprint
 import csv
 import json
+import time
 
 #from gemsearch.utils.slack import slack_send_message, slack_error_message
 from slack import slack_send_message, slack_error_message
@@ -70,7 +71,14 @@ def process_list(listPath, outputFileName):
             artistName = row[1]
             trackName = row[2]
 
-            tags = get_tags(artistName, trackName)
+            try:
+                tags = get_tags(artistName, trackName)
+            except Exception as e:
+                # retry once
+                slack_error_message('Error (will retry): ', e)
+                time.sleep(120)
+                tags = get_tags(artistName, trackName)
+
             if tags is not None:
                 pprint('Update ' + str(trackId))
                 result = {
