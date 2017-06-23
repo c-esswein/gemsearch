@@ -1,10 +1,10 @@
 
 class GraphGenerator:
     edges = []
-    pathPrefix = ''
+    _storagePath = ''
 
-    def __init__(self, pathPrefix):
-        self.pathPrefix = pathPrefix
+    def __init__(self, storagePath):
+        self._storagePath = storagePath
 
     def generateItem(self, item):
         if not 'trainingOnly' in item or not item['trainingOnly']:
@@ -18,6 +18,6 @@ class GraphGenerator:
         # ge algos require list do be sorted...
         self.edges.sort(key=lambda tup: tup[0])
 
-        with open(self.pathPrefix + 'graph.txt', 'w') as outFile:
+        with open(self._storagePath, 'w') as outFile:
             for edge in self.edges:
                 outFile.write(edge[0]+' '+edge[1]+' '+str(edge[2])+'\n')

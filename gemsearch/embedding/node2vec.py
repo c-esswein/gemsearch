@@ -1,0 +1,39 @@
+
+from gemsearch.utils.proc import execute_cmd
+
+class Node2vec:
+    def __init__(self, d, max_iter, wLen, nWalks, cSize, ret_p, inout_p, verbose = True):
+        self._d = d
+        self._max_iter = max_iter
+        self._walkLength = wLen
+        self._numWalks = nWalks
+        self._contextSize = cSize
+        self._return_p = ret_p
+        self._inout_p = inout_p
+        self._verbose = verbose
+
+        self._method_name = 'node2vec_rw'
+        self._X = None
+
+    def learn_embedding(self, graphFile, outputFile = 'tempGraph.emb'):
+        args = ['./gem/c_exe/node2vec']
+        args.append("-i:%s" % graphFile)
+        args.append("-o:%s" % outputFile)
+        args.append("-d:%d" % self._d)
+        args.append("-l:%d" % self._walkLength)
+        args.append("-r:%d" % self._numWalks)
+        args.append("-k:%d" % self._contextSize)
+        args.append("-e:%d" % self._max_iter)
+        args.append("-p:%f" % self._return_p)
+        args.append("-q:%f" % self._inout_p)
+        if self._verbose:
+            args.append("-v")
+        args.append("-dr")
+        args.append("-w")
+        
+        try:
+            execute_cmd(args, useBash = True)
+        except Exception as e:
+            print(e)
+            raise Exception('node2vec error')
+        

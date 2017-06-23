@@ -23,7 +23,7 @@ def generate_list(exportFileName, limit = 1000):
     tracks = trackCol.find({ 
         'tags' : { '$exists': False }, 
         '_id': { '$nin': SKIP_IDS }  # exclude blacklisted
-        }).limit(limit)#.skip(limit*3)
+        }).limit(limit) # .skip(limit*3)
 
     with open(exportFileName, 'w', encoding="utf-8") as typeFile:
         typeWriter = csv.writer(typeFile, delimiter=',', lineterminator='\n',
@@ -33,6 +33,35 @@ def generate_list(exportFileName, limit = 1000):
             artistName = track['artists'][0]['name']
             typeWriter.writerow([track['_id'], artistName, track['name']])
     
+
+def process_missed():
+    from gemsearch.crawler.last_fm_crawler import get_tags
+
+    trackRepo = Tracks()
+    trackCol = trackRepo.getTracks()
+
+    tracks = trackCol.find({ 
+        'tags' : { '$exists': False }, 
+        '_id': { '$in': SKIP_IDS }
+    })
+    
+    for track in tracks:
+        trackId = track['_id']
+        if len(track['artists']) > 1:
+            artistName = track['artists'][0]['name']
+            tags = get_tags(artistName, track['name'])
+
+            if tags is not None:
+                pprint('Update ' + str(trackId))
+                trackCol.update_one(
+                    {'_id': trackId}, 
+                    {'$set': {'tags': tags}}
+                )
+            else:
+                pprint('Track not found: ' + str(trackId))
+
+        else:
+            print('no second artist: ' + str(trackId))
 
 def import_update_file(filePath):
     ''' Imports result file into db
@@ -51,7 +80,8 @@ def import_update_file(filePath):
 
 if __name__ == '__main__':
     
-    #generate_list('data/last_fm_missing-next2.csv', 100000)
-    import_update_file('data/import/last_fm_result_1.json')
+    #generate_list('data/last_fm_missing-3.csv', 100000)
+    #import_update_file('data/import/last_fm_result.json')
+    process_missed()
 
     print("done")

@@ -8,7 +8,7 @@ tracks.aggregate(
           _id: '$tags.name', 
           count: { $sum: 1 },
       } },
-      { $sort : { count: -1 } },
+      //{ $sort : { count: -1 } },
       { $out: "tmp_tags" }
       //{ $count: "total_unique_tags" }
    ]

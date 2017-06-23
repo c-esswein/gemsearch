@@ -7,6 +7,8 @@ class ClassicGraphGenerator(GraphGenerator):
         #print(item['type'])
         #if item['type'] == 'user-playlist':
         #    self.write_connection(item['user'], item['playlist'])
+        if item['type'] == 'user-track':
+            self.write_connection(item['user'], item['track'])
         if item['type'] == 'track-features':
             for feature in item['features']:
                 self.write_connection(feature['id'], item['track'], feature['val'])

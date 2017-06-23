@@ -1,5 +1,6 @@
 from pprint import pprint
 import numpy as np
+import random
 
 from gemsearch.query.elastic_search import extract_query_from_name
 
@@ -12,7 +13,7 @@ class PlaylistQueryEvaluator:
     testRatio = 0.2
 
     def addItem(self, idCounter, uidObj, type, name, obj = {}):
-        if type == 'playlist':
+        if type == 'playlist' and (random.uniform(0, 1) < self.testRatio):
             self.playlists.append(obj)
 
     def close_type_handler(self):
@@ -20,7 +21,8 @@ class PlaylistQueryEvaluator:
 
     def evaluate(self, geCalc):
         # select random test playlists
-        playlistCount = max(1, int(len(self.playlists) * self.testRatio))
+        #playlistCount = max(1, int(len(self.playlists) * self.testRatio))
+        playlistCount = max(1, len(self.playlists))
         randomPlaylists = np.random.choice(self.playlists, playlistCount)
 
         totalScore = 0

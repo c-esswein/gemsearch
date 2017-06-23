@@ -10,8 +10,8 @@ import csv
 import json
 import time
 
-#from gemsearch.utils.slack import slack_send_message, slack_error_message
-from slack import slack_send_message, slack_error_message
+from gemsearch.utils.slack import slack_send_message, slack_error_message
+#from slack import slack_send_message, slack_error_message
 
 API_KEY = 'f40c6192f19aabed7b3a48910c61587f'
 

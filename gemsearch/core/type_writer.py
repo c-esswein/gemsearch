@@ -2,12 +2,9 @@ from pprint import pprint
 import csv
 
 class TypeWriter:
-    pathPrefix = ''
-
-    def __init__(self, pathPrefix):
-        self.pathPrefix = pathPrefix
-        
-        self.typeFile = open(pathPrefix + 'types.csv', 'w', encoding="utf-8")
+    
+    def __init__(self, outputFile):        
+        self.typeFile = open(outputFile, 'w', encoding="utf-8")
         self.typeWriter = csv.writer(self.typeFile, delimiter=',', lineterminator='\n',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
 

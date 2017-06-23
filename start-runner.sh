@@ -1,1 +1,1 @@
-python -m gemsearch.runner
+python -u -m gemsearch.runner >>my_log.log 2>&1

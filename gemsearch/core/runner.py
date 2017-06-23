@@ -6,13 +6,14 @@ from pprint import pprint
 from gemsearch.embedding.ge_calc import GeCalc
 
 # use utf-8 for stdout (playlist names contain sometimes strange chars)
+'''
 if sys.stdout.encoding != 'utf-8':
-  sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
 if sys.stderr.encoding != 'utf-8':
-  sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+'''
 
-
-def run_pipeline(dataDir, iterator, embeddings, evaluations):
+def run_pipeline(dataDir, iterator, embeddings = [], evaluations = []):
     print('=== started pipeline ===')
     startTime = time()
 
@@ -35,7 +36,8 @@ def run_pipeline(dataDir, iterator, embeddings, evaluations):
     # TODO: multiple embeddings require multiple datadir (work in memory otherwise...)
     for embedding in embeddings:
         em = embedding.start_embedding(dataDir)
-        ge = GeCalc(dataDir)
+        ge = GeCalc()
+        ge.load_data(tmpDir+'embedding.adj', tmpDir+'types.csv')
 
         # evaluation
         print('\n=== evaluation ===')

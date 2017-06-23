@@ -2,7 +2,7 @@
 import os
 
 from gemsearch.core.runner import run_pipeline
-from gemsearch.core.item_iterator import ItemIterator
+from gemsearch.core.iterator import ItemIterator
 from gemsearch.core.type_writer import TypeWriter
 from gemsearch.core.type_counter import TypeCounter
 from gemsearch.graph.classic_graph_generator import ClassicGraphGenerator

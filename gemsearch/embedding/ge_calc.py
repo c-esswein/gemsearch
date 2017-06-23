@@ -7,15 +7,17 @@ class GeCalc:
     '''Query embedded graph.
     '''
 
-    def __init__(self, storage_prefix):
-        self.load_data(storage_prefix)
-
-    def load_data(self, prefix):
+    def load_data(self, embeddingFile, typeFile):
         '''Loads embedding and type mapping.
         '''
-        self.prefix = prefix
-        self.embedding = read_embedding_file(prefix + 'embedding.adj')
-        self.lookup = read_type_file(prefix + 'types.csv')
+        self.embedding = read_embedding_file(embeddingFile)
+        self.lookup = read_type_file(typeFile)
+
+    def load_node2vec_data(self, embeddingFile, typeFile):
+        '''Loads embedding (stored in node2vec format) and type mapping.
+        '''
+        self.embedding = read_native_embedding_file(embeddingFile)
+        self.lookup = read_type_file(typeFile)
 
     def get_item_info_by_index(self, index):
         '''Get item by embedding index.
@@ -88,6 +90,19 @@ def read_embedding_file(file_name):
     return np.loadtxt(file_name)
 
 
+def read_native_embedding_file(file_name):
+    ''' Load embedding stored by native node2vec
+    '''
+    with open(file_name, 'r') as f:
+        n, d = f.readline().strip().split()
+        X = np.zeros((int(n), int(d)))
+        for line in f:
+            emb = line.strip().split()
+            emb_fl = [float(emb_i) for emb_i in emb[1:]]
+            X[int(emb[0]), :] = emb_fl
+    return X
+
+
 def cos_cdist(matrix, vector):
     '''Compute the cosine distances between each row of matrix and vector.
     '''
@@ -102,7 +117,9 @@ def find_similar_vecs(searchVec, vecs):
 
 
 if __name__ == '__main__':
-    ge = GeCalc('data/tmp_test/')
+    tmpDir = 'data/tmp_test/'
+    ge = GeCalc()
+    ge.load_data(tmpDir+'embedding.em', tmpDir+'types.csv')
     
     searchId = ['5730d5afa90a9a398dfb614c']
 

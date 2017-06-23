@@ -1,26 +1,37 @@
 import numpy as np
-from gem.embedding.gf import GraphFactorization as gf
+#from gem.embedding.gf import GraphFactorization as gf
+#from gem.embedding.node2vec import node2vec
+from gemsearch.embedding.node2vec import Node2vec
 from gem.utils import graph_util
+from subprocess import call
 
 class DefaultEmbedder:
     dimensions = 0
 
-    def __init__(self, dimensions = 10):
+    def __init__(self, dimensions = 50):
         self.dimensions = dimensions
 
     def get_config_info(self):
         return "default embedding with " + str(self.dimensions) + " dimensions"
 
-    def start_embedding(self, dataDir):
+    def start_embedding(self, graphFile, outputFile):
         
         # Instatiate the embedding method with hyperparameters
         #em = gf(2, 100000, 1*10**-4, 1.0)
-        em = gf(self.dimensions, 200, 1*10**-4, 1.0)
+        #em = gf(self.dimensions, 100000, 1*10**-4, 1.0)
+        
+        # em = node2vec(2, 1, 80, 10, 10, 1, 1)
+        # embed_graph(em, dataDir+'graph.txt', dataDir+'embedding.adj')
 
-        embed_graph(em, dataDir+'graph.txt', dataDir+'embedding.adj')
+        em = Node2vec(50, 1, 80, 10, 10, 1, 1)
+        em.learn_embedding(graphFile, outputFile)
+
+        #node2vec_em(dataDir+'graph.txt')
+        
 
 
 # ------------- static functions ------------
+
 
 def embed_graph(em, graphFile, embeddingFile = None):
     ''' Embeds given graph with embedding method.
@@ -28,7 +39,7 @@ def embed_graph(em, graphFile, embeddingFile = None):
     graph = graph_util.loadGraphFromEdgeListTxt(graphFile)
     print('Graph with {} nodes and {} edges'.format(graph.number_of_nodes(), graph.number_of_edges()))
 
-    Y, t = em.learn_embedding(graph, is_weighted=True, no_python=False)
+    Y, t = em.learn_embedding(graph, is_weighted=True, no_python=True)
     print('%% embedding took: {}s'.format(t))
 
     if embeddingFile is not None:
@@ -41,18 +52,8 @@ def store_embedding(file_name, embedding):
     '''
     np.savetxt(file_name, embedding)
 
-# not used currently, use np.loadtxt() instead
-def loadEmbedding(file_name):
-    with open(file_name, 'r') as f:
-        n, d = f.readline().strip().split()
-        X = np.zeros((int(n), int(d)))
-        for line in f:
-            emb = line.strip().split()
-            emb_fl = [float(emb_i) for emb_i in emb[1:]]
-            X[int(emb[0]), :] = emb_fl
-    return X
-
 if __name__ == '__main__':
     embedder = DefaultEmbedder()
-    embedder.start_embedding('data/tmp_test/')
+    tmpDir = 'data/graph_100/'
+    embedder.start_embedding(tmpDir+'graph.txt', tmpDir+'embedding.em')
     

@@ -6,6 +6,9 @@ Playlist Dataset:
     Total Artists:
     83.789
 
+    Total Users:
+    1.137
+
     Total Tracks in Playlists:
     1.527.008
 
@@ -51,3 +54,18 @@ total tracks 671.650
 - remove Playlists < 4 songs
 
 17.872 left with 1.244.611 tracks
+
+
+# Tags
+455.753 unique Tags
+    Usage:
+    count > 5   117.430
+    count > 10  74.429
+
+-------------
+ir2017
+total entries:  879.299 
+total tracks:   566.410
+found in db:    520.932
+missend in db:   45.478
+total users:        569
