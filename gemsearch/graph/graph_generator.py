@@ -17,7 +17,7 @@ class GraphGenerator:
         if (not 'trainingOnly' in item) or (not item['trainingOnly']):
             self.generateGraphItem(item)
 
-    def write_connection(self, item1, item2, weight = 1):
+    def writeConnection(self, item1, item2, weight = 1):
         #print(item1, item2, weight)
         # only add if item1 and item2 index is given (training item overwise)
         if (item1 is not None) and (item2 is not None):

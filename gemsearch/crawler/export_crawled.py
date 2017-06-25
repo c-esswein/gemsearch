@@ -5,7 +5,6 @@ from pprint import pprint
 import json
 
 from gemsearch.storage.Tracks import Tracks
-from gemsearch.utils.JSONEncoder import JSONEncoder
 
 def export_tags(filePath):
     trackCol = Tracks().getTracks()

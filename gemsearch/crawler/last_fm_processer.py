@@ -10,7 +10,6 @@ import csv
 import json
 
 from gemsearch.storage.Tracks import Tracks
-from gemsearch.utils.JSONEncoder import JSONEncoder
 from gemsearch.utils.slack import slack_send_message, slack_error_message
 from .skip_ids import SKIP_IDS
 
