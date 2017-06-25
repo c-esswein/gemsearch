@@ -6,6 +6,8 @@ from gemsearch.storage.Storage import Storage
 from gemsearch.storage.Tracks import Tracks
 
 
+# TODO: not used! delte?
+
 class UserTrackIterator(ItemIterator):
 
     def iterate(self, typeHandlers, history):

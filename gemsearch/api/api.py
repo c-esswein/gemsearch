@@ -5,7 +5,9 @@ from gemsearch.query.elastic_search import search as es_search
 
 app = Flask(__name__)
 
-geCalc = GeCalc('data/tmp_test_1/')
+dataFolder = 'data/graph_10/'
+geCalc = GeCalc()
+geCalc.load_node2vec_data(dataFolder+'embedding.em', dataFolder+'types.csv')
 
 @app.route("/api/query")
 def query():
@@ -53,7 +55,16 @@ def get_object_id(id):
 
 @app.route("/api/suggest/<term>")
 def suggest_item(term):
-    result = es_search(term)
+    try:
+        result = es_search(term)
+    except Exception as exc:
+        return jsonify({
+            'success': False,
+            'errors': [
+                str(exc)
+            ]
+        })
+
     resultItems = map(lambda item: {
         'id': item['_id'],
         'type': item['_type'],
@@ -68,10 +79,14 @@ def suggest_item(term):
 
 @app.route("/api/graph")
 def get_graph_data():
+    types = request.args.get('types')
+    if types is not None:
+        types = types.split('|')
+
     return jsonify({
-        'nodes': geCalc.get_graph_data().tolist(),
-        'mapping': geCalc.get_lbl_mapping(),
-        'graph': geCalc.get_graph().tolist()
+        'nodes': geCalc.get_graph_embedding(types).tolist(),
+        # 'mapping': geCalc.get_lbl_mapping(),
+        # 'graph': geCalc.get_graph().tolist()
     })
 
 @app.route("/api/nodes")

@@ -1,8 +1,6 @@
 from elasticsearch import Elasticsearch
 from pprint import pprint
 
-from gemsearch.core.item_iterator import ItemIterator
-from gemsearch.storage.Storage import Storage
 
 class EsTypeWriter:
     '''Writes all entities into elastic search.
@@ -33,4 +31,5 @@ def clear():
 
 
 if __name__ == '__main__':
-    clear()
+    # clear()
+    pass

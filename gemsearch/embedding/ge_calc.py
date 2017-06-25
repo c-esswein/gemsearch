@@ -7,6 +7,9 @@ class GeCalc:
     '''Query embedded graph.
     '''
 
+    embedding = None    # embeddings array
+    lookup = None       # type lookup, maps embedding key to type data
+
     def load_data(self, embeddingFile, typeFile):
         '''Loads embedding and type mapping.
         '''
@@ -30,6 +33,7 @@ class GeCalc:
         result = []
         for itemIndex in indices:
             itemInfo = self.get_item_info_by_index(itemIndex)
+            # filter type based on typeFilter
             if (typeFilter is None) or (itemInfo['type'] in typeFilter):
                 result.append(itemInfo)
         return result
@@ -66,6 +70,14 @@ class GeCalc:
 
         return result_items[:limit]
 
+    def get_graph_embedding(self, typeFilter = None):
+        '''Get 3D graph coordinates for all items.
+        '''
+        # todo typeFilter
+        # todo real 3d vecs
+        return self.embedding[:,0:3].flatten()
+
+
 # ------------- static functions ------------
 
 def read_type_file(file_name):
@@ -95,11 +107,16 @@ def read_native_embedding_file(file_name):
     '''
     with open(file_name, 'r') as f:
         n, d = f.readline().strip().split()
+        n = 5638
         X = np.zeros((int(n), int(d)))
         for line in f:
             emb = line.strip().split()
             emb_fl = [float(emb_i) for emb_i in emb[1:]]
             X[int(emb[0]), :] = emb_fl
+
+        for i in range(0, n):
+            if X[i,0] == 0:
+                print(i)
     return X
 
 
@@ -117,9 +134,9 @@ def find_similar_vecs(searchVec, vecs):
 
 
 if __name__ == '__main__':
-    tmpDir = 'data/tmp_test/'
+    tmpDir = 'data/tmp1/'
     ge = GeCalc()
-    ge.load_data(tmpDir+'embedding.em', tmpDir+'types.csv')
+    ge.load_node2vec_data(tmpDir+'embedding.em', tmpDir+'types.csv')
     
     searchId = ['5730d5afa90a9a398dfb614c']
 

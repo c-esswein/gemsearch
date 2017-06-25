@@ -1,8 +1,10 @@
 from pprint import pprint
 import numpy as np
 import random
+import json
 
 from gemsearch.query.elastic_search import extract_query_from_name
+from gemsearch.utils.JSONEncoder import JSONEncoder
 
 ''' is a evaluator and typeHandler
 '''
@@ -11,22 +13,33 @@ class PlaylistQueryEvaluator:
     name = 'Playlist Query Evaluator'
     playlists = []
     testRatio = 0.2
+    dataDir = ''
+
+    def __init__(self, dataDir = ''):
+        self.dataDir = dataDir
 
     def addItem(self, idCounter, uidObj, type, name, obj = {}):
         if type == 'playlist' and (random.uniform(0, 1) < self.testRatio):
             self.playlists.append(obj)
+            print('chosen playlist: ' + name)
+            return True
+        
+        return False
 
     def close_type_handler(self):
-        pass
+        # write chosen playlists into file for easier testing
+        with open(self.dataDir+'playlist_evaluation.json', 'w', encoding="utf-8") as outFile:
+            for playlist in self.playlists:
+                outFile.write(json.dumps(playlist, cls=JSONEncoder) + '\n')
 
     def evaluate(self, geCalc):
-        # select random test playlists
-        #playlistCount = max(1, int(len(self.playlists) * self.testRatio))
-        playlistCount = max(1, len(self.playlists))
-        randomPlaylists = np.random.choice(self.playlists, playlistCount)
+        playlistCount = len(self.playlists)
+
+        if playlistCount < 1:
+            raise Exception('No Playlists collected to test!')
 
         totalScore = 0
-        for playlist in randomPlaylists:
+        for playlist in self.playlists:
             score = evaluate_playlist(geCalc, playlist)
             totalScore = totalScore + score
             print('Playlist: '+str(score)+' <<'+playlist['name']+'>>')
@@ -62,14 +75,18 @@ def match_track_hits(playlistTracks, recTracks):
 
 if __name__ == '__main__':
     from gemsearch.storage.Storage import Storage
-    from gemsearch.embedding.ge_calc import GeCalc
+    from gemsearch.embedding.ge_calc import GeCalc, read_type_file
 
-    playlists = Storage().getCollection('tmp_playlists_cleaned').find({}, no_cursor_timeout=True).limit(2)
-    geCalc = GeCalc('data/tmp_test/')
+    dataFolder = 'data/tmp1/'
+
+    playlistsCol = Storage().getCollection('playlists')
+    playlists = playlists.find({}).limit(1000)
 
     evaluator = PlaylistQueryEvaluator()
 
     for playlist in playlists:
         evaluator.addItem('idCounter', 'uidObj', 'playlist', 'name', playlist)
     
+    geCalc = GeCalc()
+    geCalc.load_node2vec_data(dataFolder+'embedding.em', dataFolder+'types.csv')
     evaluator.evaluate(geCalc)

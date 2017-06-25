@@ -33,11 +33,11 @@ def run_pipeline(dataDir, iterator, embeddings = [], evaluations = []):
 
     # embed
     print('\n=== embedding ===')
-    # TODO: multiple embeddings require multiple datadir (work in memory otherwise...)
+    # TODO: multiple embeddings require multiple datadir
     for embedding in embeddings:
-        em = embedding.start_embedding(dataDir)
+        em = embedding.start_embedding(dataDir + 'graph.txt', dataDir+'embedding.em')
         ge = GeCalc()
-        ge.load_data(tmpDir+'embedding.adj', tmpDir+'types.csv')
+        ge.load_node2vec_data(dataDir+'embedding.em', dataDir+'types.csv')
 
         # evaluation
         print('\n=== evaluation ===')

@@ -18,7 +18,8 @@ class PlaylistIterator(ItemIterator):
         tracksRepo = Tracks()
 
         featureId = self.getId('feature--valence', 'feature', 'feature--valence')
-            
+        
+        # --- playlist ---
         for playlist in playlists:
             userId = self.getId(playlist['username'], 'user', playlist['username'], {})
             playlistId = self.getId(playlist['_id'], 'playlist', playlist['name'], playlist)
@@ -42,6 +43,9 @@ class PlaylistIterator(ItemIterator):
                     'trackData': trackData
                 }
 
+                # TODO: beyond this duplicates possible
+
+                # --- features ---
                 features = tracksRepo.getFeatures(track['track_id'])
                 yield {
                     'type': 'track-features',

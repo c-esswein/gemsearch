@@ -2,17 +2,26 @@
 class GraphGenerator:
     edges = []
     _storagePath = ''
+    _edgeFilter = None
 
-    def __init__(self, storagePath):
+    def __init__(self, storagePath, edgeFilter = None):
         self._storagePath = storagePath
+        self._edgeFilter = edgeFilter
 
     def generateItem(self, item):
-        if not 'trainingOnly' in item or not item['trainingOnly']:
+        # check if type should be moddeled
+        if (self._edgeFilter is not None) and (item['type'] not in self._edgeFilter):
+            return
+
+        # check if item is training only
+        if (not 'trainingOnly' in item) or (not item['trainingOnly']):
             self.generateGraphItem(item)
 
     def write_connection(self, item1, item2, weight = 1):
         #print(item1, item2, weight)
-        self.edges.append((item1, item2, weight))
+        # only add if item1 and item2 index is given (training item overwise)
+        if (item1 is not None) and (item2 is not None):
+            self.edges.append((item1, item2, weight))
 
     def close_generation(self):
         # ge algos require list do be sorted...

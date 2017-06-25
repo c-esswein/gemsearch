@@ -8,7 +8,11 @@ from gemsearch.core.type_counter import TypeCounter
 from gemsearch.graph.classic_graph_generator import ClassicGraphGenerator
 # from gemsearch.query.elastic_search_filler import EsTypeWriter
 
+# ---- config
 dataDir = 'data/graph_100/'
+playlistCount = 100
+graphEdges = ['track-features', 'track-artist', 'track-tag']
+# ---- config
 
 # create data dir
 if not os.path.exists(dataDir):
@@ -17,12 +21,12 @@ if not os.path.exists(dataDir):
 run_pipeline(
     dataDir,
     iterator = {
-        'iterator': PlaylistIterator(100),
+        'iterator': PlaylistIterator(playlistCount),
         'typeHandlers': [
             TypeWriter(dataDir + 'types.csv'), 
             TypeCounter(), 
             # EsTypeWriter()
         ],
-        'generators': [ClassicGraphGenerator(dataDir + 'graph.txt')],
+        'generators': [ClassicGraphGenerator(dataDir + 'graph.txt', graphEdges)],
     }
 )
