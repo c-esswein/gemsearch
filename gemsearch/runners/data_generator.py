@@ -61,24 +61,25 @@ class DataGenerator():
                     self._idWritten[trackId] = True
 
                 # --- features ---
+                trackData = tracksRepo.getTrackById(track['track_id'])
                 features = tracksRepo.getFeatures(track['track_id'])
                 
                 self.writeJson('track_features', {
                     'id': trackId,
+                    'name': trackData['name'],
                     'features': {
                         'valence': features['valence']
                     }
                 })
                 
-
-                trackData = tracksRepo.getTrackById(track['track_id'])
                 # --- artists ---
                 for artist in trackData['artists']:
                     artistId = artist['id']
 
                     self.write('track_artist', [
                         trackId,
-                        artist['uri']
+                        artist['uri'],
+                        artist['name']
                     ])
 
                     '''
@@ -93,12 +94,10 @@ class DataGenerator():
 
                 # --- tags ---
                 if 'tags' in trackData:
-                    for tag in trackData['tags']:
-                        tagUid = 'tag::'+tag['name']
-                        
+                    for tag in trackData['tags']:                        
                         self.write('track_tag', [
                             trackId,
-                            tagUid
+                            tag['name']
                         ])
 
         self._closeHandlers()

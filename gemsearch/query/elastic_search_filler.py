@@ -6,17 +6,16 @@ class EsTypeWriter:
     '''Writes all entities into elastic search.
     '''
 
-    def __init__(self):
+    def __init__(self, indexPrefix = ''):
         self.es = Elasticsearch()
+        self._indexPrefix = indexPrefix
 
-    def addItem(self, idCounter, uidObj, type, name, obj = {}):
+    def addItem(self, idCounter, uidObj, type, name):
         doc = {
             'name': name
         }
-        if 'uri' in obj:
-            doc['uri'] = obj['uri']
-            
-        index = type+'-index'
+
+        index = indexPrefix + type + '-index'
         self.es.index(index=index, doc_type=type, id=uidObj, body=doc)
 
     def close_type_handler(self):

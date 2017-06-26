@@ -38,7 +38,7 @@ def traverseUserTrackInPlaylists(filePath):
 
 def traverseTrackArtist(filePath):
      with open(filePath, 'r', encoding="utf-8") as inFile:
-        fieldnames = ['trackId', 'artistId']
+        fieldnames = ['trackId', 'artistId', 'artistName']
         for line in csv.DictReader(inFile, fieldnames=fieldnames, delimiter=',', quotechar='|'):
             yield ({
                 'type': 'track',
@@ -47,6 +47,7 @@ def traverseTrackArtist(filePath):
             {
                 'type': 'artist',
                 'id': line['artistId']
+                'name': line['artistName']
             },
             1)
 
@@ -57,17 +58,19 @@ def traverseTrackFeatures(filePath):
             for feature in data['features']:
                 yield ({
                     'type': 'track',
+                    'name': data['name']
                     'id': data['id']
                 },
                 {
                     'type': 'feature',
-                    'id': feature
+                    'id': 'feature::' + feature,
+                    'name': feature
                 },
                 data['features'][feature])
 
 def traverseTrackTag(filePath):
      with open(filePath, 'r', encoding="utf-8") as inFile:
-        fieldnames = ['trackId', 'tagId']
+        fieldnames = ['trackId', 'tagName']
         for line in csv.DictReader(inFile, fieldnames=fieldnames, delimiter=',', quotechar='|'):
             yield ({
                 'type': 'track',
@@ -75,7 +78,8 @@ def traverseTrackTag(filePath):
             },
             {
                 'type': 'tag',
-                'id': line['tagId']
+                'name': line['tagName']
+                'id': 'tag::' + line['tagName']
             },
             1)
 

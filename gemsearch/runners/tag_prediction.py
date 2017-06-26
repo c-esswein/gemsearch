@@ -2,6 +2,8 @@ from gemsearch.core.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
 from gemsearch.core.data_loader import traverseUserTrackInPlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag
 
+from gemsearch.core.type_counter import TypeCounter
+
 from gemsearch.evaluation.tag_prediction_evaluator import TagPredictionEvaluator
 from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
@@ -14,11 +16,11 @@ tagPredictEval = TagPredictionEvaluator(testSplit=0.2, precisionAt = 5)
 
 print('------------- generate graph -------------')
 
-graphGenerator = GraphGenerator(outDir+'graph.txt', IdManager(outDir+'types.csv'))
+graphGenerator = GraphGenerator(outDir+'graph.txt', IdManager(outDir+'types.csv', typeHandlers = [TypeCounter()]))
 
+graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
 graphGenerator.add(traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
 graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
-graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
 #graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
 graphGenerator.add(tagPredictEval.traverse(traverseTrackTag(dataDir+'track_tag.csv')))
 graphGenerator.close_generation()

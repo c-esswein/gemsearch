@@ -13,10 +13,8 @@ class PlaylistQueryEvaluator:
     name = 'Playlist Query Evaluator'
     _playlists = []
     _testSplit = 0.2
-    dataDir = ''
 
-    def __init__(self, dataDir = '', testSplit = 0.2):
-        self.dataDir = dataDir
+    def __init__(self, testSplit = 0.2):
         self._testSplit = testSplit
     
     def traverse(self, playlistTraverser):
@@ -25,11 +23,15 @@ class PlaylistQueryEvaluator:
         self._playlists = test
 
         return training
+    
+    def addPlaylists(self, playlistTraverser):
+        self._playlists = list(playlistTraverser)
 
-    def close_type_handler(self):
+    # TODO: remove?
+    def writeTestLists(self, dataDir):
         # write chosen playlists into file for easier testing
-        with open(self.dataDir+'playlist_evaluation.json', 'w', encoding="utf-8") as outFile:
-            for playlist in self.playlists:
+        with open(dataDir+'playlist_evaluation.json', 'w', encoding="utf-8") as outFile:
+            for playlist in self._playlists:
                 outFile.write(json.dumps(playlist, cls=JSONEncoder) + '\n')
 
     def evaluate(self, geCalc):
@@ -51,12 +53,12 @@ class PlaylistQueryEvaluator:
 def evaluate_playlist(geCalc, playlist):
     '''Evaluates playlist name as query performance.
     '''
-    queryIds = extract_query_from_name(playlist['name'])
+    queryIds = extract_query_from_name(playlist['playlistName'])
     playlistCount = len(playlist['tracks'])
     results = geCalc.query_by_ids(
         queryIds, 
         typeFilter = ['track'], 
-        limit = playlistCount * 2
+        limit = playlistCount * 2 # TODO: put into parameter, use precision / recall
     )
 
     numHits = match_track_hits(playlist['tracks'], results)
@@ -64,8 +66,7 @@ def evaluate_playlist(geCalc, playlist):
 
 def match_track_hits(playlistTracks, recTracks):
     hits = 0
-    for track in playlistTracks:
-        trackId = str(track['track_id'])
+    for trackId in playlistTracks:
         for recTrack in recTracks:
             if recTrack['id'] == trackId:
                 hits += 1
@@ -85,6 +86,7 @@ if __name__ == '__main__':
     evaluator = PlaylistQueryEvaluator()
 
     for playlist in playlists:
+        # TODO: outdated api
         evaluator.addItem('idCounter', 'uidObj', 'playlist', 'name', playlist)
     
     geCalc = GeCalc()
