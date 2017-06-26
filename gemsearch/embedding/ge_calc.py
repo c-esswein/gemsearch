@@ -1,6 +1,7 @@
 from pprint import pprint
 import numpy as np
 import csv
+import sys
 import scipy.spatial.distance
 
 class GeCalc:
@@ -27,15 +28,20 @@ class GeCalc:
         '''
         return self.lookup[index]
 
-    def get_items_from_embedding_indices(self, indices, typeFilter = None):
+    def get_items_from_embedding_indices(self, indices, typeFilter = None, limit = sys.maxsize):
         '''Maps embedding indices to items. Optional type Filter can be applied.
         '''
         result = []
+        found = 0
         for itemIndex in indices:
             itemInfo = self.get_item_info_by_index(itemIndex)
             # filter type based on typeFilter
             if (typeFilter is None) or (itemInfo['type'] in typeFilter):
                 result.append(itemInfo)
+                found += 1
+                if found == limit:
+                    break
+
         return result
 
     def get_item_by_item_id(self, itemId):
@@ -66,9 +72,9 @@ class GeCalc:
                 searchVec = itemVec
 
         result = find_similar_vecs(searchVec, self.embedding)
-        result_items = self.get_items_from_embedding_indices(result, typeFilter)
+        result_items = self.get_items_from_embedding_indices(result, typeFilter, limit)
 
-        return result_items[:limit]
+        return result_items
 
     def get_graph_embedding(self, typeFilter = None):
         '''Get 3D graph coordinates for all items.
@@ -91,8 +97,7 @@ def read_type_file(file_name):
                 'embeddingIndex': int(row[0]),
                 'id': row[1],
                 'type': row[2],
-                'name': row[3],
-                'uri': row[4]
+                'name': row[3]
             })
     return lookup
 
@@ -107,16 +112,12 @@ def read_native_embedding_file(file_name):
     '''
     with open(file_name, 'r') as f:
         n, d = f.readline().strip().split()
-        n = 5638
         X = np.zeros((int(n), int(d)))
         for line in f:
             emb = line.strip().split()
             emb_fl = [float(emb_i) for emb_i in emb[1:]]
             X[int(emb[0]), :] = emb_fl
 
-        for i in range(0, n):
-            if X[i,0] == 0:
-                print(i)
     return X
 
 

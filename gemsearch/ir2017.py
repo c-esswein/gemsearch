@@ -2,6 +2,8 @@ import csv
 from pprint import pprint
 from gemsearch.storage.Storage import Storage
 
+# TODO: adapt to new layout
+
 from gemsearch.core.iterator.user_track_iterator import UserTrackIterator
 from gemsearch.graph.classic_graph_generator import ClassicGraphGenerator
 from gemsearch.core.type_writer import TypeWriter

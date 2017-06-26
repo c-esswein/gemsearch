@@ -1,7 +1,7 @@
 from pprint import pprint
 import numpy as np
+from sklearn.model_selection import train_test_split
 
-from gemsearch.query.elastic_search import extract_query_from_name
 
 ''' hides tags for tracks during training and evaluates
 track tag prediction
@@ -9,73 +9,39 @@ track tag prediction
 class TagPredictionEvaluator:
 
     name = 'Tag Prediction Evaluator'
-    tags = {}
-    firstNTags = 0
-    precisionAt = 1
-    testTags = None
+    _testTags = []
 
-    def __init__(self, precisionAt = 5, firstNTags = 0, testTags = None):
-        self.precisionAt = precisionAt
-        self.firstNTags = firstNTags
-        self.testTags = testTags
+    def __init__(self, testSplit = 0.2, precisionAt = 5):
+        self._testSplit = testSplit
+        self._precisionAt = precisionAt
 
-    def addItem(self, idCounter, uidObj, type, name, obj = {}):
-        if type != 'tag':
-            return
+    def traverse(self, tagTraverser):
+        tags = list(tagTraverser)
+        training, test = train_test_split(tags, test_size=self._testSplit, random_state=42)
+        self._testTags = test
 
-        addTag = False
-
-        if (self.testTags is not None) and (name in self.testTags): # tagList mode
-            addTag = True
-        elif (self.firstNTags > 0): # take first N tags mode
-            addTag = True
-            self.firstNTags -= 1
-
-        if addTag:
-            self.tags[uidObj] = {
-                'name': name,
-                'track': None
-            }
-
-    def close_type_handler(self):
-        pass
-
-    def generateItem(self, item):
-        if item['type'] == 'track-tag':
-            tagKey = item['tagUid']
-            if tagKey in self.tags and self.tags[tagKey]['track'] == None:
-                self.tags[tagKey]['track'] = str(item['trackUid'])
-                return True
-
-        return False
-
-    def close_generation(self):
-        pass
+        return training
 
     def evaluate(self, geCalc):
-        print('Chosen tags:')
-        pprint(self.tags)
-
         hits = 0
-        tagCount = 0
 
-        for tag in self.tags:
-            tagCount += 1
-            tagData = self.tags[tag]
-            
-            if evaluate_track_tag_predict(geCalc, self.precisionAt, tag, tagData['track']):
-                print('Hit Tag: {}'.format(tagData['name']))
+        for track, tag, weight in self._testTags:
+            if evaluate_track_tag_predict(geCalc, self._precisionAt, track['id'], tag['id']):
+                print('Hit Tag: {}'.format(tag['id']))
                 hits += 1
             else:
-                print('Missed Tag: {}'.format(tagData['name']))
-
+                #print('Missed Tag: {}'.format(tagData['name']))
+                pass
+        
+        tagCount = len(self._testTags)
+        print('Evaluator {}, split={}, tagCount={}'.format(self.name, self._testSplit, tagCount))
         print('Hit Rate: {}'.format(hits / tagCount))
 
 
 # ------------- static functions ------------
 
-def evaluate_track_tag_predict(geCalc, precisionAt, tag, track):
-    '''Evaluates tag prediction for tracks
+def evaluate_track_tag_predict(geCalc, precisionAt, track, tag):
+    '''Evaluates tag prediction for track
     '''
     
     results = geCalc.query_by_ids(

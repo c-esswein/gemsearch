@@ -11,20 +11,20 @@ from gemsearch.utils.JSONEncoder import JSONEncoder
 class PlaylistQueryEvaluator:
 
     name = 'Playlist Query Evaluator'
-    playlists = []
-    testRatio = 0.2
+    _playlists = []
+    _testSplit = 0.2
     dataDir = ''
 
-    def __init__(self, dataDir = ''):
+    def __init__(self, dataDir = '', testSplit = 0.2):
         self.dataDir = dataDir
+        self._testSplit = testSplit
+    
+    def traverse(self, playlistTraverser):
+        playlists = list(playlistTraverser)
+        training, test = train_test_split(playlists, test_size=self._testSplit, random_state=42)
+        self._playlists = test
 
-    def addItem(self, idCounter, uidObj, type, name, obj = {}):
-        if type == 'playlist' and (random.uniform(0, 1) < self.testRatio):
-            self.playlists.append(obj)
-            print('chosen playlist: ' + name)
-            return True
-        
-        return False
+        return training
 
     def close_type_handler(self):
         # write chosen playlists into file for easier testing
@@ -33,7 +33,7 @@ class PlaylistQueryEvaluator:
                 outFile.write(json.dumps(playlist, cls=JSONEncoder) + '\n')
 
     def evaluate(self, geCalc):
-        playlistCount = len(self.playlists)
+        playlistCount = len(self._playlists)
 
         if playlistCount < 1:
             raise Exception('No Playlists collected to test!')
