@@ -3,6 +3,9 @@ import sys
 import codecs
 from pprint import pprint
 
+#TODO: delete
+
+
 from gemsearch.embedding.ge_calc import GeCalc
 
 # use utf-8 for stdout (playlist names contain sometimes strange chars)

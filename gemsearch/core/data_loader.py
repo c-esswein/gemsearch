@@ -1,5 +1,9 @@
 import csv
 import json
+import sys
+
+# TODO: use json for playlists
+csv.field_size_limit(500 * 1024 * 1024)
 
 def traversePlaylists(filePath):
     with open(filePath, 'r', encoding="utf-8") as inFile:
@@ -28,7 +32,8 @@ def traverseUserTrackInPlaylists(filePath):
         for track in playlist['tracks']:
             yield ({
                 'type': 'user',
-                'id': line['userId']
+                'id': playlist['userId'],
+                'name': playlist['userId']
             },
             {
                 'type': 'track',
@@ -46,7 +51,7 @@ def traverseTrackArtist(filePath):
             },
             {
                 'type': 'artist',
-                'id': line['artistId']
+                'id': line['artistId'],
                 'name': line['artistName']
             },
             1)
@@ -58,7 +63,7 @@ def traverseTrackFeatures(filePath):
             for feature in data['features']:
                 yield ({
                     'type': 'track',
-                    'name': data['name']
+                    'name': data['name'],
                     'id': data['id']
                 },
                 {
@@ -78,8 +83,22 @@ def traverseTrackTag(filePath):
             },
             {
                 'type': 'tag',
-                'name': line['tagName']
+                'name': line['tagName'],
                 'id': 'tag::' + line['tagName']
             },
             1)
 
+
+def traverseTypes(fileName):
+    '''Reads type file
+    '''
+    with open(fileName, 'r', encoding="utf-8") as csvfile:
+        # dict reader not possible because int cast is needed
+        typeReader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in typeReader:
+            yield {
+                'embeddingIndex': int(row[0]),
+                'id': row[1],
+                'type': row[2],
+                'name': row[3]
+            }

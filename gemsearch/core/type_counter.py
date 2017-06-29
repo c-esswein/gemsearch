@@ -11,7 +11,7 @@ class TypeCounter:
         
         self._counter[type] += 1
 
-    def close_type_handler(self):
+    def close_handler(self):
         print('Collected items by type:')
         for type in self._counter:
             print('{}: {}'.format(type, self._counter[type]))

@@ -3,6 +3,7 @@ import numpy as np
 import csv
 import sys
 import scipy.spatial.distance
+from gemsearch.core.data_loader import traverseTypes
 
 class GeCalc:
     '''Query embedded graph.
@@ -15,13 +16,16 @@ class GeCalc:
         '''Loads embedding and type mapping.
         '''
         self.embedding = read_embedding_file(embeddingFile)
-        self.lookup = read_type_file(typeFile)
+        self.lookup = list(traverseTypes(typeFile))
 
     def load_node2vec_data(self, embeddingFile, typeFile):
         '''Loads embedding (stored in node2vec format) and type mapping.
         '''
         self.embedding = read_native_embedding_file(embeddingFile)
-        self.lookup = read_type_file(typeFile)
+        self.lookup = list(traverseTypes(typeFile))
+
+        if len(self.embedding) != len(self.lookup):
+            raise Exception('Embeddings ({}) and type-mappings ({}) size does not match'.format(len(self.embedding), len(self.lookup)))
 
     def get_item_info_by_index(self, index):
         '''Get item by embedding index.
@@ -86,21 +90,6 @@ class GeCalc:
 
 # ------------- static functions ------------
 
-def read_type_file(file_name):
-    '''Reads type file and creates lookup from embeddingIndex to items.
-    '''
-    lookup = []
-    with open(file_name, 'r', encoding="utf-8") as csvfile:
-        typeReader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        for row in typeReader:
-            lookup.append({
-                'embeddingIndex': int(row[0]),
-                'id': row[1],
-                'type': row[2],
-                'name': row[3]
-            })
-    return lookup
-
 def read_embedding_file(file_name):
     '''Load embedding.
     '''
@@ -135,17 +124,20 @@ def find_similar_vecs(searchVec, vecs):
 
 
 if __name__ == '__main__':
-    tmpDir = 'data/tmp1/'
+    from gemsearch.utils.timer import Timer
+
+    tmpDir = 'data/run1/'
     ge = GeCalc()
-    ge.load_node2vec_data(tmpDir+'embedding.em', tmpDir+'types.csv')
     
-    searchId = ['5730d5afa90a9a398dfb614c']
+    with Timer(message='Data loading') as t:
+        ge.load_node2vec_data(tmpDir+'node2vec.em', tmpDir+'types.csv')
+    
+    searchId = ['spotify:track:0OFr7o3pOXko0iUTmmMvPF']
 
     print('Search for:\n')
     pprint(ge.get_item_by_item_id(searchId[0]))
 
     print('\nResults:\n')
-    result_items = ge.query_by_ids(searchId, ['track'])
-    for item in result_items:
-        pprint(item)
+    with Timer(message='Query') as t:
+        result_items = ge.query_by_ids(searchId, ['track'], 10)
     

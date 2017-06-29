@@ -1,9 +1,11 @@
 ''''Loads data from mongodb and creates data files.
 '''
-from gemsearch.storage.Storage import Storage
-from gemsearch.storage.Tracks import Tracks
 import json
 import csv
+import re
+from gemsearch.storage.Storage import Storage
+from gemsearch.storage.Tracks import Tracks
+from gemsearch.core.name_cleaning import clean_playlist_name, clean_tag
 
 
 # TODO integrate albums
@@ -18,7 +20,7 @@ class DataGenerator():
 
     def _getHandler(self, fileName):
         if fileName not in self._handlers:
-            self._handlers[fileName] = open(fileName, 'a', encoding="utf-8")
+            self._handlers[fileName] = open(fileName, 'w', encoding="utf-8")
 
         return self._handlers[fileName]
 
@@ -45,10 +47,14 @@ class DataGenerator():
         # --- playlist ---
         for playlist in playlists:
 
+            playlistName = clean_playlist_name(playlist['name'])
+            if not playlistName:
+                continue
+
             self.write('playlist', [
                 playlist['_id'],
                 playlist['username'],
-                playlist['name'],
+                playlistName,
                 [track['track_uri'] for track in playlist['tracks']]
             ])
 
@@ -94,15 +100,17 @@ class DataGenerator():
 
                 # --- tags ---
                 if 'tags' in trackData:
-                    for tag in trackData['tags']:                        
-                        self.write('track_tag', [
-                            trackId,
-                            tag['name']
-                        ])
+                    for tag in trackData['tags']:
+                        tagName = clean_tag(tag)
+                        if tagName:
+                            self.write('track_tag', [
+                                trackId,
+                                tagName
+                            ])
 
         self._closeHandlers()
 
 if __name__ == "__main__":
-    generator = DataGenerator('data/graph_200/')
-    generator.generate(200)
+    generator = DataGenerator('data/graph_500/')
+    generator.generate(500)
     print('data written')

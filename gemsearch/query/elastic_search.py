@@ -3,9 +3,9 @@ from elasticsearch import Elasticsearch
 
 es = Elasticsearch()
 
-def search(queryStr):
+def search(queryStr: str, limit=10):
         # "match_all": {}
-    res = es.search(index="_all", body={"query": 
+    res = es.search(index="_all", size=limit, body={"query": 
         {"match" : {"name" : {"query": queryStr, "fuzziness": "AUTO"}}}
         #{"match_phrase" : {"name" : "machine gun"}}
         #{"match_phrase": { "name": { "query": "machina gun", "slop": 3 } } }
@@ -13,7 +13,7 @@ def search(queryStr):
     #print("Got %d Hits:" % res['hits']['total'])
     return [hit for hit in res['hits']['hits']]
 
-def suggest(prefix):
+def suggest(prefix: str):
     '''res = es.search(index="_all", body={
         "suggest": {
             "name-suggest" : {
@@ -39,6 +39,11 @@ def suggest(prefix):
     })
     pprint(res)
 
+def extract_query_from_name(name, limit=1):
+    hits = search(name, limit)
+    return [hit['_source']['id'] for hit in hits] # [0:1]
+    # return [hit['_id'] for hit in hits][0:1]
+
 def tester():
     from gemsearch.storage.Storage import Storage
 
@@ -50,11 +55,9 @@ def tester():
         result = extract_query_from_name(playlist['name'])
         pprint(result)
 
-def extract_query_from_name(name):
-    hits = search(name)
-    return [hit['_id'] for hit in hits][0:1]
-
 
 if __name__ == '__main__':
-    pprint(search('ni'))
+    #pprint(search('ni'))
+
+    pprint(es.count())
     #suggest('ni')

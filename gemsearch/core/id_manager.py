@@ -11,7 +11,7 @@ class IdManager():
         self._typeFile = open(outputFile, 'w', encoding="utf-8")
         self._typeWriter = csv.writer(self._typeFile, delimiter=',', lineterminator='\n',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        self._typeHandlers = []
+        self._typeHandlers = typeHandlers
 
     def getId(self, item):
         uid = str(item['id'])
@@ -35,4 +35,4 @@ class IdManager():
         self._typeFile.close()
 
         for typeHandler in self._typeHandlers:
-            typeHandler.close()
+            typeHandler.close_handler()

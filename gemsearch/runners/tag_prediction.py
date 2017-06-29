@@ -8,7 +8,7 @@ from gemsearch.evaluation.tag_prediction_evaluator import TagPredictionEvaluator
 from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
 
-dataDir = 'data/tmp_generator/'
+dataDir = 'data/graph_200/'
 outDir = 'data/run1/'
 
 
