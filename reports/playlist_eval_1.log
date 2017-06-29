@@ -1,0 +1,219 @@
+Simple RUN:
+- tag cleaning: removed empty tags, trim, count < 5
+- playlist name cleaning: trim, removed non alpha char containing
+
+
+config:
+{'MAX_PRECISION_AT': 2,
+ 'SHOULD_EMBED': True,
+ 'SHOULD_INDEX_ES': True,
+ 'TEST_PLAYLIST_SPLIT': 0.2,
+ 'dataDir': 'data/graph_500/',
+ 'outDir': 'data/graph_500_data/'}
+%%% playlist_eval runner...
+------------- generate graph -------------
+%%% graph generation...
+Collected items by type:
+tag: 72540
+track: 34239
+artist: 8172
+feature: 1
+
+%%% graph generation done in 8.818s
+%%% elastic search writer...
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 114952}
+
+%%% elastic search writer done in 12.396s
+------------- graph embedding -------------
+%%% embedding...
+running: bash.exe -c "./gem/c_exe/node2vec -i:data/graph_500_data/graph.txt -o:data/graph_500_data/node2vec.em -d:50 -l:80 -r:10 -k:10 -e:1 -p:1.000000 -q:1.000000 -dr -w"
+
+An algorithmic framework for representational learning on graphs. [Jun 16 2017]
+================================================================================
+Input graph path (-i:)=data/graph_500_data/graph.txt
+Output graph path (-o:)=data/graph_500_data/node2vec.em
+Number of dimensions. Default is 128 (-d:)=50
+Length of walk per source. Default is 80 (-l:)=80
+Number of walks per source. Default is 10 (-r:)=10
+Context size for optimization. Default is 10 (-k:)=10
+Number of epochs in SGD. Default is 1 (-e:)=1
+Return hyperparameter. Default is 1 (-p:)=1
+Inout hyperparameter. Default is 1 (-q:)=1
+Verbose output. (-v)=NO
+Graph is directed. (-dr)=YES
+Graph is weighted. (-w)=YES
+
+%%% embedding done in 307.392s
+%%% ge calc initializing...
+
+%%% ge calc initializing done in 4.184s
+------------- evaluation -------------
+%%% evaluation...
+
+--- Precision@1 ---
+Playlist: precision 0.047619047619047616 <<[In The House Of Flies]>> query:[spotify:track:1B7QMxhxKSHbYBXoSXJzGk]
+Playlist: precision 0.06666666666666667 <<Bach: Toccata & Fugue, BWV 565; Passacaglia & Fugue, BWV 582; Pastorale, BWV 590; Preludes & Fugues - E. Power Biggs>> query:[spotify:track:4r2hhErOg9MB0UYIuB3mWG]
+Playlist: precision 0.007782101167315175 <<MTV Day 2010 Galicia>> query:[tag::mtv]
+Playlist: precision 0.02702702702702703 <<Piano Mood Mode>> query:[tag::mod]
+Playlist: precision 0.03125 <<_ goes the weasel>> query:[tag::it goes it goes it goes it goes it goes]
+Playlist: precision 0.008130081300813009 <<- 2000-tal ->> query:[tag::2000]
+Playlist: precision 0.004878048780487805 <<- 2010-tal ->> query:[tag::2010]
+Playlist: precision 0.018518518518518517 <<- Hip Hop - ••>> query:[tag::hip  hop]
+Playlist: precision 0.013114754098360656 <<- Indie ->> query:[tag::indie indie]
+Playlist: precision 0.00909090909090909 <<- Swedish - ••>> query:[tag::swedish]
+Playlist: precision 0.009900990099009901 <<@'Roid rage radio>> query:[spotify:track:7KowLPnMIf2m9EPYIFj1q8]
+Playlist: precision 0.007246376811594203 <<@songs>> query:[tag::songs]
+Playlist: precision 0.0035087719298245615 <<*LISTEN TO*>> query:[tag::to listen]
+Playlist: precision 0.02638888888888889 <<*MONSTER WORKOUT*>> query:[tag::workout]
+Playlist: precision 0.018666666666666668 <<*Random & Always Good...>> query:[tag::random]
+Playlist: precision 0.011695906432748537 <</// Some of the Best Records of 2013>> query:[tag::the best of 2014]
+Playlist: precision 0.033101045296167246 <<#bfrysworldradio update>> query:[tag::plate]
+Playlist: precision 0.023255813953488372 <<#F*ck bra music>> query:[spotify:track:5v501hmUMvbHPKa7qm0MGD]
+Playlist: precision 0.02127659574468085 <<#G30>> query:[tag::d30]
+Playlist: precision 0.017543859649122806 <<#tbt - pre2006 mix>> query:[tag::tbr]
+Playlist: precision 0.009950248756218905 <<>>>> Inbox>> query:[tag::inbox]
+Playlist: precision 0.015151515151515152 <<>Hip Hop 101>> query:[tag::10s hip hop]
+Playlist: precision 0.013888888888888888 <<>TRUE BANGOUT 3>> query:[spotify:track:4eK6Ll87PfVxb2OYLc90fi]
+Playlist: precision 0.15842671940232916 <<1 Everything>> query:[spotify:artist:1HOeqtP7tHkKNJNLzQ2tnr]
+Playlist: precision 0.008333333333333333 <<1- Cool tracks (updated: today 14-12)>> query:[tag::cool tracks]
+Playlist: precision 0.01818181818181818 <<1: Youwillnotwin>> query:[spotify:track:3PkTRkzpuNo7mUnbuIFxxw]
+Playlist: precision 0.09090909090909091 <<10,000 Maniacs – Our Time In Eden>> query:[spotify:artist:0MBIKH9DjtBkv8O3nS6szj]
+Playlist: precision 0.011235955056179775 <<100 Best Film Classics>> query:[tag::best 100]
+Playlist: precision 0.16666666666666666 <<100 Days, 100 Nights>> query:[spotify:track:5LWLVUBBCNYKPWOHDO0We7]
+Playlist: precision 0.010476190476190476 <<100%CONCENTRACIÓN>> query:[tag::concentratie]
+Playlist: precision 0.04 <<1000names – Toys Room Combat>> query:[spotify:track:4SphM5UfiUhAlJLpWOablp]
+Playlist: precision 0.00819672131147541 <<1001 songs you must hear before you die on Soundrop>> query:[tag::songs you must hear before you die]
+Playlist: precision 0.025423728813559324 <<11: Yeah, Like Tomatoes>> query:[spotify:artist:3TNt4aUIxgfy9aoaft5Jj2]
+Playlist: precision 0.03333333333333333 <<1970's - Marvin Gaye Studio Albums>> query:[tag::1970's]
+Playlist: precision 0.0125 <<1970s>> query:[tag::1970s]
+Playlist: precision 0.020134228187919462 <<1980's>> query:[tag::1980's]
+Playlist: precision 0.003816793893129771 <<1Q84>> query:[tag::1984]
+Playlist: precision 0.007462686567164179 <<1ST EVENING>> query:[tag::evening]
+Playlist: precision 0.025362318840579712 <<2 - Great albums (sorted)>> query:[tag::great albums]
+Playlist: precision 0.0625 <<2 Hookers + An 8-Ball>> query:[spotify:track:4DMawS7FrfUFq0kNBur81q]
+Playlist: precision 0.0625 <<2 steg från paradise>> query:[spotify:track:0nlxkDzyZPBFxaFQqoNdYy]
+Playlist: precision 0.005813953488372093 <<20 *Perfect* Hip Hop / R&B Albums, end to end (in progress...)>> query:[tag::rap and hip hop]
+Playlist: precision 0.017857142857142856 <<20 *Perfect* Pop / Rock Albums, end to end (in progress)>> query:[spotify:track:5pGO3dUq5eOJvL34ZYIYnh]
+Playlist: precision 0.01639344262295082 <<2000s era urban pop>> query:[tag::urban pop]
+Playlist: precision 0.008174386920980926 <<2011 Ultimate>> query:[tag::ultimate]
+Playlist: precision 0.011627906976744186 <<2012 Discoveries>> query:[tag::discoveries]
+Playlist: precision 0.012345679012345678 <<2012 in 100 tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.036180904522613064 <<2012 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+Playlist: precision 0.0029585798816568047 <<2013 - Todays Song>> query:[tag::eurovision song contest 2013]
+Playlist: precision 0.009345794392523364 <<2013 Albums>> query:[tag::2013 album]
+Playlist: precision 0.03970452446906741 <<2013 stuff>> query:[tag::stuff]
+Playlist: precision 0.008403361344537815 <<2013 Top 10>> query:[tag::top 10]
+Playlist: precision 0.034753363228699555 <<2014 favs>> query:[tag::favs 2015]
+Playlist: precision 0.03768624014022787 <<2014 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+Playlist: precision 0.009876543209876543 <<2014 playlist>> query:[tag::2014 playlist]
+Playlist: precision 0.031186094069529654 <<2014 stuff>> query:[tag::stuff]
+Playlist: precision 0.004310344827586207 <<2015 digs>> query:[tag::dogs dogs dogs]
+Playlist: precision 0.0043859649122807015 <<2015 favs>> query:[tag::favs 2015]
+Playlist: precision 0.023138105567606652 <<2015 playlist>> query:[tag::playlist 2011]
+Playlist: precision 0.00392156862745098 <<2015 stuff>> query:[tag::stuff]
+Playlist: precision 0.01098901098901099 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.014705882352941176 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.017241379310344827 <<20s Jazz>> query:[tag::20s jazz]
+Playlist: precision 0.25 <<29 años, 9 meses y 1 dia cd2>> query:[spotify:track:1RxjtGE5Ae51QfKx7qMQRf]
+Playlist: precision 0.011363636363636364 <<3:...And the Bag's in the River>> query:[spotify:track:5NTA3dsB2DlLaSG1KM6RTh]
+Playlist: precision 0.010526315789473684 <<34 Albums Every Kid Should Hear Before They Turn 13>> query:[spotify:track:30FlU15z37hXIqmg8u0AkE]
+Playlist: precision 0.018867924528301886 <<4 - De Chill Lijst (updated today: 14-12)>> query:[tag::4 de maio de 2016]
+Playlist: precision 0.01834862385321101 <<4 december 2010>> query:[tag::relmnth:2010:december]
+Playlist: precision 0.02168021680216802 <<4: Shake and Fingerpop>> query:[spotify:track:4dI4oscajpdtjpg2dP1x28]
+Avg: precision@1: 0.005468101145321871, recall 0.005468101145321871 @ 348 playlists (testsplit=0.2)
+
+--- Precision@2 ---
+Playlist: precision 0.023809523809523808 <<[In The House Of Flies]>> query:[spotify:track:1B7QMxhxKSHbYBXoSXJzGk]
+Playlist: precision 0.03333333333333333 <<Bach: Toccata & Fugue, BWV 565; Passacaglia & Fugue, BWV 582; Pastorale, BWV 590; Preludes & Fugues - E. Power Biggs>> query:[spotify:track:4r2hhErOg9MB0UYIuB3mWG]
+Playlist: precision 0.0038910505836575876 <<MTV Day 2010 Galicia>> query:[tag::mtv]
+Playlist: precision 0.02027027027027027 <<Piano Mood Mode>> query:[tag::mod]
+Playlist: precision 0.020833333333333332 <<_ goes the weasel>> query:[tag::it goes it goes it goes it goes it goes]
+Playlist: precision 0.0040650406504065045 <<- 2000-tal ->> query:[tag::2000]
+Playlist: precision 0.012195121951219513 <<- 2010-tal ->> query:[tag::2010]
+Playlist: precision 0.009259259259259259 <<- Hip Hop - ••>> query:[tag::hip  hop]
+Playlist: precision 0.00819672131147541 <<- Indie ->> query:[tag::indie indie]
+Playlist: precision 0.004545454545454545 <<- Swedish - ••>> query:[tag::swedish]
+Playlist: precision 0.01 <<:Wumpscut:>> query:[tag::wumpscut]
+Playlist: precision 0.008064516129032258 <<?uest>> query:[tag::best of quest]
+Playlist: precision 0.00390625 <<(w)RAPitUp>> query:[tag:::w:]
+Playlist: precision 0.0049504950495049506 <<@'Roid rage radio>> query:[spotify:track:7KowLPnMIf2m9EPYIFj1q8]
+Playlist: precision 0.007246376811594203 <<@songs>> query:[tag::songs]
+Playlist: precision 0.005263157894736842 <<*LISTEN TO*>> query:[tag::to listen]
+Playlist: precision 0.03194444444444444 <<*MONSTER WORKOUT*>> query:[tag::workout]
+Playlist: precision 0.012 <<*Random & Always Good...>> query:[tag::random]
+Playlist: precision 0.005847953216374269 <</// Some of the Best Records of 2013>> query:[tag::the best of 2014]
+Playlist: precision 0.03440766550522648 <<#bfrysworldradio update>> query:[tag::plate]
+Playlist: precision 0.011627906976744186 <<#F*ck bra music>> query:[spotify:track:5v501hmUMvbHPKa7qm0MGD]
+Playlist: precision 0.010638297872340425 <<#G30>> query:[tag::d30]
+Playlist: precision 0.017543859649122806 <<#tbt - pre2006 mix>> query:[tag::tbr]
+Playlist: precision 0.0021551724137931034 <<+Connected+>> query:[spotify:track:6hV9U4jXzvexHVrxlzGFpV]
+Playlist: precision 0.007462686567164179 <<>>>> Inbox>> query:[tag::inbox]
+Playlist: precision 0.007575757575757576 <<>Hip Hop 101>> query:[tag::10s hip hop]
+Playlist: precision 0.006329113924050633 <<>TRUE BANGOUT 2>> query:[spotify:track:4eK6Ll87PfVxb2OYLc90fi]
+Playlist: precision 0.006944444444444444 <<>TRUE BANGOUT 3>> query:[spotify:track:4eK6Ll87PfVxb2OYLc90fi]
+Playlist: precision 0.15502087453306965 <<1 Everything>> query:[spotify:artist:1HOeqtP7tHkKNJNLzQ2tnr]
+Playlist: precision 0.008333333333333333 <<1- Cool tracks (updated: today 14-12)>> query:[tag::cool tracks]
+Playlist: precision 0.00909090909090909 <<1: Youwillnotwin>> query:[spotify:track:3PkTRkzpuNo7mUnbuIFxxw]
+Playlist: precision 0.045454545454545456 <<10,000 Maniacs – Our Time In Eden>> query:[spotify:artist:0MBIKH9DjtBkv8O3nS6szj]
+Playlist: precision 0.008333333333333333 <<10/10 Dance party>> query:[tag::10 of 10]
+Playlist: precision 0.0056179775280898875 <<100 Best Film Classics>> query:[tag::best 100]
+Playlist: precision 0.08333333333333333 <<100 Days, 100 Nights>> query:[spotify:track:5LWLVUBBCNYKPWOHDO0We7]
+Playlist: precision 0.005747126436781609 <<100 Hits Of The '90s>> query:[tag::top 100 uk hits of the 90s]
+Playlist: precision 0.012380952380952381 <<100%CONCENTRACIÓN>> query:[tag::concentratie]
+Playlist: precision 0.02 <<1000names – Toys Room Combat>> query:[spotify:track:4SphM5UfiUhAlJLpWOablp]
+Playlist: precision 0.004098360655737705 <<1001 songs you must hear before you die on Soundrop>> query:[tag::songs you must hear before you die]
+Playlist: precision 0.01694915254237288 <<11: Yeah, Like Tomatoes>> query:[spotify:artist:3TNt4aUIxgfy9aoaft5Jj2]
+Playlist: precision 0.004201680672268907 <<1956 albums>> query:[tag::1956]
+Playlist: precision 0.016666666666666666 <<1970's - Marvin Gaye Studio Albums>> query:[tag::1970's]
+Playlist: precision 0.00625 <<1970s>> query:[tag::1970s]
+Playlist: precision 0.025167785234899327 <<1980's>> query:[tag::1980's]
+Playlist: precision 0.0019083969465648854 <<1Q84>> query:[tag::1984]
+Playlist: precision 0.0037313432835820895 <<1ST EVENING>> query:[tag::evening]
+Playlist: precision 0.022946859903381644 <<2 - Great albums (sorted)>> query:[tag::great albums]
+Playlist: precision 0.03125 <<2 Hookers + An 8-Ball>> query:[spotify:track:4DMawS7FrfUFq0kNBur81q]
+Playlist: precision 0.03125 <<2 steg från paradise>> query:[spotify:track:0nlxkDzyZPBFxaFQqoNdYy]
+Playlist: precision 0.011627906976744186 <<20 *Perfect* Hip Hop / R&B Albums, end to end (in progress...)>> query:[tag::rap and hip hop]
+Playlist: precision 0.017857142857142856 <<20 *Perfect* Pop / Rock Albums, end to end (in progress)>> query:[spotify:track:5pGO3dUq5eOJvL34ZYIYnh]
+Playlist: precision 0.00819672131147541 <<2000s era urban pop>> query:[tag::urban pop]
+Playlist: precision 0.014986376021798364 <<2011 Ultimate>> query:[tag::ultimate]
+Playlist: precision 0.005813953488372093 <<2012 Discoveries>> query:[tag::discoveries]
+Playlist: precision 0.006172839506172839 <<2012 in 100 tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.031155778894472363 <<2012 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+Playlist: precision 0.008875739644970414 <<2013 - Todays Song>> query:[tag::eurovision song contest 2013]
+Playlist: precision 0.006230529595015576 <<2013 Albums>> query:[tag::2013 album]
+Playlist: precision 0.0420129270544783 <<2013 stuff>> query:[tag::stuff]
+Playlist: precision 0.004201680672268907 <<2013 Top 10>> query:[tag::top 10]
+Playlist: precision 0.032511210762331835 <<2014 favs>> query:[tag::favs 2015]
+Playlist: precision 0.03593339176161262 <<2014 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+Playlist: precision 0.008641975308641974 <<2014 playlist>> query:[tag::2014 playlist]
+Playlist: precision 0.032975460122699383 <<2014 stuff>> query:[tag::stuff]
+Playlist: precision 0.0038461538461538464 <<2015 - TodaysSong>> query:[tag::2015]
+Playlist: precision 0.0021551724137931034 <<2015 digs>> query:[tag::dogs dogs dogs]
+Playlist: precision 0.008771929824561403 <<2015 favs>> query:[tag::favs 2015]
+Playlist: precision 0.021330441070137384 <<2015 playlist>> query:[tag::playlist 2011]
+Playlist: precision 0.0058823529411764705 <<2015 stuff>> query:[tag::stuff]
+Playlist: precision 0.01098901098901099 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.005555555555555556 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.0056179775280898875 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.007352941176470588 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.0047169811320754715 <<2015's Best Indie / Alt (fka DiS Monthly)>> query:[tag::best 2015]
+Playlist: precision 0.016666666666666666 <<2016 Worship>> query:[spotify:track:2OkMaoOy9Q1ggJrzuheWXp]
+Playlist: precision 0.008620689655172414 <<20s Jazz>> query:[tag::20s jazz]
+Playlist: precision 0.007142857142857143 <<22F>> query:[tag::222]
+Playlist: precision 0.009433962264150943 <<25års ferre>> query:[tag::rs 500]
+Playlist: precision 0.125 <<29 años, 9 meses y 1 dia cd2>> query:[spotify:track:1RxjtGE5Ae51QfKx7qMQRf]
+Playlist: precision 0.005813953488372093 <<3 AM>> query:[tag::3 am]
+Playlist: precision 0.011363636363636364 <<3:...And the Bag's in the River>> query:[spotify:track:5NTA3dsB2DlLaSG1KM6RTh]
+Playlist: precision 0.004166666666666667 <<30's-50's Jazz>> query:[tag::50's]
+Playlist: precision 0.012280701754385965 <<34 Albums Every Kid Should Hear Before They Turn 13>> query:[spotify:track:30FlU15z37hXIqmg8u0AkE]
+Playlist: precision 0.009433962264150943 <<4 - De Chill Lijst (updated today: 14-12)>> query:[tag::4 de maio de 2016]
+Playlist: precision 0.009174311926605505 <<4 december 2010>> query:[tag::relmnth:2010:december]
+Playlist: precision 0.004545454545454545 <<4: Cripples, Bastards, and Broken Things>> query:[spotify:track:4UH3wKQUfE3PH934SRqmCi]
+Playlist: precision 0.016260162601626018 <<4: Shake and Fingerpop>> query:[spotify:track:4dI4oscajpdtjpg2dP1x28]
+Avg: precision@2: 0.004124583375422569, recall 0.008249166750845138 @ 348 playlists (testsplit=0.2)
+
+%%% evaluation done in 53.431s
+------------- done -------------
+
+%%% playlist_eval runner done in 386.267s
