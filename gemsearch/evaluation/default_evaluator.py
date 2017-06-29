@@ -1,5 +1,5 @@
 
-# TODO implement real evaluation, ideas: Tag Predicting, Track Similarity
+# TODO implement real evaluation, ideas: Track Similarity
 # Artist Search --> Tracks from Artists (same for tags)
 
 class DefaultEvaluator:

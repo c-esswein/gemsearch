@@ -2,12 +2,13 @@ from flask import Flask, jsonify, request
 
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.query.elastic_search import search as es_search
+from gemsearch.api.metadata import resolve_items_meta
 
 app = Flask(__name__)
 
-dataFolder = 'data/graph_10/'
+dataFolder = 'data/playlist_eval/'
 geCalc = GeCalc()
-geCalc.load_node2vec_data(dataFolder+'embedding.em', dataFolder+'types.csv')
+geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
 
 @app.route("/api/query")
 def query():
@@ -29,7 +30,7 @@ def query():
         result = geCalc.query_by_ids(idList, types)
         return jsonify({
             'success': True,
-            'data': result
+            'data': resolve_items_meta(result)
         })
     except ValueError as exc:
         return jsonify({
@@ -45,7 +46,7 @@ def get_object_id(id):
     if result is not None:
         return jsonify({
             'success': True,
-            'data': [result]
+            'data': resolve_items_meta([result])
         })
     else:
         return jsonify({
@@ -94,6 +95,7 @@ def get_graph_nodes():
     return jsonify({
         'graph': geCalc.get_graph()
     })
+
 
 if __name__ == "__main__":
     app.run()
