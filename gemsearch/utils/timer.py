@@ -30,4 +30,4 @@ class Timer(object):
         self.secs_str = str(self.secs) + 's'
 
         if self.message:
-            print('%%% ' + self.message + ' done in', self.secs_str)
+            print('\n%%% ' + self.message + ' done in', self.secs_str)

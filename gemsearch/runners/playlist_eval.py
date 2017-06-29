@@ -10,9 +10,11 @@ from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
 
+from pprint import pprint
+
 # ---- config ----
-dataDir = 'data/graph_200/'
-outDir = 'data/tmp/'
+dataDir = 'data/graph_500/'
+outDir = 'data/graph_500_data/'
 
 SHOULD_EMBED = True
 SHOULD_INDEX_ES = True
@@ -20,6 +22,16 @@ SHOULD_INDEX_ES = True
 TEST_PLAYLIST_SPLIT=0.2
 MAX_PRECISION_AT=2
 # ---- /config ----
+
+print('config:')
+pprint({
+    'dataDir': dataDir,
+    'outDir': outDir,
+    'SHOULD_EMBED': SHOULD_EMBED,
+    'SHOULD_INDEX_ES': SHOULD_INDEX_ES,
+    'TEST_PLAYLIST_SPLIT': TEST_PLAYLIST_SPLIT,
+    'MAX_PRECISION_AT': MAX_PRECISION_AT
+})
 
 with Timer(message='playlist_eval runner') as t:
 

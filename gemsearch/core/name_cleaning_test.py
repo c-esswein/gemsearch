@@ -13,6 +13,7 @@ class NameCleaningTest(unittest.TestCase):
         self.assertFalse(clean_tag({'count': 1, 'tag': 'test'}))
         self.assertFalse(clean_tag_name('  '))
         self.assertFalse(clean_tag_name(' 12 '))
+        self.assertFalse(clean_tag_name('3'))
         self.assertFalse(clean_tag_name(''))
 
     def test_playlist_trim(self):
@@ -21,6 +22,9 @@ class NameCleaningTest(unittest.TestCase):
 
         self.assertFalse(clean_playlist_name('  ---  '))
         self.assertFalse(clean_playlist_name('---'))
+        self.assertFalse(clean_playlist_name(' 12 '))
+        self.assertFalse(clean_playlist_name('3'))
+        self.assertFalse(clean_playlist_name('   '))
 
 if __name__ == '__main__':
     unittest.main()

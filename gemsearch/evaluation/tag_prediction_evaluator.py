@@ -1,5 +1,4 @@
 from pprint import pprint
-import numpy as np
 from sklearn.model_selection import train_test_split
 
 
@@ -11,9 +10,9 @@ class TagPredictionEvaluator:
     name = 'Tag Prediction Evaluator'
     _testTags = []
 
-    def __init__(self, testSplit = 0.2, precisionAt = 5):
+    def __init__(self, testSplit = 0.2, maxTopNAccuracy = 5):
         self._testSplit = testSplit
-        self._precisionAt = precisionAt
+        self._maxTopNAccuracy = maxTopNAccuracy
 
     def traverse(self, tagTraverser):
         tags = list(tagTraverser)
@@ -23,35 +22,34 @@ class TagPredictionEvaluator:
         return training
 
     def evaluate(self, geCalc):
-        hits = 0
-
-        for track, tag, weight in self._testTags:
-            if evaluate_track_tag_predict(geCalc, self._precisionAt, track['id'], tag['id']):
-                print('Hit Tag: {}'.format(tag['id']))
-                hits += 1
-            else:
-                #print('Missed Tag: {}'.format(tagData['name']))
-                pass
-        
         tagCount = len(self._testTags)
-        print('Evaluator {}, split={}, tagCount={}'.format(self.name, self._testSplit, tagCount))
-        print('Hit Rate: {}'.format(hits / tagCount))
 
+        for topNAccuracy in range(1, self._maxTopNAccuracy + 1):
+            print('\n--- top {} accuracy ---'.format(topNAccuracy))
+            hits = 0
+            for track, tag, weight in self._testTags:
+                if evaluate_track_tag_predict(geCalc, topNAccuracy, track['id'], tag['id']):
+                    print('Hit Tag: {}'.format(tag['id']))
+                    hits += 1
+            
+            print('Avg: top {} accuracy: {} @ {} tags (testsplit={})'.format(
+                topNAccuracy,
+                hits / tagCount,
+                tagCount,
+                self._testSplit
+            ))
 
 # ------------- static functions ------------
 
-def evaluate_track_tag_predict(geCalc, precisionAt, track, tag):
+def evaluate_track_tag_predict(geCalc, topNAccuracy, track, tag):
     '''Evaluates tag prediction for track
     '''
     
     results = geCalc.query_by_ids(
         [track], 
         typeFilter = ['tag'], 
-        limit = precisionAt
+        limit = topNAccuracy
     )
     
-    for recTag in results:
-        if recTag['id'] == tag:
-            return True
-
-    return False
+    # check if tag is in recommended tags
+    return any((recTag['id'] == tag) for recTag in results)

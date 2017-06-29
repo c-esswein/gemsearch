@@ -111,6 +111,6 @@ class DataGenerator():
         self._closeHandlers()
 
 if __name__ == "__main__":
-    generator = DataGenerator('data/graph_500/')
-    generator.generate(500)
+    generator = DataGenerator('data/graph_100/')
+    generator.generate(100)
     print('data written')

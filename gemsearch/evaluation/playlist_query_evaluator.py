@@ -50,7 +50,7 @@ class PlaylistQueryEvaluator:
             raise Exception('No Playlists collected to test!')
         
         for precisionAt in range(1, self._maxPrecisionAt + 1):
-            print('--- Precision@{} ---'.format(precisionAt))
+            print('\n--- Precision@{} ---'.format(precisionAt))
             totalRecall = 0
             totalPrecision = 0
             for playlist in self._playlists:
