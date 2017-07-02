@@ -1,12 +1,15 @@
 from flask import Flask, jsonify, request
+# import numpy as np
+import itertools
 
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.query.elastic_search import search as es_search
 from gemsearch.api.metadata import resolve_items_meta
+from gemsearch.api.graph import Graph
 
 app = Flask(__name__)
 
-dataFolder = 'data/playlist_eval/'
+dataFolder = 'data/viz/'
 geCalc = GeCalc()
 geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
 
@@ -67,8 +70,8 @@ def suggest_item(term):
         })
 
     resultItems = map(lambda item: {
-        'id': item['_id'],
-        'type': item['_type'],
+        'id': item['_source']['id'],
+        'type': item['_source']['type'],
         'name': item['_source']['name']
     }, result)
     return jsonify({
@@ -78,24 +81,46 @@ def suggest_item(term):
 
 # ------- graph routes -------
 
-@app.route("/api/graph")
+@app.route("/api/nodes")
 def get_graph_data():
     types = request.args.get('types')
     if types is not None:
         types = types.split('|')
 
+    lookup = geCalc.get_lookup()
+    typeMapping = [item['type'] for item in lookup]
+
     return jsonify({
         'nodes': geCalc.get_graph_embedding(types).tolist(),
-        # 'mapping': geCalc.get_lbl_mapping(),
-        # 'graph': geCalc.get_graph().tolist()
+        'typeMapping': typeMapping,
     })
 
-@app.route("/api/nodes")
+_graphHelper = None
+
+def get_graph_helper():
+    '''lazy loader for graph helper.
+    '''
+    global _graphHelper
+    if _graphHelper is None:
+
+        # remove features from graph
+        lookup = geCalc.get_lookup()
+        def typeRestrictor(nodeId):
+            item = lookup[nodeId]
+            return item['type'] != 'feature'
+            
+        _graphHelper = Graph()
+        _graphHelper.load_from_edge_list(dataFolder + 'graph.txt', typeRestrictor)
+    
+    return _graphHelper
+
+@app.route("/api/graph")
 def get_graph_nodes():
+    edges = get_graph_helper().get_edges()
     return jsonify({
-        'graph': geCalc.get_graph()
+        # flatten array
+        'edges': list(itertools.chain.from_iterable(edges))
     })
-
 
 if __name__ == "__main__":
     app.run()

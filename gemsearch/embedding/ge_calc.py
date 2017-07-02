@@ -87,6 +87,9 @@ class GeCalc:
         # todo real 3d vecs
         return self.embedding[:,0:3].flatten()
 
+    def get_lookup(self):
+        #TODO: still used by api?
+        return self.lookup
 
 # ------------- static functions ------------
 
