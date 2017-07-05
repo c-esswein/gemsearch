@@ -38,7 +38,7 @@ class Node2vec:
             raise Exception('node2vec error')
 
 if __name__ == '__main__':
-    dataDir = 'data/run1/'
-    em = Node2vec(50, 1, 80, 10, 10, 1, 1)
+    dataDir = 'data/viz/'
+    em = Node2vec(3, 1, 80, 10, 10, 1, 1)
     em.learn_embedding(dataDir+'graph.txt', dataDir+'node2vec.em')
     print('result written to ' + dataDir+'node2vec.em')

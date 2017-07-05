@@ -107,7 +107,7 @@ def get_graph_helper():
         lookup = geCalc.get_lookup()
         def typeRestrictor(nodeId):
             item = lookup[nodeId]
-            return item['type'] != 'feature'
+            return item['type'] != 'feature' and item['type'] != 'tag'
             
         _graphHelper = Graph()
         _graphHelper.load_from_edge_list(dataFolder + 'graph.txt', typeRestrictor)

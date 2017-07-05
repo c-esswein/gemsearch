@@ -25,3 +25,5 @@ class Graph():
         '''
         return self._G.edges()
 
+    def get_neighbors(self, nodeId):
+        return [n in self._G[nodeId]]

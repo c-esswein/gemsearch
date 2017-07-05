@@ -41,6 +41,21 @@ def traverseUserTrackInPlaylists(filePath):
             },
             1)
 
+def traverseUserTrack(filePath):
+     with open(filePath, 'r', encoding="utf-8") as inFile:
+        fieldnames = ['userId', 'trackId']
+        for line in csv.DictReader(inFile, fieldnames=fieldnames, delimiter=',', quotechar='|'):            
+            yield ({
+                'type': 'user',
+                'id': line['userId'],
+                'name': line['userId']
+            },
+            {
+                'type': 'track',
+                'id': line['trackId']
+            },
+            1)
+
 def traverseTrackArtist(filePath):
      with open(filePath, 'r', encoding="utf-8") as inFile:
         fieldnames = ['trackId', 'artistId', 'artistName']

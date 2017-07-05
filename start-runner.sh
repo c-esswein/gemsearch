@@ -1,1 +1,1 @@
-python -u -m gemsearch.runner >>my_log.log 2>&1
+python -u -m gemsearch.runners.playlist_eval >>my_log.log 2>&1

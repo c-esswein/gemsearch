@@ -2,7 +2,7 @@
 '''
 import json
 import csv
-import re
+from gemsearch.core.abstract_data_generator import ADataGenerator
 from gemsearch.storage.Storage import Storage
 from gemsearch.storage.Tracks import Tracks
 from gemsearch.core.name_cleaning import clean_playlist_name, clean_tag
@@ -10,35 +10,9 @@ from gemsearch.core.name_cleaning import clean_playlist_name, clean_tag
 
 # TODO integrate albums
 
-class DataGenerator():
+class DataGenerator(ADataGenerator):
 
     _idWritten = {}
-    _handlers = {}
-
-    def __init__(self, dataDir):
-        self._dataDir = dataDir
-
-    def _getHandler(self, fileName):
-        if fileName not in self._handlers:
-            self._handlers[fileName] = open(fileName, 'w', encoding="utf-8")
-
-        return self._handlers[fileName]
-
-    def _closeHandlers(self):
-        for handler in self._handlers:
-            self._handlers[handler].close()
-
-    def write(self, connectionName, data):
-        fileName = self._dataDir + connectionName + '.csv'
-        # todo lazy init, close on ending
-        outputFile = self._getHandler(fileName)
-        csvWriter = csv.writer(outputFile, delimiter=',', lineterminator='\n', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        csvWriter.writerow(data)
-
-    def writeJson(self, connectionName, data):
-        fileName = self._dataDir + connectionName + '.json'
-        outputFile = self._getHandler(fileName)
-        outputFile.write(json.dumps(data) + '\n')
 
     def generate(self, limit):
         playlists = Storage().getCollection('tmp_playlists_cleaned').find({}, no_cursor_timeout=True).limit(limit)
@@ -111,6 +85,6 @@ class DataGenerator():
         self._closeHandlers()
 
 if __name__ == "__main__":
-    generator = DataGenerator('data/graph_100/')
-    generator.generate(100)
+    generator = DataGenerator('data/graph_50/')
+    generator.generate(50)
     print('data written')
