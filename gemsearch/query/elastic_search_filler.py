@@ -32,11 +32,15 @@ def es_create_indices(index_name):
     es = es_get_instance()
     es.indices.create(index=index_name, body=settings, ignore=404)
 
-def es_load_all_types(typeTraverser, indexName, docType):
+def es_load_all_types(typeTraverser, indexName, docType, dismissTypes = []):
     es = es_get_instance()
 
     def esActionGenerator(traverser):
         for typeDef in traverser:
+            # check if item type should not be indexed
+            if typeDef['type'] in dismissTypes:
+                continue
+
             yield {
                 '_op_type': 'index',
                 '_index': indexName,

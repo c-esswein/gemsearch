@@ -2,6 +2,7 @@ from pprint import pprint
 import numpy as np
 import random
 import json
+from sklearn.model_selection import train_test_split 
 
 from gemsearch.query.elastic_search import extract_query_from_name
 from gemsearch.utils.JSONEncoder import JSONEncoder
@@ -16,9 +17,10 @@ class PlaylistQueryEvaluator:
     _testSplit = 0
     _maxPrecisionAt = 0
 
-    def __init__(self, testSplit = 0.2, maxPrecisionAt = 1):
+    def __init__(self, testSplit = 0.2, maxPrecisionAt = 1, useUserContext = False):
         self._testSplit = testSplit
         self._maxPrecisionAt = maxPrecisionAt
+        self._useUserContext = useUserContext
     
     def traverse(self, playlistTraverser):
         '''Add playlists to test on. testSplit is randomly applied to generate subset.
@@ -54,7 +56,7 @@ class PlaylistQueryEvaluator:
             totalRecall = 0
             totalPrecision = 0
             for playlist in self._playlists:
-                recall, precision = evaluate_playlist(geCalc, playlist, precisionAt)
+                recall, precision = evaluate_playlist(geCalc, playlist, precisionAt, self._useUserContext)
                 totalRecall = totalRecall + recall
                 totalPrecision = totalPrecision + precision
             
@@ -68,12 +70,15 @@ class PlaylistQueryEvaluator:
 
 # ------------- static functions ------------
 
-def evaluate_playlist(geCalc, playlist, precisionAt = 1):
+def evaluate_playlist(geCalc, playlist, precisionAt = 1, useUserContext = False):
     '''Evaluates playlist name as query performance.
     '''
     queryIds = extract_query_from_name(playlist['playlistName'])
     if len(queryIds) < 1:
         return (0, 0)
+
+    if useUserContext:
+        queryIds.append(playlist['userId'])
 
     playlistCount = len(playlist['tracks'])
     limit = playlistCount * precisionAt

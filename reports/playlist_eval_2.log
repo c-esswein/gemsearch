@@ -1,0 +1,95 @@
+Simple RUN:
+- tag cleaning: removed empty tags, trim, count < 5
+- playlist name cleaning: trim, removed non alpha char containing
+- added users in query
+
+
+config:
+{'MAX_PRECISION_AT': 2,
+ 'SHOULD_EMBED': True,
+ 'SHOULD_INDEX_ES': True,
+ 'TEST_PLAYLIST_SPLIT': 0.2,
+ 'USE_USER_IN_QUERY': True,
+ 'dataDir': 'data/graph_500/',
+ 'outDir': 'data/tmp_500_playlisteval/'}
+%%% playlist_eval runner...
+------------- generate graph -------------
+%%% graph generation...
+Collected items by type:
+artist: 8172
+user: 145
+feature: 1
+tag: 72540
+track: 34239
+
+%%% graph generation done in 72.489s
+%%% elastic search writer...
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 114952}
+
+%%% elastic search writer done in 62.279s
+------------- graph embedding -------------
+%%% embedding...
+running: bash.exe -c "./gem/c_exe/node2vec -i:data/tmp_500_playlisteval/graph.txt -o:data/tmp_500_playlisteval/node2vec.em -d:50 -l:80 -r:10 -k:10 -e:1 -p:1.000000 -q:1.000000 -dr -w"
+
+An algorithmic framework for representational learning on graphs. [Jun 16 2017]
+================================================================================
+Input graph path (-i:)=data/tmp_500_playlisteval/graph.txt
+Output graph path (-o:)=data/tmp_500_playlisteval/node2vec.em
+Number of dimensions. Default is 128 (-d:)=50
+Length of walk per source. Default is 80 (-l:)=80
+Number of walks per source. Default is 10 (-r:)=10
+Context size for optimization. Default is 10 (-k:)=10
+Number of epochs in SGD. Default is 1 (-e:)=1
+Return hyperparameter. Default is 1 (-p:)=1
+Inout hyperparameter. Default is 1 (-q:)=1
+Verbose output. (-v)=NO
+Graph is directed. (-dr)=YES
+Graph is weighted. (-w)=YES
+
+%%% embedding done in 286.915s
+%%% ge calc initializing...
+
+%%% ge calc initializing done in 12.125s
+------------- evaluation -------------
+%%% evaluation...
+
+--- Precision@1 ---
+Playlist: precision 0.03067484662576687 <<2014 stuff>> query:[tag::2014]
+Playlist: precision 0.01098901098901099 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.020833333333333332 <<*MONSTER WORKOUT*>> query:[spotify:track:5CoHWtIo2xRgBqVtm4OgcF]
+Playlist: precision 0.016 <<*Random & Always Good...>> query:[tag::random]
+Playlist: precision 0.015625 <<(w)RAPitUp>> query:[spotify:track:3ZWAD6mrzTWCyJ4DZgFpTs]
+Playlist: precision 0.03943908851884312 <<2014 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+Playlist: precision 0.030303030303030304 <<:: Best of Trance/Dance ::>> query:[tag::best of dance gavin dance]
+Playlist: precision 0.008333333333333333 <<1- Cool tracks (updated: today 14-12)>> query:[tag::cool tracks]
+Playlist: precision 0.014035087719298246 <<34 Albums Every Kid Should Hear Before They Turn 13>> query:[spotify:track:30FlU15z37hXIqmg8u0AkE]
+Playlist: precision 0.03484320557491289 <<#bfrysworldradio update>> query:[tag::plate]
+Playlist: precision 0.010526315789473684 <<*LISTEN TO*>> query:[tag::listen to]
+Playlist: precision 0.012658227848101266 <<*MY FEELS*>> query:[tag::feels]
+Avg: precision@1: 0.0034894354290729147, recall 0.0034894354290729147 @ 70 playlists (testsplit=0.2)
+
+--- Precision@2 ---
+Playlist: precision 0.03399795501022495 <<2014 stuff>> query:[tag::2014]
+Playlist: precision 0.010869565217391304 <<=party>> query:[tag::party party party]
+Playlist: precision 0.005494505494505495 <<2015 Top Tracks>> query:[tag::2011 tracks]
+Playlist: precision 0.021527777777777778 <<*MONSTER WORKOUT*>> query:[spotify:track:5CoHWtIo2xRgBqVtm4OgcF]
+Playlist: precision 0.012 <<*Random & Always Good...>> query:[tag::random]
+Playlist: precision 0.01171875 <<(w)RAPitUp>> query:[spotify:track:3ZWAD6mrzTWCyJ4DZgFpTs]
+Playlist: precision 0.036371603856266435 <<2014 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+Playlist: precision 0.015151515151515152 <<:: Best of Trance/Dance ::>> query:[tag::best of dance gavin dance]
+Playlist: precision 0.008333333333333333 <<1- Cool tracks (updated: today 14-12)>> query:[tag::cool tracks]
+Playlist: precision 0.012280701754385965 <<34 Albums Every Kid Should Hear Before They Turn 13>> query:[spotify:track:30FlU15z37hXIqmg8u0AkE]
+Playlist: precision 0.031794425087108016 <<#bfrysworldradio update>> query:[tag::plate]
+Playlist: precision 0.007142857142857143 <<80s playlist>> query:[tag::80s playlist]
+Playlist: precision 0.0021551724137931034 <<2015 digs>> query:[tag::dogs dogs dogs]
+Playlist: precision 0.005263157894736842 <<*LISTEN TO*>> query:[tag::listen to]
+Playlist: precision 0.008064516129032258 <<30 seconds to mars>> query:[tag::30 seconds to mars]
+Playlist: precision 0.007575757575757576 <<2014 Albums>> query:[tag::2014 album]
+Playlist: precision 0.006329113924050633 <<*MY FEELS*>> query:[tag::feels]
+Avg: precision@2: 0.0033724386823247993, recall 0.0067448773646495985 @ 70 playlists (testsplit=0.2)
+
+%%% evaluation done in 87.131s
+------------- done -------------
+
+%%% playlist_eval runner done in 521.039s

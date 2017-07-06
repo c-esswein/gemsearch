@@ -41,6 +41,20 @@ def traverseUserTrackInPlaylists(filePath):
             },
             1)
 
+def traverseUserTrackInPlaylistsObj(playlists):
+    for playlist in playlists:
+        for track in playlist['tracks']:
+            yield ({
+                'type': 'user',
+                'id': playlist['userId'],
+                'name': playlist['userId']
+            },
+            {
+                'type': 'track',
+                'id': track
+            },
+            1)
+
 def traverseUserTrack(filePath):
      with open(filePath, 'r', encoding="utf-8") as inFile:
         fieldnames = ['userId', 'trackId']

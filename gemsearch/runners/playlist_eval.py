@@ -1,6 +1,6 @@
 from gemsearch.core.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
-from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes
+from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes, traverseUserTrackInPlaylistsObj
 
 from gemsearch.core.type_counter import TypeCounter
 from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
@@ -14,13 +14,14 @@ from pprint import pprint
 
 # ---- config ----
 dataDir = 'data/graph_500/'
-outDir = 'data/graph_500_data/'
+outDir = 'data/tmp_500_playlisteval/'
 
 SHOULD_EMBED = True
 SHOULD_INDEX_ES = True
 
 TEST_PLAYLIST_SPLIT=0.2
 MAX_PRECISION_AT=2
+USE_USER_IN_QUERY = True
 # ---- /config ----
 
 print('config:')
@@ -30,13 +31,17 @@ pprint({
     'SHOULD_EMBED': SHOULD_EMBED,
     'SHOULD_INDEX_ES': SHOULD_INDEX_ES,
     'TEST_PLAYLIST_SPLIT': TEST_PLAYLIST_SPLIT,
-    'MAX_PRECISION_AT': MAX_PRECISION_AT
+    'MAX_PRECISION_AT': MAX_PRECISION_AT,
+    'USE_USER_IN_QUERY': USE_USER_IN_QUERY
 })
 
 with Timer(message='playlist_eval runner') as t:
 
     playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT)
-    playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+    if USE_USER_IN_QUERY:
+        trainingPlaylists = playlistEval.traverse(traversePlaylists(dataDir+'playlist.csv'))
+    else:
+        playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
 
     if SHOULD_EMBED:
         print('------------- generate graph -------------')
@@ -52,6 +57,10 @@ with Timer(message='playlist_eval runner') as t:
             graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
             graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
             graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
+
+            if USE_USER_IN_QUERY:
+                graphGenerator.add(traverseUserTrackInPlaylistsObj(trainingPlaylists))
+
             graphGenerator.close_generation()
 
         if SHOULD_INDEX_ES:
@@ -60,7 +69,7 @@ with Timer(message='playlist_eval runner') as t:
                 es_clear_indices()
 
                 # insert all types
-                es_load_all_types(traverseTypes(outDir+'types.csv'), 'music_index', 'music_type')
+                es_load_all_types(traverseTypes(outDir+'types.csv'), 'music_index', 'music_type', dismissTypes = ['user'])
         
 
         print('------------- graph embedding -------------')
