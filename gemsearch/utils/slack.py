@@ -1,10 +1,9 @@
 from slacker import Slacker
 import sys, os
-
-API_TOKEN = 'TOKEN'
+from gemsearch.settings import SLACK_API_TOKEN
 
 def slack_send_message(msg):
-    slack = Slacker(API_TOKEN)
+    slack = Slacker(SLACK_API_TOKEN)
     slack.chat.post_message('#job-notifications', msg)
 
 def slack_error_message(msg, err):
