@@ -10,17 +10,24 @@ with Timer(message='Processing') as t:
 
 '''
 class Timer(object):
-    def __init__(self, message=None):
+
+    def __init__(self, message=None, logger = None):
         self.start = None
         self.secs = None
         self.secs_str = None
 
         self.message = message
+        self.logger = logger
+
+    def writeMsg(self, msg):
+        if self.logger:
+            self.logger.info(msg)
+        else:
+            print(msg)
 
     def __enter__(self):
         if self.message:
-            #print(self.message + '... ', end='', flush=True)
-            print('%%% ' + self.message + '... ')
+            self.writeMsg('%%% ' + self.message + '... ')
 
         self.start = time.time()
         return self
@@ -30,4 +37,4 @@ class Timer(object):
         self.secs_str = str(self.secs) + 's'
 
         if self.message:
-            print('\n%%% ' + self.message + ' done in', self.secs_str)
+            self.writeMsg('\n%%% ' + self.message + ' done in ' + str(self.secs_str))

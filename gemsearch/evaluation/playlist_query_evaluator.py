@@ -3,6 +3,8 @@ import numpy as np
 import random
 import json
 from sklearn.model_selection import train_test_split 
+import logging
+logger = logging.getLogger(__name__)
 
 from gemsearch.query.elastic_search import extract_query_from_name
 from gemsearch.utils.JSONEncoder import JSONEncoder
@@ -52,7 +54,7 @@ class PlaylistQueryEvaluator:
             raise Exception('No Playlists collected to test!')
         
         for precisionAt in range(1, self._maxPrecisionAt + 1):
-            print('\n--- Precision@{} ---'.format(precisionAt))
+            logger.info('\n--- Precision@%s ---', precisionAt)
             totalRecall = 0
             totalPrecision = 0
             for playlist in self._playlists:
@@ -60,13 +62,13 @@ class PlaylistQueryEvaluator:
                 totalRecall = totalRecall + recall
                 totalPrecision = totalPrecision + precision
             
-            print('Avg: precision@{}: {}, recall {} @ {} playlists (testsplit={})'.format(
+            logger.info('Avg: precision@%s: %s, recall %s @ %s playlists (testsplit=%s)',
                 precisionAt,
                 totalPrecision / playlistCount,
                 totalRecall / playlistCount,
                 playlistCount,
                 self._testSplit
-            ))
+            )
 
 # ------------- static functions ------------
 
@@ -90,11 +92,11 @@ def evaluate_playlist(geCalc, playlist, precisionAt = 1, useUserContext = False)
 
     numHits = match_track_hits(playlist['tracks'], results)
     if numHits > 0:
-        print('Playlist: precision {} <<{}>> query:[{}]'.format(
+        logger.info('Playlist: precision %s <<%s>> query:[%s]',
             numHits / limit,
             playlist['playlistName'],
             queryIds[0]
-        ))
+        )
 
     return (
         numHits / playlistCount, # recall

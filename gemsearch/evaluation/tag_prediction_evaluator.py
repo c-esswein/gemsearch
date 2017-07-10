@@ -1,5 +1,7 @@
 from pprint import pprint
 from sklearn.model_selection import train_test_split
+import logging
+logger = logging.getLogger(__name__)
 
 
 ''' hides tags for tracks during training and evaluates
@@ -24,20 +26,24 @@ class TagPredictionEvaluator:
     def evaluate(self, geCalc):
         tagCount = len(self._testTags)
 
+        if (tagCount < 1):
+            logger.error('No test tags set for evaluation')
+            return
+
         for topNAccuracy in range(1, self._maxTopNAccuracy + 1):
-            print('\n--- top {} accuracy ---'.format(topNAccuracy))
+            logger.info('\n--- top %s accuracy ---', topNAccuracy)
             hits = 0
             for track, tag, weight in self._testTags:
                 if evaluate_track_tag_predict(geCalc, topNAccuracy, track['id'], tag['id']):
-                    print('Hit Tag: {}'.format(tag['id']))
+                    logger.debug('Hit Tag: %s', tag['id'])
                     hits += 1
             
-            print('Avg: top {} accuracy: {} @ {} tags (testsplit={})'.format(
+            logger.info('Avg: top %s accuracy: %s @ %s tags (testsplit=%s)',
                 topNAccuracy,
                 hits / tagCount,
                 tagCount,
                 self._testSplit
-            ))
+            )
 
 # ------------- static functions ------------
 

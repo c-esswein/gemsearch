@@ -1,5 +1,7 @@
 
 from gemsearch.utils.proc import execute_cmd
+import logging
+logger = logging.getLogger(__name__)
 
 class Node2vec:
     def __init__(self, d, max_iter, wLen, nWalks, cSize, ret_p, inout_p, verbose = True):
@@ -34,7 +36,7 @@ class Node2vec:
         try:
             execute_cmd(args, useBash = True)
         except Exception as e:
-            print(e)
+            logger.error('Failed to execute node2vec', exc_info=True)
             raise Exception('node2vec error')
 
 if __name__ == '__main__':

@@ -1,3 +1,9 @@
+from gemsearch.utils.logging import setup_logging
+setup_logging()
+
+import logging
+logger = logging.getLogger(__name__)
+
 from gemsearch.core.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
 from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes, traverseUserTrackInPlaylistsObj
@@ -13,19 +19,18 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_500/'
-outDir = 'data/tmp_500_playlisteval/'
+dataDir = 'data/graph_50/'
+outDir = 'data/tmp/'
 
 SHOULD_EMBED = True
-SHOULD_INDEX_ES = True
+SHOULD_INDEX_ES = False
 
 TEST_PLAYLIST_SPLIT=0.2
 MAX_PRECISION_AT=2
 USE_USER_IN_QUERY = True
 # ---- /config ----
 
-print('config:')
-pprint({
+logger.info('started playlist eval with config: %s', {
     'dataDir': dataDir,
     'outDir': outDir,
     'SHOULD_EMBED': SHOULD_EMBED,
@@ -35,7 +40,7 @@ pprint({
     'USE_USER_IN_QUERY': USE_USER_IN_QUERY
 })
 
-with Timer(message='playlist_eval runner') as t:
+with Timer(logger=logger, message='playlist_eval runner') as t:
 
     playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT)
     if USE_USER_IN_QUERY:
@@ -45,7 +50,7 @@ with Timer(message='playlist_eval runner') as t:
 
     if SHOULD_EMBED:
         print('------------- generate graph -------------')
-        with Timer(message='graph generation') as t:
+        with Timer(logger=logger, message='graph generation') as t:
 
             graphGenerator = GraphGenerator(
                 outDir+'graph.txt', 
@@ -64,7 +69,7 @@ with Timer(message='playlist_eval runner') as t:
             graphGenerator.close_generation()
 
         if SHOULD_INDEX_ES:
-            with Timer(message='elastic search writer') as t:
+            with Timer(logger=logger, message='elastic search writer') as t:
                 # clear all current entries in elastic search
                 es_clear_indices()
 
@@ -74,19 +79,19 @@ with Timer(message='playlist_eval runner') as t:
 
         print('------------- graph embedding -------------')
 
-        with Timer(message='embedding') as t:
+        with Timer(logger=logger, message='embedding') as t:
             em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
             em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')
 
     # load embedding
-    with Timer(message='ge calc initializing') as t:
+    with Timer(logger=logger, message='ge calc initializing') as t:
         geCalc = GeCalc()
         geCalc.load_node2vec_data(outDir+'node2vec.em', outDir+'types.csv')
 
 
     print('------------- evaluation -------------')
 
-    with Timer(message='evaluation') as t:
+    with Timer(logger=logger, message='evaluation') as t:
         playlistEval.evaluate(geCalc)
 
 
