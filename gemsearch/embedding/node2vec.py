@@ -3,6 +3,8 @@ from gemsearch.utils.proc import execute_cmd
 import logging
 logger = logging.getLogger(__name__)
 
+from gemsearch.settings import USE_WINDOWS_BASH
+
 class Node2vec:
     def __init__(self, d, max_iter, wLen, nWalks, cSize, ret_p, inout_p, verbose = True):
         self._d = d
@@ -34,7 +36,7 @@ class Node2vec:
         args.append("-w")
         
         try:
-            execute_cmd(args, useBash = True)
+            execute_cmd(args, useBash = USE_WINDOWS_BASH)
         except Exception as e:
             logger.error('Failed to execute node2vec', exc_info=True)
             raise Exception('node2vec error')

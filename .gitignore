@@ -5,3 +5,4 @@ skip_ids.py
 /gem
 errors.log
 info.log
+.env

@@ -4,5 +4,7 @@ Flask==0.12.2
 networkx==1.11
 numpy==1.12.1
 pymongo==3.4.0
-scikit-learn==0.18.1
 ratelimit==1.2.0
+slacker==0.9.50
+scikit-learn==0.18.1
+scipy==0.19.0

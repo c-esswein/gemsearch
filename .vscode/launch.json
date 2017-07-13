@@ -48,7 +48,7 @@
             "stopOnEntry": false,
             "pythonPath": "${config:python.pythonPath}",
             //"module": "gemsearch.api.${fileBasenameNoExtension}",
-            "module": "gemsearch.embedding.${fileBasenameNoExtension}",
+            "module": "gemsearch.runners.${fileBasenameNoExtension}",
             //"module": "gemsearch.runner",
             "cwd": "${workspaceRoot}",
             "env": {},
