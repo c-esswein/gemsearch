@@ -1,2 +1,8 @@
-pip install -U python-dotenv
-
+python-dotenv==0.6.4
+elasticsearch==5.4.0
+Flask==0.12.2
+networkx==1.11
+numpy==1.12.1
+pymongo==3.4.0
+scikit-learn==0.18.1
+ratelimit==1.2.0
