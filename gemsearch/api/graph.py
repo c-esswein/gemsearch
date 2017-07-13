@@ -1,23 +1,19 @@
 import networkx as nx
+from gemsearch.core.data_loader import traverseGraphFile
+
 
 class Graph():
     
     def load_from_edge_list(self, file_name, node_handler = None):
-        with open(file_name, 'r') as f:
-            G = nx.Graph()
-            for line in f:
-                edge = line.strip().split()
-                if len(edge) == 3:
-                    w = float(edge[2])
-                else:
-                    w = 1.0
-                
-                if (node_handler is not None):
-                    validNodes = node_handler(int(edge[0])) and node_handler(int(edge[1]))
-                    if validNodes == False:
-                        continue
+        G = nx.Graph()
+        for edge in traverseGraphFile(file_name):
+            # skip edge if one of the node_handler returns false                
+            if (node_handler is not None):
+                validNodes = node_handler(edge[0]) and node_handler(edge[1])
+                if validNodes == False:
+                    continue
 
-                G.add_edge(int(edge[0]), int(edge[1]), weight=w)
+            G.add_edge(edge[0], edge[1], weight=edge[2])
         self._G = G
 
     def get_edges(self):
@@ -25,5 +21,8 @@ class Graph():
         '''
         return self._G.edges()
 
-    def get_neighbors(self, nodeId):
-        return [n in self._G[nodeId]]
+    def get_neighbors(self, nodeId, depth):
+        '''Get neighbors of node.
+        '''
+        # TODO sort by weight, use depth
+        return self._G[nodeId]

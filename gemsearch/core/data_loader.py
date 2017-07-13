@@ -131,3 +131,16 @@ def traverseTypes(fileName):
                 'type': row[2],
                 'name': row[3]
             }
+
+def traverseGraphFile(fileName):
+    '''Traverses edge list file to create graphs.
+    '''
+    with open(fileName, 'r') as f:
+        for line in f:
+            edge = line.strip().split()
+            if len(edge) == 3:
+                w = float(edge[2])
+            else:
+                w = 1.0
+            
+            yield (int(edge[0]), int(edge[1]), w)

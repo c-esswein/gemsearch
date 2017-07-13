@@ -1,4 +1,4 @@
-from gemsearch.core.graph_generator import GraphGenerator
+from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
 from gemsearch.core.data_loader import traverseUserTrack, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes
 

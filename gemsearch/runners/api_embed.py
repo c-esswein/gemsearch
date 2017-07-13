@@ -1,3 +1,7 @@
+''' Generates embedding for api.
+'''
+
+
 from gemsearch.utils.logging import setup_logging
 setup_logging()
 
@@ -6,47 +10,35 @@ logger = logging.getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
-from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes, traverseUserTrackInPlaylistsObj
+from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes
 
 from gemsearch.core.type_counter import TypeCounter
 from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
 
-from gemsearch.evaluation.playlist_query_evaluator import PlaylistQueryEvaluator
 from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
+from gemsearch.graph.weight_assigner import assign_edge_weights
 from gemsearch.utils.timer import Timer
 
 from pprint import pprint
 
 # ---- config ----
 dataDir = 'data/graph_50/'
-outDir = 'data/tmp/'
+outDir = 'data/api/'
 
 SHOULD_EMBED = True
-SHOULD_INDEX_ES = False
+SHOULD_INDEX_ES = True
 
-TEST_PLAYLIST_SPLIT=0.2
-MAX_PRECISION_AT=2
-USE_USER_IN_QUERY = True
 # ---- /config ----
 
-logger.info('started playlist eval with config: %s', {
+logger.info('started api embedding with config: %s', {
     'dataDir': dataDir,
     'outDir': outDir,
     'SHOULD_EMBED': SHOULD_EMBED,
     'SHOULD_INDEX_ES': SHOULD_INDEX_ES,
-    'TEST_PLAYLIST_SPLIT': TEST_PLAYLIST_SPLIT,
-    'MAX_PRECISION_AT': MAX_PRECISION_AT,
-    'USE_USER_IN_QUERY': USE_USER_IN_QUERY
 })
 
-with Timer(logger=logger, message='playlist_eval runner') as t:
-
-    playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT)
-    if USE_USER_IN_QUERY:
-        trainingPlaylists = playlistEval.traverse(traversePlaylists(dataDir+'playlist.csv'))
-    else:
-        playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+with Timer(logger=logger, message='api embedding') as t:
 
     if SHOULD_EMBED:
         print('------------- generate graph -------------')
@@ -62,9 +54,6 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
             graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
             graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
-
-            if USE_USER_IN_QUERY:
-                graphGenerator.add(traverseUserTrackInPlaylistsObj(trainingPlaylists))
 
             graphGenerator.close_generation()
 
@@ -83,16 +72,9 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
             em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')
 
-    # load embedding
-    with Timer(logger=logger, message='ge calc initializing') as t:
-        geCalc = GeCalc()
-        geCalc.load_node2vec_data(outDir+'node2vec.em', outDir+'types.csv')
+        with Timer(logger=logger, message='weight assigning for graph') as t:
+            geCalc = GeCalc()
+            geCalc.load_node2vec_data(outDir+'node2vec.em', outDir+'types.csv')
 
-
-    print('------------- evaluation -------------')
-
-    with Timer(logger=logger, message='evaluation') as t:
-        playlistEval.evaluate(geCalc)
-
-
-    print('------------- done -------------')
+            assign_edge_weights(outDir+'graph.txt', outDir+'graph_w.txt', geCalc)
+        

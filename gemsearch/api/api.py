@@ -9,7 +9,8 @@ from gemsearch.api.graph import Graph
 
 app = Flask(__name__)
 
-dataFolder = 'data/viz/'
+# dataFolder = 'data/viz/'
+dataFolder = 'data/api/'
 geCalc = GeCalc()
 geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
 
@@ -110,7 +111,7 @@ def get_graph_helper():
             return item['type'] != 'feature' and item['type'] != 'tag'
             
         _graphHelper = Graph()
-        _graphHelper.load_from_edge_list(dataFolder + 'graph.txt', typeRestrictor)
+        _graphHelper.load_from_edge_list(dataFolder + 'graph_w.txt', typeRestrictor)
     
     return _graphHelper
 
@@ -120,6 +121,24 @@ def get_graph_nodes():
     return jsonify({
         # flatten array
         'edges': list(itertools.chain.from_iterable(edges))
+    })
+
+@app.route("/api/neighbors/<nodeId>")
+def get_graph_neighbors(nodeId):
+    types = request.args.get('types')
+    if types is not None:
+        types = types.split('|')
+    
+    depth = int(request.args.get('depth') or 1)
+    print(depth)
+
+    node = geCalc.get_item_by_item_id(nodeId)
+    nodes = get_graph_helper().get_neighbors(node['embeddingIndex'], depth)
+
+    items = geCalc.get_items_from_embedding_indices(nodes, types)
+
+    return jsonify({
+        'nodes': resolve_items_meta(items)
     })
 
 if __name__ == "__main__":

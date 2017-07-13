@@ -80,6 +80,11 @@ class GeCalc:
 
         return result_items
 
+    def get_distance(self, nodeAId, nodeBId):
+        '''Returns distance between two nodes.
+        '''
+        return scipy.spatial.distance.cosine(self.embedding[nodeAId], self.embedding[nodeBId])
+
     def get_graph_embedding(self, typeFilter = None):
         '''Get 3D graph coordinates for all items.
         '''
