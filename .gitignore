@@ -6,3 +6,4 @@ skip_ids.py
 errors.log
 info.log
 .env
+*.pyc 
