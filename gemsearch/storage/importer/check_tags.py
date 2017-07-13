@@ -1,6 +1,6 @@
 import csv
 from pprint import pprint
-# from gemsearch.storage.Storage import Storage
+from gemsearch.storage.Storage import Storage
 
 def readCsv(filename):
     with open(filename, "r", encoding="utf-8") as csvfile:
@@ -13,7 +13,7 @@ def readCsv(filename):
 playLists = dict()
 tracks = dict()
 
-for row in readCsv('data/playlistDataset.csv'):
+for row in readCsv('data/echonestDataset.csv'):
     playlistKey = row['userID'] + '_' + row['playlistName']
     if not playlistKey in playLists:
         playLists[playlistKey] = {
