@@ -18,13 +18,15 @@ from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_
 from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.graph.weight_assigner import assign_edge_weights
+from gemsearch.embedding import dim_reducer
 from gemsearch.utils.timer import Timer
 
 from pprint import pprint
+import numpy as np
 
 # ---- config ----
-dataDir = 'data/graph_50/'
-outDir = 'data/api/'
+dataDir = 'data/graph_1/'
+outDir = 'data/api_1/'
 
 SHOULD_EMBED = True
 SHOULD_INDEX_ES = True
@@ -77,4 +79,11 @@ with Timer(logger=logger, message='api embedding') as t:
             geCalc.load_node2vec_data(outDir+'node2vec.em', outDir+'types.csv')
 
             assign_edge_weights(outDir+'graph.txt', outDir+'graph_w.txt', geCalc)
+
+
+        with Timer(logger=logger, message='pca dimension reduction') as t:
+            embedding = geCalc.embedding
+            reduced = dim_reducer.pca(embedding)
+            np.save(outDir+'pca.em', reduced)
+
         

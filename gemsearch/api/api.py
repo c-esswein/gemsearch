@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
-# import numpy as np
+import numpy as np
 import itertools
+import os.path
 
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.query.elastic_search import search as es_search
@@ -10,7 +11,8 @@ from gemsearch.api.graph import Graph
 app = Flask(__name__)
 
 # dataFolder = 'data/viz/'
-dataFolder = 'data/api/'
+dataFolder = 'data/api_1/'
+EMBEDDING_FILE = dataFolder + 'pca.em.npy'
 geCalc = GeCalc()
 geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
 
@@ -82,6 +84,7 @@ def suggest_item(term):
 
 # ------- graph routes -------
 
+# params: types, embedding_file
 @app.route("/api/nodes")
 def get_graph_data():
     types = request.args.get('types')
@@ -91,8 +94,30 @@ def get_graph_data():
     lookup = geCalc.get_lookup()
     typeMapping = [item['type'] for item in lookup]
 
+    embeddingFile = request.args.get('embedding_file')
+    if embeddingFile is not None:
+        embeddingFile = dataFolder + embeddingFile
+    else:
+        embeddingFile = EMBEDDING_FILE
+
+    if not os.path.isfile(embeddingFile):
+        return jsonify({
+            'success': False,
+            'errors': [
+                'viz embedding file not found'
+            ]
+        })
+
+    # load embedding
+    embedding = np.load(embeddingFile)
+
+    # flatten array to faster loading in client
+    flattenEmbedding = embedding.flatten().tolist()
+
+    # embedding = geCalc.get_graph_embedding(types).tolist()
+
     return jsonify({
-        'nodes': geCalc.get_graph_embedding(types).tolist(),
+        'nodes': flattenEmbedding,
         'typeMapping': typeMapping,
     })
 

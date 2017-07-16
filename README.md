@@ -7,3 +7,5 @@ Install python dependencies with running:
 ```
 pip3 install -r requirements.txt
 ```
+
+For playlist evaluation is elastic search required.

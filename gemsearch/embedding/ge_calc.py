@@ -15,6 +15,7 @@ class GeCalc:
     def load_data(self, embeddingFile, typeFile):
         '''Loads embedding and type mapping.
         '''
+        
         self.embedding = read_embedding_file(embeddingFile)
         self.lookup = list(traverseTypes(typeFile))
 
