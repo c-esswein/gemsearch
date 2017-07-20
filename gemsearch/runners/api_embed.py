@@ -13,7 +13,6 @@ from gemsearch.core.id_manager import IdManager
 from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes
 
 from gemsearch.core.type_counter import TypeCounter
-from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
 
 from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
@@ -29,7 +28,7 @@ dataDir = 'data/graph_50/'
 outDir = 'data/tmp/'
 
 SHOULD_EMBED = True
-SHOULD_INDEX_ES = True
+SHOULD_INDEX_ES = False
 
 # ---- /config ----
 
@@ -60,6 +59,7 @@ with Timer(logger=logger, message='api embedding') as t:
             graphGenerator.close_generation()
 
         if SHOULD_INDEX_ES:
+            from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
             with Timer(logger=logger, message='elastic search writer') as t:
                 # clear all current entries in elastic search
                 es_clear_indices()
