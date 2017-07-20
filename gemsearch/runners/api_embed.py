@@ -25,8 +25,8 @@ from pprint import pprint
 import numpy as np
 
 # ---- config ----
-dataDir = 'data/graph_1/'
-outDir = 'data/api_1/'
+dataDir = 'data/graph_50/'
+outDir = 'data/tmp/'
 
 SHOULD_EMBED = True
 SHOULD_INDEX_ES = True
