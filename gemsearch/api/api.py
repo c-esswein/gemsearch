@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 # dataFolder = 'data/viz/'
 dataFolder = 'data/api_1/'
-EMBEDDING_FILE = dataFolder + 'pca.em.npy'
+VIZ_EMBEDDING_FILE = dataFolder + 'pca.em.npy'
 geCalc = GeCalc()
 geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
 
@@ -20,6 +20,7 @@ geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
 def query():
     ids = request.args.get('ids')
 
+    # no ids in query
     if ids is None or ids == '':
         return jsonify({
             'success': True,
@@ -28,12 +29,21 @@ def query():
 
     idList = ids.split('|')
 
+    # type filter
     types = request.args.get('types')
     if types is not None:
         types = types.split('|')
 
     try:
         result = geCalc.query_by_ids(idList, types)
+        resolvedItems = resolve_items_meta(result)
+
+        # append 3D positions
+        # TODO: move somewhere else...
+        vizEmbedding = np.load(VIZ_EMBEDDING_FILE)
+        for item in resolvedItems:
+            item['position'] = vizEmbedding[item['embeddingIndex']].tolist()
+
         return jsonify({
             'success': True,
             'data': resolve_items_meta(result)
@@ -84,7 +94,7 @@ def suggest_item(term):
 
 # ------- graph routes -------
 
-# params: types, embedding_file
+# params: types, VIZ_EMBEDDING_FILE
 @app.route("/api/nodes")
 def get_graph_data():
     types = request.args.get('types')
@@ -94,11 +104,11 @@ def get_graph_data():
     lookup = geCalc.get_lookup()
     typeMapping = [item['type'] for item in lookup]
 
-    embeddingFile = request.args.get('embedding_file')
+    embeddingFile = request.args.get('VIZ_EMBEDDING_FILE')
     if embeddingFile is not None:
         embeddingFile = dataFolder + embeddingFile
     else:
-        embeddingFile = EMBEDDING_FILE
+        embeddingFile = VIZ_EMBEDDING_FILE
 
     if not os.path.isfile(embeddingFile):
         return jsonify({
