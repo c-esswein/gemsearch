@@ -51,6 +51,10 @@
             "level": "ERROR",
             "handlers": ["console"],
             "propagate": "no"
+        },
+
+        "elasticsearch": {
+            "level": "ERROR"
         }
     },
 
