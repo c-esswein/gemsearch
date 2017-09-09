@@ -1,4 +1,8 @@
 from pprint import pprint
+from gemsearch.utils.logging import setup_logging
+setup_logging()
+import logging
+logger = logging.getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
@@ -12,27 +16,26 @@ from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
 
 # ---- config ----
-dataDir = 'data/graph_100/'
-outDir = 'data/run1/'
+dataDir = 'data/graph_15000/'
+outDir = 'data/graph_15000_tag_eval/'
 
 TEST_TAG_SPLIT = 0.02
 MAX_TOP_N_ACCURACY = 5
 EMBEDDING_VERBOSE = False
 # ---- /config ----
 
-print('config:')
-pprint({
+logger.info('started tag prediction eval with config: %s',{
     'dataDir': dataDir,
     'outDir': outDir,
     'TEST_TAG_SPLIT': TEST_TAG_SPLIT,
     'MAX_TOP_N_ACCURACY': MAX_TOP_N_ACCURACY
 })
 
-with Timer(message='playlist_eval runner') as t:
+with Timer(logger=logger, message='playlist_eval runner') as t:
     tagPredictEval = TagPredictionEvaluator(testSplit=TEST_TAG_SPLIT, maxTopNAccuracy=MAX_TOP_N_ACCURACY)
 
-    print('------------- generate graph -------------')
-    with Timer(message='graph generation') as t:
+    logger.info('------------- generate graph -------------')
+    with Timer(logger=logger, message='graph generation') as t:
 
         graphGenerator = GraphGenerator(
             outDir+'graph.txt', 
@@ -48,22 +51,22 @@ with Timer(message='playlist_eval runner') as t:
         graphGenerator.close_generation()
 
 
-    print('------------- graph embedding -------------')
+    logger.info('------------- graph embedding -------------')
     
-    with Timer(message='embedding') as t:
+    with Timer(logger=logger, message='embedding') as t:
         em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=EMBEDDING_VERBOSE)
         em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')
     
 
     # load embedding
-    with Timer(message='ge calc initializing') as t:
+    with Timer(logger=logger, message='ge calc initializing') as t:
         geCalc = GeCalc()
         geCalc.load_node2vec_data(outDir+'node2vec.em', outDir+'types.csv')
 
 
-    print('------------- evaluation -------------')
+    logger.info('------------- evaluation -------------')
     
-    with Timer(message='evaluation') as t:
+    with Timer(logger=logger, message='evaluation') as t:
         tagPredictEval.evaluate(geCalc)
 
-    print('------------- done -------------')
+    logger.info('------------- done -------------')

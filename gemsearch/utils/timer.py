@@ -37,4 +37,4 @@ class Timer(object):
         self.secs_str = str(self.secs) + 's'
 
         if self.message:
-            self.writeMsg('\n%%% ' + self.message + ' done in ' + str(self.secs_str))
+            self.writeMsg('%%% ' + self.message + ' done in ' + str(self.secs_str) + '\n\n')
