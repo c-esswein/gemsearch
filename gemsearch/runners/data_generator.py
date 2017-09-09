@@ -19,7 +19,12 @@ class DataGenerator(ADataGenerator):
         tracksRepo = Tracks()
 
         # --- playlist ---
+        counter = 0
         for playlist in playlists:
+
+            counter += 1
+            if counter % 100 == 0:
+                print('written {}/{}'.format(counter, limit))
 
             playlistName = clean_playlist_name(playlist['name'])
             if not playlistName:
@@ -85,6 +90,6 @@ class DataGenerator(ADataGenerator):
         self._closeHandlers()
 
 if __name__ == "__main__":
-    generator = DataGenerator('data/graph_50/')
-    generator.generate(50)
+    generator = DataGenerator('data/graph_15000/')
+    generator.generate(15000)
     print('data written')
