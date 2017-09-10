@@ -3,7 +3,7 @@ from elasticsearch import Elasticsearch
 
 es = Elasticsearch()
 
-def search(queryStr: str, limit=10):
+def search(queryStr, limit=10):
         # "match_all": {}
     res = es.search(index="_all", size=limit, body={"query": 
         {"match" : {"name" : {"query": queryStr, "fuzziness": "AUTO"}}}
@@ -13,7 +13,7 @@ def search(queryStr: str, limit=10):
     #print("Got %d Hits:" % res['hits']['total'])
     return [hit for hit in res['hits']['hits']]
 
-def suggest(prefix: str):
+def suggest(prefix):
     '''res = es.search(index="_all", body={
         "suggest": {
             "name-suggest" : {
