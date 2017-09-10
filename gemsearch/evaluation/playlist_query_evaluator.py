@@ -29,7 +29,13 @@ class PlaylistQueryEvaluator:
         '''
         playlists = list(playlistTraverser)
         training, test = train_test_split(playlists, test_size=self._testSplit, random_state=42)
-        self._playlists = test
+
+        # make sure all test users are present in training set
+        usersInTraining = {}
+        for trainingPlaylist in training:
+            usersInTraining[trainingPlaylist['userId']] = True
+
+        self._playlists = [x for x in test if (x['userId'] in usersInTraining)]
 
         return training
     
