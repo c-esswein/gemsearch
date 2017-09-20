@@ -22,7 +22,7 @@ from pprint import pprint
 dataDir = 'data/graph_500/'
 outDir = 'data/tmp/'
 
-SHOULD_EMBED = True
+SHOULD_EMBED = False
 SHOULD_INDEX_ES = True
 
 TEST_PLAYLIST_SPLIT=0.2

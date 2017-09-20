@@ -82,7 +82,7 @@ class GeCalc:
 
         return result_items
 
-    def get_random_ids(self, typeFilter = None, limit = 20):
+    def random_query_results(self, typeFilter = None, limit = 20):
         '''Returns random entries with given optional typeFilter
         '''
         maxIndex = len(self.lookup)

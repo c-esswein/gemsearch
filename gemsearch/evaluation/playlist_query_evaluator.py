@@ -37,6 +37,8 @@ class PlaylistQueryEvaluator:
 
         self._playlists = [x for x in test if (x['userId'] in usersInTraining)]
 
+        logger.info('Splitted playlists for training (%s) and test (%s), total (%s)', len(training), len(self._playlists), len(playlists))
+
         return training
     
     def addPlaylists(self, playlistTraverser):
@@ -55,6 +57,7 @@ class PlaylistQueryEvaluator:
         '''Starts evaluation.
         '''
         playlistCount = len(self._playlists)
+        logger.info('Started playlist evaluation with %s playlists', playlistCount)
 
         if playlistCount < 1:
             raise Exception('No Playlists collected to test!')
@@ -62,7 +65,7 @@ class PlaylistQueryEvaluator:
         for precisionAt in range(1, self._maxPrecisionAt + 1):
             logger.info('\n--- Precision@%s ---', precisionAt)
 
-            # self.runEvaluation(evaluate_playlist, geCalc, precisionAt, self._useUserContext)
+            self.runEvaluation(evaluate_playlist, geCalc, precisionAt, self._useUserContext)
             self.runEvaluation(evaluate_random_guess, geCalc, precisionAt, self._useUserContext)
     
     def runEvaluation(self, evaluationFunc, geCalc, precisionAt, useUserContext):
@@ -82,7 +85,7 @@ class PlaylistQueryEvaluator:
             totalRecall / playlistCount,
             playlistCount,
             self._testSplit,
-            evaluationFunc
+            evaluationFunc.__name__
         )
 
 # ------------- static functions ------------
@@ -124,7 +127,7 @@ def evaluate_random_guess(geCalc, playlist, precisionAt = 1, useUserContext = Fa
     
     playlistCount = len(playlist['tracks'])
     limit = playlistCount * precisionAt
-    results = geCalc.get_random_ids(
+    results = geCalc.random_query_results(
         typeFilter = ['track'], 
         limit = limit
     )

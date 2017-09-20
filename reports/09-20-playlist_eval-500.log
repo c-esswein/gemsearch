@@ -1,0 +1,78 @@
+2017-09-20 21:05:34,540 - __main__ - INFO - started playlist eval with config: {'dataDir': 'data/graph_500/', 'SHOULD_EMBED': False, 'MAX_PRECISION_AT': 2, 'USE_USER_IN_QUERY': True, 'TEST_PLAYLIST_SPLIT': 0.2, 'outDir': 'data/tmp/', 'SHOULD_INDEX_ES': True}
+2017-09-20 21:05:34,542 - __main__ - INFO - %%% playlist_eval runner... 
+
+------------- generate graph -------------
+2017-09-20 20:52:15,089 - __main__ - INFO - %%% graph generation... 
+Collected items by type:
+track: 34239
+feature: 1
+artist: 8172
+tag: 72540
+user: 145
+2017-09-20 20:53:22,519 - __main__ - INFO - %%% graph generation done in 67.427s
+
+
+2017-09-20 20:53:22,520 - __main__ - INFO - %%% elastic search writer... 
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 114952}
+2017-09-20 20:54:28,282 - __main__ - INFO - %%% elastic search writer done in 65.76s
+
+
+------------- graph embedding -------------
+2017-09-20 20:54:28,286 - __main__ - INFO - %%% embedding... 
+running: bash.exe -c "./gem/c_exe/node2vec -i:data/tmp/graph.txt -o:data/tmp/node2vec.em -d:50 -l:80 -r:10 -k:10 -e:1 -p:1.000000 -q:1.000000 -dr -w"
+
+An algorithmic framework for representational learning on graphs. [Jun 16 2017]
+================================================================================
+Input graph path (-i:)=data/tmp/graph.txt
+Output graph path (-o:)=data/tmp/node2vec.em
+Number of dimensions. Default is 128 (-d:)=50
+Length of walk per source. Default is 80 (-l:)=80
+Number of walks per source. Default is 10 (-r:)=10
+Context size for optimization. Default is 10 (-k:)=10
+Number of epochs in SGD. Default is 1 (-e:)=1
+Return hyperparameter. Default is 1 (-p:)=1
+Inout hyperparameter. Default is 1 (-q:)=1
+Verbose output. (-v)=NO
+Graph is directed. (-dr)=YES
+Graph is weighted. (-w)=YES
+2017-09-20 21:00:11,835 - __main__ - INFO - %%% embedding done in 343.547s
+
+
+2017-09-20 21:05:34,624 - __main__ - INFO - %%% ge calc initializing... 
+2017-09-20 21:05:47,029 - __main__ - INFO - %%% ge calc initializing done in 12.403s
+
+
+------------- evaluation -------------
+2017-09-20 21:05:47,031 - __main__ - INFO - %%% evaluation... 
+2017-09-20 21:05:47,033 - gemsearch.evaluation.playlist_query_evaluator - INFO - 
+--- Precision@1 ---
+2017-09-20 21:05:58,052 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.0352760736196319 <<2014 stuff>> query:[tag::2014]
+2017-09-20 21:06:02,113 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.025 <<*MONSTER WORKOUT*>> query:[tag::workout]
+2017-09-20 21:06:07,909 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.03242769500438212 <<2014 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+2017-09-20 21:06:15,933 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.024390243902439025 <<#bfrysworldradio update>> query:[tag::plate]
+2017-09-20 21:06:16,479 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.014285714285714285 <<80s playlist>> query:[tag::80s playlist]
+2017-09-20 21:06:18,071 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.007017543859649123 <<*LISTEN TO*>> query:[tag::listen to]
+2017-09-20 21:06:23,949 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@1: 0.003295173111233725, recall 0.003295173111233725 @ 42 playlists (testsplit=0.2) method: evaluate_playlist
+2017-09-20 21:06:30,166 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@1: 0.000979574956322995, recall 0.000979574956322995 @ 42 playlists (testsplit=0.2) method: evaluate_random_guess
+2017-09-20 21:06:30,168 - gemsearch.evaluation.playlist_query_evaluator - INFO - 
+--- Precision@2 ---
+2017-09-20 21:06:50,696 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.03680981595092025 <<2014 stuff>> query:[tag::2014]
+2017-09-20 21:06:52,072 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.0035971223021582736 <<2: Kryptonite>> query:[spotify:track:5ZPp1V3PufN6qhAe3rLNmb]
+2017-09-20 21:06:55,623 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.02638888888888889 <<*MONSTER WORKOUT*>> query:[tag::workout]
+2017-09-20 21:06:56,668 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.01171875 <<(w)RAPitUp>> query:[spotify:track:3ZWAD6mrzTWCyJ4DZgFpTs]
+2017-09-20 21:06:57,273 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.004201680672268907 <<1956 albums>> query:[tag::1956]
+2017-09-20 21:07:04,133 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.028045574057843997 <<2014 Pitchfork Music Festival>> query:[tag::pitchfork music festival 2010]
+2017-09-20 21:07:04,645 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.0072992700729927005 <<2014-otra lista>> query:[tag::lista]
+2017-09-20 21:07:15,326 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.029616724738675958 <<#bfrysworldradio update>> query:[tag::plate]
+2017-09-20 21:07:15,902 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.007142857142857143 <<80s playlist>> query:[tag::80s playlist]
+2017-09-20 21:07:17,658 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist: precision 0.005263157894736842 <<*LISTEN TO*>> query:[tag::listen to]
+2017-09-20 21:07:23,177 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@2: 0.003811520040984356, recall 0.007623040081968712 @ 42 playlists (testsplit=0.2) method: evaluate_playlist
+2017-09-20 21:07:35,045 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@2: 0.001800184495661496, recall 0.003600368991322992 @ 42 playlists (testsplit=0.2) method: evaluate_random_guess
+2017-09-20 21:07:35,047 - __main__ - INFO - %%% evaluation done in 108.014s
+
+
+------------- done -------------
+2017-09-20 21:07:35,050 - __main__ - INFO - %%% playlist_eval runner done in 120.505s
+
+
