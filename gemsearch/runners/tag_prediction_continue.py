@@ -16,8 +16,8 @@ from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
 
 # ---- config ----
-dataDir = 'data/graph_50/'
-outDir = 'data/tmp/'
+dataDir = 'data/graph_10000/'
+outDir = 'data/graph_10000_tag_eval/'
 
 TEST_TAG_SPLIT = 0.02
 MAX_TOP_N_ACCURACY = 5
@@ -34,29 +34,9 @@ logger.info('started tag prediction eval with config: %s',{
 with Timer(logger=logger, message='playlist_eval runner') as t:
     tagPredictEval = TagPredictionEvaluator(testSplit=TEST_TAG_SPLIT, maxTopNAccuracy=MAX_TOP_N_ACCURACY)
 
-    logger.info('------------- generate graph -------------')
-    with Timer(logger=logger, message='graph generation') as t:
+    # load previous test tags
 
-        graphGenerator = GraphGenerator(
-            outDir+'graph.txt', 
-            IdManager(outDir+'types.csv', 
-                typeHandlers = [TypeCounter()]
-            )
-        )
-
-        graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
-        graphGenerator.add(traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
-        graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
-        graphGenerator.add(tagPredictEval.traverse(traverseTrackTag(dataDir+'track_tag.csv')))
-        graphGenerator.close_generation()
-
-
-    logger.info('------------- graph embedding -------------')
-    
-    with Timer(logger=logger, message='embedding') as t:
-        em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=EMBEDDING_VERBOSE)
-        em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')
-    
+    tagPredictEval.loadIntermediateTags()
 
     # load embedding
     with Timer(logger=logger, message='ge calc initializing') as t:

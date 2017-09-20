@@ -2,6 +2,7 @@ from pprint import pprint
 from sklearn.model_selection import train_test_split
 import logging
 logger = logging.getLogger(__name__)
+import pickle
 
 
 ''' hides tags for tracks during training and evaluates
@@ -21,7 +22,13 @@ class TagPredictionEvaluator:
         training, test = train_test_split(tags, test_size=self._testSplit, random_state=42)
         self._testTags = test
 
+        # write test data to file in case of process termination
+        pickle.dump(test, open('tag_predict_test.p', 'wb'))
+
         return training
+    
+    def loadIntermediateTags(self):
+        self._testTags = pickle.load(open('tag_predict_test.p', 'rb'))
 
     def evaluate(self, geCalc):
         tagCount = len(self._testTags)
