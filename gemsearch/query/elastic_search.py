@@ -1,7 +1,8 @@
 from pprint import pprint
 from elasticsearch import Elasticsearch
 
-es = Elasticsearch()
+hostIp = 'localhost'
+es = Elasticsearch([hostIp])
 
 def search(queryStr, limit=10):
         # "match_all": {}
