@@ -1,6 +1,7 @@
 from pprint import pprint
 import numpy as np
 import csv
+import random
 import sys
 import scipy.spatial.distance
 from gemsearch.core.data_loader import traverseTypes
@@ -80,6 +81,16 @@ class GeCalc:
         result_items = self.get_items_from_embedding_indices(result, typeFilter, limit)
 
         return result_items
+
+    def get_random_ids(self, typeFilter = None, limit = 20):
+        '''Returns random entries with given optional typeFilter
+        '''
+        maxIndex = len(self.lookup)
+        randomIndices = [random.randint(0, maxIndex - 1) for i in range(0, limit)]
+        result_items = self.get_items_from_embedding_indices(randomIndices, typeFilter, limit)
+
+        return result_items
+
 
     def get_distance(self, nodeAId, nodeBId):
         '''Returns distance between two nodes.

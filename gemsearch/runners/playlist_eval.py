@@ -19,11 +19,11 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
+dataDir = 'data/graph_500/'
 outDir = 'data/tmp/'
 
 SHOULD_EMBED = True
-SHOULD_INDEX_ES = False
+SHOULD_INDEX_ES = True
 
 TEST_PLAYLIST_SPLIT=0.2
 MAX_PRECISION_AT=2
@@ -42,7 +42,7 @@ logger.info('started playlist eval with config: %s', {
 
 with Timer(logger=logger, message='playlist_eval runner') as t:
 
-    playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT)
+    playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
     if USE_USER_IN_QUERY:
         trainingPlaylists = playlistEval.traverse(traversePlaylists(dataDir+'playlist.csv'))
     else:
