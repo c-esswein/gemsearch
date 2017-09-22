@@ -7,17 +7,22 @@ from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.query.elastic_search import search as es_search
 from gemsearch.api.metadata import resolve_items_meta
 from gemsearch.api.graph import Graph
+from gemsearch.api.positions import calc_viz_data, cluster_items
 
 app = Flask(__name__)
 
-# dataFolder = 'data/viz/'
-dataFolder = 'data/api_1/'
+dataFolder = 'data/tmp/'
 VIZ_EMBEDDING_FILE = dataFolder + 'pca.em.npy'
+
+print('initialize geCalc')
 geCalc = GeCalc()
 geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
+print('initialize geCalc finished')
 
 @app.route("/api/query")
 def query():
+    ''' Query for items with multiple object ids.
+    '''
     ids = request.args.get('ids')
 
     # no ids in query
@@ -26,7 +31,6 @@ def query():
             'success': True,
             'data': []
         })    
-
     idList = ids.split('|')
 
     # type filter
@@ -34,19 +38,27 @@ def query():
     if types is not None:
         types = types.split('|')
 
+    limit = request.args.get('limit') or 20
+    limit = int(limit)
+
+    minClusterDistance = request.args.get('minClusterDistance') or 0.05
+    minClusterDistance = float(minClusterDistance)
+
     try:
-        result = geCalc.query_by_ids(idList, types)
+        result = geCalc.query_by_ids(idList, types, limit)
         resolvedItems = resolve_items_meta(result)
 
         # append 3D positions
-        # TODO: move somewhere else...
+        # TODO: only include in graph search
         vizEmbedding = np.load(VIZ_EMBEDDING_FILE)
-        for item in resolvedItems:
-            item['position'] = vizEmbedding[item['embeddingIndex']].tolist()
+        vizItems = calc_viz_data(resolvedItems, vizEmbedding)
+        clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance)
 
         return jsonify({
             'success': True,
-            'data': resolve_items_meta(result)
+            'data': resolvedItems, # TODO: remove data
+            'clusters': clusteredResult,
+            'boundingBox': boundingBox.tolist()
         })
     except ValueError as exc:
         return jsonify({
@@ -58,6 +70,8 @@ def query():
 
 @app.route("/api/object/<id>")
 def get_object_id(id):
+    ''' Get meta data for given object.
+    '''
     result = geCalc.get_item_by_item_id(id)
     if result is not None:
         return jsonify({
@@ -72,6 +86,8 @@ def get_object_id(id):
 
 @app.route("/api/suggest/<term>")
 def suggest_item(term):
+    ''' Get autocomplete suggestions for given term.
+    '''
     try:
         result = es_search(term)
     except Exception as exc:
@@ -87,6 +103,7 @@ def suggest_item(term):
         'type': item['_source']['type'],
         'name': item['_source']['name']
     }, result)
+
     return jsonify({
         'success': True,
         'data': list(resultItems)

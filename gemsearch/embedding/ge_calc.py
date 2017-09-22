@@ -146,13 +146,13 @@ def find_similar_vecs(searchVec, vecs):
 if __name__ == '__main__':
     from gemsearch.utils.timer import Timer
 
-    tmpDir = 'data/run1/'
+    tmpDir = 'data/tmp/'
     ge = GeCalc()
     
     with Timer(message='Data loading') as t:
         ge.load_node2vec_data(tmpDir+'node2vec.em', tmpDir+'types.csv')
     
-    searchId = ['spotify:track:0OFr7o3pOXko0iUTmmMvPF']
+    searchId = ['tag::club house']
 
     print('Search for:\n')
     pprint(ge.get_item_by_item_id(searchId[0]))
