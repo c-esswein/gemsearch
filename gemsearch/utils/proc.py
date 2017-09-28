@@ -1,8 +1,6 @@
 import shlex
 import subprocess
 
-from pprint import pprint
-
 def execute_cmd(args, useBash = False, printOutput=True):
     """
     Execute the external command and get its exitcode, stdout are yield.

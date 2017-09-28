@@ -55,6 +55,10 @@
 
         "elasticsearch": {
             "level": "ERROR"
+        },
+
+        "gemsearch.evaluation.playlist_query_evaluator": {
+            "level": "INFO"
         }
     },
 

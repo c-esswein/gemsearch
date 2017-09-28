@@ -47,9 +47,31 @@ def embed_hope(graphFile, outputFile):
     X, t = em.learn_embedding(edge_f=graphFile, is_weighted=True)
     store_embedding(outputFile, X)
 
+def embed_SDNE(graphFile, outputFolder):
+    from gem.embedding.sdne import SDNE
+    
+    print("started")
+    em = SDNE(
+        d=2, beta=5, alpha=1e-5, nu1=1e-6, nu2=1e-6, K=3, n_units=[50, 15,], rho=0.3, 
+        n_iter=50, xeta=0.01, n_batch=500, 
+        modelfile=[outputFolder+'enc_model.json', outputFolder+'dec_model.json'], 
+        weightfile=[outputFolder+'enc_weights.hdf5', outputFolder+'dec_weights.hdf5']
+    )
+    X, t = em.learn_embedding(edge_f=graphFile, is_weighted=True)
+    store_embedding(outputFile, X)
+
+def embed_deepwalk(graphFile, outputFile):
+    from deepwalk.runner import startDeepwalk
+    startDeepwalk(dict(
+        input=graphFile, output=outputFile,
+        number_walks=10, walk_length=5,
+    ))
+
 if __name__ == '__main__':
-    tmpDir = 'data/run1/'
+    tmpDir = 'data/tmp/'
     # embed_hope(tmpDir+'graph.txt', tmpDir+'hope.em')
-    embed_gf(tmpDir+'graph.txt', tmpDir+'gf.em')
+    #embed_gf(tmpDir+'graph.txt', tmpDir+'gf.em')
+    #embed_SDNE(tmpDir+'graph.txt', 'data/sdne/')
+    embed_deepwalk(tmpDir+'graph.txt', 'data/tmp/deepwalk.em')
 
     print("done")

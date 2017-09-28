@@ -63,7 +63,7 @@ class PlaylistQueryEvaluator:
             raise Exception('No Playlists collected to test!')
         
         for precisionAt in range(1, self._maxPrecisionAt + 1):
-            logger.info('\n--- Precision@%s ---', precisionAt)
+            logger.info('--- Precision@%s ---', precisionAt)
 
             self.runEvaluation(evaluate_playlist, geCalc, precisionAt, self._useUserContext)
             self.runEvaluation(evaluate_random_guess, geCalc, precisionAt, self._useUserContext)
@@ -110,7 +110,7 @@ def evaluate_playlist(geCalc, playlist, precisionAt = 1, useUserContext = False)
 
     numHits = match_track_hits(playlist['tracks'], results)
     if numHits > 0:
-        logger.info('Playlist: precision %s <<%s>> query:[%s]',
+        logger.debug('Playlist: precision %s <<%s>> query:[%s]',
             numHits / limit,
             playlist['playlistName'],
             queryIds[0]

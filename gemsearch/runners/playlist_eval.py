@@ -19,15 +19,15 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_500/'
+dataDir = 'data/graph_50/'
 outDir = 'data/tmp/'
 
 SHOULD_EMBED = False
-SHOULD_INDEX_ES = True
+SHOULD_INDEX_ES = False
 
 TEST_PLAYLIST_SPLIT=0.2
 MAX_PRECISION_AT=2
-USE_USER_IN_QUERY = True
+USE_USER_IN_QUERY = False
 # ---- /config ----
 
 logger.info('started playlist eval with config: %s', {
@@ -80,8 +80,10 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
         print('------------- graph embedding -------------')
 
         with Timer(logger=logger, message='embedding') as t:
-            em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
-            em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')
+            ''' em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
+            em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em') '''
+            from gemsearch.embedding.default_embedder import embed_deepwalk
+            embed_deepwalk(outDir+'graph.txt', outDir+'node2vec.em')
 
     # load embedding
     with Timer(logger=logger, message='ge calc initializing') as t:
