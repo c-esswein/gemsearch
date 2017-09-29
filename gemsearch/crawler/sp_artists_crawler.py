@@ -6,7 +6,8 @@ import json
 import time
 from pprint import pprint
 
-from slack import slack_send_message, slack_error_message
+from gemsearch.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+from gemsearch.utils.slack import slack_send_message, slack_error_message
 
 @rate_limited(1)
 def crawl_artist(sp, artistId):
@@ -24,7 +25,7 @@ def create_artist_list(exportFileName):
             outFile.write(str(artist['id']) + '\n')
 
 def process_list(listPath, outputFileName):
-    credentials = spotipy.oauth2.SpotifyClientCredentials('a82ae3d8bb5a4c4480189efa073efa94', '173c05b92b624c31ac97f6f961ac7462')
+    credentials = spotipy.oauth2.SpotifyClientCredentials(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET)
     token = credentials.get_access_token()
     sp = spotipy.Spotify(client_credentials_manager=credentials)
     

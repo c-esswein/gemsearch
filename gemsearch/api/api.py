@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 import numpy as np
 import itertools
 import os.path
@@ -8,6 +8,7 @@ from gemsearch.query.elastic_search import search as es_search
 from gemsearch.api.metadata import resolve_items_meta
 from gemsearch.api.graph import Graph
 from gemsearch.api.positions import calc_viz_data, cluster_items
+from gemsearch.api.user import syncUserMusic
 
 app = Flask(__name__)
 
@@ -107,6 +108,36 @@ def suggest_item(term):
     return jsonify({
         'success': True,
         'data': list(resultItems)
+    })
+
+# ------- user routes -------
+
+@app.route("/api/user/sync", methods=['POST'])
+def sync_user():
+    ''' Sync user spotify data.
+    '''
+    token = request.form['token']
+    print(token)
+    if token is None:
+        return make_response(jsonify({
+            'success': False,
+            'errors': [
+                str(exc)
+            ]
+        }), 400)
+
+    try:
+        syncUserMusic(token)
+    except Exception as exc:
+        return jsonify({
+            'success': False,
+            'errors': [
+                str(exc)
+            ]
+        })
+
+    return jsonify({
+        'success': True,
     })
 
 # ------- graph routes -------
