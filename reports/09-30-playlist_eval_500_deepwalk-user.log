@@ -1,0 +1,245 @@
+2017-09-30 19:24:12,163 - __main__ - INFO - started playlist eval with config: {'TEST_PLAYLIST_SPLIT': 0.2, 'outDir': 'data/graph_500_data_deep/', 'SHOULD_INDEX_ES': True, 'USE_USER_IN_QUERY': True, 'MAX_PRECISION_AT': 2, 'SHOULD_EMBED': True, 'dataDir': 'data/graph_500/'}
+2017-09-30 19:24:12,164 - __main__ - INFO - %%% playlist_eval runner... 
+2017-09-30 19:24:12,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - Splitted playlists for training (278) and test (42), total (348)
+------------- generate graph -------------
+2017-09-30 19:24:12,236 - __main__ - INFO - %%% graph generation... 
+Collected items by type:
+user: 145
+tag: 72540
+feature: 1
+artist: 8172
+track: 34239
+-- Total: 115097 --
+2017-09-30 19:25:11,466 - __main__ - INFO - %%% graph generation done in 59.228s
+
+
+2017-09-30 19:25:11,467 - __main__ - INFO - %%% elastic search writer... 
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 114952}
+2017-09-30 19:25:57,937 - __main__ - INFO - %%% elastic search writer done in 46.467s
+
+
+------------- graph embedding -------------
+2017-09-30 19:25:57,939 - __main__ - INFO - %%% embedding... 
+C:\Users\cessw\Anaconda3\envs\tensorflow\lib\site-packages\gensim\utils.py:860: UserWarning: detected Windows; aliasing chunkize to chunkize_serial
+  warnings.warn("detected Windows; aliasing chunkize to chunkize_serial")
+2017-09-30 19:25:59,461 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2017-09-30 19:25:59,560 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/graph_500_data_deep/graph.txt', log='INFO', max_memory_data_size=1000000000, number_walks=5, output='data/graph_500_data_deep/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=5, window_size=5, workers=3)
+2017-09-30 19:26:06,045 - deepwalk - INFO - make_consistent: made consistent in 0.982184886932373s
+2017-09-30 19:26:06,477 - deepwalk - INFO - remove_self_loops: removed 0 loops in 0.4310109615325928s
+Number of walks: 575485
+Data size (walks*length): 2877425
+Walking...
+Training...
+2017-09-30 19:27:51,584 - gensim.models.word2vec - INFO - collecting all words and their counts
+2017-09-30 19:27:51,586 - gensim.models.word2vec - INFO - PROGRESS: at sentence #0, processed 0 words, keeping 0 word types
+2017-09-30 19:27:51,808 - gensim.models.word2vec - INFO - PROGRESS: at sentence #10000, processed 50000 words, keeping 27622 word types
+2017-09-30 19:27:52,029 - gensim.models.word2vec - INFO - PROGRESS: at sentence #20000, processed 100000 words, keeping 45049 word types
+2017-09-30 19:27:52,273 - gensim.models.word2vec - INFO - PROGRESS: at sentence #30000, processed 150000 words, keeping 58411 word types
+2017-09-30 19:27:52,505 - gensim.models.word2vec - INFO - PROGRESS: at sentence #40000, processed 200000 words, keeping 69242 word types
+2017-09-30 19:27:52,742 - gensim.models.word2vec - INFO - PROGRESS: at sentence #50000, processed 250000 words, keeping 78242 word types
+2017-09-30 19:27:52,994 - gensim.models.word2vec - INFO - PROGRESS: at sentence #60000, processed 300000 words, keeping 86122 word types
+2017-09-30 19:27:53,220 - gensim.models.word2vec - INFO - PROGRESS: at sentence #70000, processed 350000 words, keeping 92884 word types
+2017-09-30 19:27:53,470 - gensim.models.word2vec - INFO - PROGRESS: at sentence #80000, processed 400000 words, keeping 98880 word types
+2017-09-30 19:27:53,714 - gensim.models.word2vec - INFO - PROGRESS: at sentence #90000, processed 450000 words, keeping 104154 word types
+2017-09-30 19:27:53,942 - gensim.models.word2vec - INFO - PROGRESS: at sentence #100000, processed 500000 words, keeping 108928 word types
+2017-09-30 19:27:54,181 - gensim.models.word2vec - INFO - PROGRESS: at sentence #110000, processed 550000 words, keeping 113121 word types
+2017-09-30 19:27:54,436 - gensim.models.word2vec - INFO - PROGRESS: at sentence #120000, processed 600000 words, keeping 115097 word types
+2017-09-30 19:27:54,659 - gensim.models.word2vec - INFO - PROGRESS: at sentence #130000, processed 650000 words, keeping 115097 word types
+2017-09-30 19:27:54,902 - gensim.models.word2vec - INFO - PROGRESS: at sentence #140000, processed 700000 words, keeping 115097 word types
+2017-09-30 19:27:55,146 - gensim.models.word2vec - INFO - PROGRESS: at sentence #150000, processed 750000 words, keeping 115097 word types
+2017-09-30 19:27:55,372 - gensim.models.word2vec - INFO - PROGRESS: at sentence #160000, processed 800000 words, keeping 115097 word types
+2017-09-30 19:27:55,617 - gensim.models.word2vec - INFO - PROGRESS: at sentence #170000, processed 850000 words, keeping 115097 word types
+2017-09-30 19:27:55,866 - gensim.models.word2vec - INFO - PROGRESS: at sentence #180000, processed 900000 words, keeping 115097 word types
+2017-09-30 19:27:56,085 - gensim.models.word2vec - INFO - PROGRESS: at sentence #190000, processed 950000 words, keeping 115097 word types
+2017-09-30 19:27:56,325 - gensim.models.word2vec - INFO - PROGRESS: at sentence #200000, processed 1000000 words, keeping 115097 word types
+2017-09-30 19:27:56,575 - gensim.models.word2vec - INFO - PROGRESS: at sentence #210000, processed 1050000 words, keeping 115097 word types
+2017-09-30 19:27:56,800 - gensim.models.word2vec - INFO - PROGRESS: at sentence #220000, processed 1100000 words, keeping 115097 word types
+2017-09-30 19:27:57,039 - gensim.models.word2vec - INFO - PROGRESS: at sentence #230000, processed 1150000 words, keeping 115097 word types
+2017-09-30 19:27:57,283 - gensim.models.word2vec - INFO - PROGRESS: at sentence #240000, processed 1200000 words, keeping 115097 word types
+2017-09-30 19:27:57,517 - gensim.models.word2vec - INFO - PROGRESS: at sentence #250000, processed 1250000 words, keeping 115097 word types
+2017-09-30 19:27:57,758 - gensim.models.word2vec - INFO - PROGRESS: at sentence #260000, processed 1300000 words, keeping 115097 word types
+2017-09-30 19:27:58,001 - gensim.models.word2vec - INFO - PROGRESS: at sentence #270000, processed 1350000 words, keeping 115097 word types
+2017-09-30 19:27:58,220 - gensim.models.word2vec - INFO - PROGRESS: at sentence #280000, processed 1400000 words, keeping 115097 word types
+2017-09-30 19:27:58,470 - gensim.models.word2vec - INFO - PROGRESS: at sentence #290000, processed 1450000 words, keeping 115097 word types
+2017-09-30 19:27:58,712 - gensim.models.word2vec - INFO - PROGRESS: at sentence #300000, processed 1500000 words, keeping 115097 word types
+2017-09-30 19:27:58,937 - gensim.models.word2vec - INFO - PROGRESS: at sentence #310000, processed 1550000 words, keeping 115097 word types
+2017-09-30 19:27:59,190 - gensim.models.word2vec - INFO - PROGRESS: at sentence #320000, processed 1600000 words, keeping 115097 word types
+2017-09-30 19:27:59,441 - gensim.models.word2vec - INFO - PROGRESS: at sentence #330000, processed 1650000 words, keeping 115097 word types
+2017-09-30 19:27:59,665 - gensim.models.word2vec - INFO - PROGRESS: at sentence #340000, processed 1700000 words, keeping 115097 word types
+2017-09-30 19:27:59,908 - gensim.models.word2vec - INFO - PROGRESS: at sentence #350000, processed 1750000 words, keeping 115097 word types
+2017-09-30 19:28:00,158 - gensim.models.word2vec - INFO - PROGRESS: at sentence #360000, processed 1800000 words, keeping 115097 word types
+2017-09-30 19:28:00,382 - gensim.models.word2vec - INFO - PROGRESS: at sentence #370000, processed 1850000 words, keeping 115097 word types
+2017-09-30 19:28:00,628 - gensim.models.word2vec - INFO - PROGRESS: at sentence #380000, processed 1900000 words, keeping 115097 word types
+2017-09-30 19:28:00,877 - gensim.models.word2vec - INFO - PROGRESS: at sentence #390000, processed 1950000 words, keeping 115097 word types
+2017-09-30 19:28:01,097 - gensim.models.word2vec - INFO - PROGRESS: at sentence #400000, processed 2000000 words, keeping 115097 word types
+2017-09-30 19:28:01,340 - gensim.models.word2vec - INFO - PROGRESS: at sentence #410000, processed 2050000 words, keeping 115097 word types
+2017-09-30 19:28:01,590 - gensim.models.word2vec - INFO - PROGRESS: at sentence #420000, processed 2100000 words, keeping 115097 word types
+2017-09-30 19:28:01,816 - gensim.models.word2vec - INFO - PROGRESS: at sentence #430000, processed 2150000 words, keeping 115097 word types
+2017-09-30 19:28:02,059 - gensim.models.word2vec - INFO - PROGRESS: at sentence #440000, processed 2200000 words, keeping 115097 word types
+2017-09-30 19:28:02,306 - gensim.models.word2vec - INFO - PROGRESS: at sentence #450000, processed 2250000 words, keeping 115097 word types
+2017-09-30 19:28:02,534 - gensim.models.word2vec - INFO - PROGRESS: at sentence #460000, processed 2300000 words, keeping 115097 word types
+2017-09-30 19:28:02,773 - gensim.models.word2vec - INFO - PROGRESS: at sentence #470000, processed 2350000 words, keeping 115097 word types
+2017-09-30 19:28:03,021 - gensim.models.word2vec - INFO - PROGRESS: at sentence #480000, processed 2400000 words, keeping 115097 word types
+2017-09-30 19:28:03,243 - gensim.models.word2vec - INFO - PROGRESS: at sentence #490000, processed 2450000 words, keeping 115097 word types
+2017-09-30 19:28:03,494 - gensim.models.word2vec - INFO - PROGRESS: at sentence #500000, processed 2500000 words, keeping 115097 word types
+2017-09-30 19:28:03,738 - gensim.models.word2vec - INFO - PROGRESS: at sentence #510000, processed 2550000 words, keeping 115097 word types
+2017-09-30 19:28:03,963 - gensim.models.word2vec - INFO - PROGRESS: at sentence #520000, processed 2600000 words, keeping 115097 word types
+2017-09-30 19:28:04,203 - gensim.models.word2vec - INFO - PROGRESS: at sentence #530000, processed 2650000 words, keeping 115097 word types
+2017-09-30 19:28:04,446 - gensim.models.word2vec - INFO - PROGRESS: at sentence #540000, processed 2700000 words, keeping 115097 word types
+2017-09-30 19:28:04,673 - gensim.models.word2vec - INFO - PROGRESS: at sentence #550000, processed 2750000 words, keeping 115097 word types
+2017-09-30 19:28:04,919 - gensim.models.word2vec - INFO - PROGRESS: at sentence #560000, processed 2800000 words, keeping 115097 word types
+2017-09-30 19:28:05,164 - gensim.models.word2vec - INFO - PROGRESS: at sentence #570000, processed 2850000 words, keeping 115097 word types
+2017-09-30 19:28:05,288 - gensim.models.word2vec - INFO - collected 115097 word types from a corpus of 2877425 raw words and 575485 sentences
+2017-09-30 19:28:05,291 - gensim.models.word2vec - INFO - Loading a fresh vocabulary
+2017-09-30 19:28:10,333 - gensim.models.word2vec - INFO - min_count=0 retains 115097 unique words (100% of original 115097, drops 0)
+2017-09-30 19:28:10,335 - gensim.models.word2vec - INFO - min_count=0 leaves 2877425 word corpus (100% of original 2877425, drops 0)
+2017-09-30 19:28:13,255 - gensim.models.word2vec - INFO - deleting the raw counts dictionary of 115097 items
+2017-09-30 19:28:13,263 - gensim.models.word2vec - INFO - sample=0.001 downsamples 6 most-common words
+2017-09-30 19:28:13,265 - gensim.models.word2vec - INFO - downsampling leaves estimated 2802246 word corpus (97.4% of prior 2877425)
+2017-09-30 19:28:13,266 - gensim.models.word2vec - INFO - estimated required memory for 115097 words and 64 dimensions: 116478164 bytes
+2017-09-30 19:28:15,346 - gensim.models.word2vec - INFO - resetting layer weights
+2017-09-30 19:28:18,133 - gensim.models.word2vec - INFO - training model with 3 workers on 115097 vocabulary and 64 features, using sg=0 hs=0 sample=0.001 negative=5 window=5
+2017-09-30 19:28:19,214 - gensim.models.word2vec - INFO - PROGRESS: at 0.90% examples, 118389 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:20,254 - gensim.models.word2vec - INFO - PROGRESS: at 1.81% examples, 120077 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:21,311 - gensim.models.word2vec - INFO - PROGRESS: at 2.71% examples, 119949 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:22,363 - gensim.models.word2vec - INFO - PROGRESS: at 3.61% examples, 120064 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:23,411 - gensim.models.word2vec - INFO - PROGRESS: at 4.52% examples, 120214 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:24,442 - gensim.models.word2vec - INFO - PROGRESS: at 5.42% examples, 120629 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:25,497 - gensim.models.word2vec - INFO - PROGRESS: at 6.33% examples, 120545 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:26,534 - gensim.models.word2vec - INFO - PROGRESS: at 7.23% examples, 120726 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:27,604 - gensim.models.word2vec - INFO - PROGRESS: at 8.06% examples, 119429 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:28,639 - gensim.models.word2vec - INFO - PROGRESS: at 8.97% examples, 119719 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:29,640 - gensim.models.word2vec - INFO - PROGRESS: at 9.80% examples, 119463 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:30,680 - gensim.models.word2vec - INFO - PROGRESS: at 10.70% examples, 119655 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:31,722 - gensim.models.word2vec - INFO - PROGRESS: at 11.61% examples, 119796 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:32,753 - gensim.models.word2vec - INFO - PROGRESS: at 12.51% examples, 120010 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:33,789 - gensim.models.word2vec - INFO - PROGRESS: at 13.41% examples, 120140 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:34,878 - gensim.models.word2vec - INFO - PROGRESS: at 14.25% examples, 119312 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:35,978 - gensim.models.word2vec - INFO - PROGRESS: at 15.01% examples, 117958 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:37,031 - gensim.models.word2vec - INFO - PROGRESS: at 15.92% examples, 118081 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:38,050 - gensim.models.word2vec - INFO - PROGRESS: at 16.82% examples, 118398 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:39,095 - gensim.models.word2vec - INFO - PROGRESS: at 17.72% examples, 118535 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:40,148 - gensim.models.word2vec - INFO - PROGRESS: at 18.63% examples, 118616 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:41,202 - gensim.models.word2vec - INFO - PROGRESS: at 19.53% examples, 118686 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:42,259 - gensim.models.word2vec - INFO - PROGRESS: at 20.43% examples, 118734 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:43,285 - gensim.models.word2vec - INFO - PROGRESS: at 21.34% examples, 118925 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:44,325 - gensim.models.word2vec - INFO - PROGRESS: at 22.24% examples, 119039 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:45,373 - gensim.models.word2vec - INFO - PROGRESS: at 23.15% examples, 119107 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:46,417 - gensim.models.word2vec - INFO - PROGRESS: at 24.05% examples, 119190 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:47,421 - gensim.models.word2vec - INFO - PROGRESS: at 24.88% examples, 119088 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:48,433 - gensim.models.word2vec - INFO - PROGRESS: at 25.79% examples, 119289 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:49,509 - gensim.models.word2vec - INFO - PROGRESS: at 26.69% examples, 119236 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:50,564 - gensim.models.word2vec - INFO - PROGRESS: at 27.59% examples, 119263 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:51,616 - gensim.models.word2vec - INFO - PROGRESS: at 28.50% examples, 119295 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:52,658 - gensim.models.word2vec - INFO - PROGRESS: at 29.40% examples, 119362 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:53,678 - gensim.models.word2vec - INFO - PROGRESS: at 30.30% examples, 119497 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:54,718 - gensim.models.word2vec - INFO - PROGRESS: at 31.21% examples, 119558 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:55,766 - gensim.models.word2vec - INFO - PROGRESS: at 32.11% examples, 119597 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:56,782 - gensim.models.word2vec - INFO - PROGRESS: at 33.02% examples, 119726 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:57,819 - gensim.models.word2vec - INFO - PROGRESS: at 33.92% examples, 119788 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:58,841 - gensim.models.word2vec - INFO - PROGRESS: at 34.82% examples, 119887 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:28:59,903 - gensim.models.word2vec - INFO - PROGRESS: at 35.73% examples, 119871 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:00,944 - gensim.models.word2vec - INFO - PROGRESS: at 36.63% examples, 119914 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:01,998 - gensim.models.word2vec - INFO - PROGRESS: at 37.53% examples, 119919 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:03,028 - gensim.models.word2vec - INFO - PROGRESS: at 38.44% examples, 119990 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:04,086 - gensim.models.word2vec - INFO - PROGRESS: at 39.34% examples, 119983 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:05,109 - gensim.models.word2vec - INFO - PROGRESS: at 40.24% examples, 120064 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:06,148 - gensim.models.word2vec - INFO - PROGRESS: at 41.15% examples, 120105 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:07,172 - gensim.models.word2vec - INFO - PROGRESS: at 42.05% examples, 120180 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:08,193 - gensim.models.word2vec - INFO - PROGRESS: at 42.96% examples, 120257 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:09,237 - gensim.models.word2vec - INFO - PROGRESS: at 43.86% examples, 120279 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:10,293 - gensim.models.word2vec - INFO - PROGRESS: at 44.76% examples, 120272 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:11,322 - gensim.models.word2vec - INFO - PROGRESS: at 45.67% examples, 120323 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:12,369 - gensim.models.word2vec - INFO - PROGRESS: at 46.57% examples, 120336 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:13,437 - gensim.models.word2vec - INFO - PROGRESS: at 47.47% examples, 120303 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:14,493 - gensim.models.word2vec - INFO - PROGRESS: at 48.38% examples, 120292 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:15,526 - gensim.models.word2vec - INFO - PROGRESS: at 49.28% examples, 120335 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:16,581 - gensim.models.word2vec - INFO - PROGRESS: at 50.18% examples, 120328 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:17,631 - gensim.models.word2vec - INFO - PROGRESS: at 51.09% examples, 120333 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:18,688 - gensim.models.word2vec - INFO - PROGRESS: at 51.99% examples, 120322 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:19,736 - gensim.models.word2vec - INFO - PROGRESS: at 52.89% examples, 120332 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:20,757 - gensim.models.word2vec - INFO - PROGRESS: at 53.80% examples, 120391 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:21,788 - gensim.models.word2vec - INFO - PROGRESS: at 54.70% examples, 120428 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:22,834 - gensim.models.word2vec - INFO - PROGRESS: at 55.61% examples, 120437 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:23,903 - gensim.models.word2vec - INFO - PROGRESS: at 56.51% examples, 120405 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:24,944 - gensim.models.word2vec - INFO - PROGRESS: at 57.41% examples, 120425 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:25,964 - gensim.models.word2vec - INFO - PROGRESS: at 58.32% examples, 120480 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:27,012 - gensim.models.word2vec - INFO - PROGRESS: at 59.22% examples, 120487 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:28,047 - gensim.models.word2vec - INFO - PROGRESS: at 60.12% examples, 120514 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:29,063 - gensim.models.word2vec - INFO - PROGRESS: at 61.03% examples, 120572 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:30,109 - gensim.models.word2vec - INFO - PROGRESS: at 61.93% examples, 120578 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:31,160 - gensim.models.word2vec - INFO - PROGRESS: at 62.83% examples, 120577 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:32,205 - gensim.models.word2vec - INFO - PROGRESS: at 63.74% examples, 120585 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:33,233 - gensim.models.word2vec - INFO - PROGRESS: at 64.64% examples, 120621 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:34,245 - gensim.models.word2vec - INFO - PROGRESS: at 65.48% examples, 120551 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:35,268 - gensim.models.word2vec - INFO - PROGRESS: at 66.38% examples, 120594 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:36,307 - gensim.models.word2vec - INFO - PROGRESS: at 67.28% examples, 120611 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:37,347 - gensim.models.word2vec - INFO - PROGRESS: at 68.19% examples, 120626 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:38,395 - gensim.models.word2vec - INFO - PROGRESS: at 69.09% examples, 120628 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:39,459 - gensim.models.word2vec - INFO - PROGRESS: at 69.99% examples, 120607 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:40,524 - gensim.models.word2vec - INFO - PROGRESS: at 70.90% examples, 120583 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:41,584 - gensim.models.word2vec - INFO - PROGRESS: at 71.80% examples, 120570 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:42,606 - gensim.models.word2vec - INFO - PROGRESS: at 72.70% examples, 120609 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:43,638 - gensim.models.word2vec - INFO - PROGRESS: at 73.61% examples, 120633 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:44,662 - gensim.models.word2vec - INFO - PROGRESS: at 74.51% examples, 120668 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:45,711 - gensim.models.word2vec - INFO - PROGRESS: at 75.41% examples, 120669 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:46,754 - gensim.models.word2vec - INFO - PROGRESS: at 76.32% examples, 120675 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:47,785 - gensim.models.word2vec - INFO - PROGRESS: at 77.22% examples, 120701 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:48,835 - gensim.models.word2vec - INFO - PROGRESS: at 78.13% examples, 120699 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:49,894 - gensim.models.word2vec - INFO - PROGRESS: at 79.03% examples, 120686 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:50,949 - gensim.models.word2vec - INFO - PROGRESS: at 79.93% examples, 120677 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:51,987 - gensim.models.word2vec - INFO - PROGRESS: at 80.84% examples, 120692 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:53,035 - gensim.models.word2vec - INFO - PROGRESS: at 81.74% examples, 120694 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:54,060 - gensim.models.word2vec - INFO - PROGRESS: at 82.64% examples, 120723 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:55,100 - gensim.models.word2vec - INFO - PROGRESS: at 83.55% examples, 120736 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:56,124 - gensim.models.word2vec - INFO - PROGRESS: at 84.45% examples, 120766 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:57,160 - gensim.models.word2vec - INFO - PROGRESS: at 85.35% examples, 120781 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:58,185 - gensim.models.word2vec - INFO - PROGRESS: at 86.26% examples, 120810 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:29:59,223 - gensim.models.word2vec - INFO - PROGRESS: at 87.16% examples, 120821 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:00,275 - gensim.models.word2vec - INFO - PROGRESS: at 88.06% examples, 120816 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:01,297 - gensim.models.word2vec - INFO - PROGRESS: at 88.97% examples, 120847 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:02,360 - gensim.models.word2vec - INFO - PROGRESS: at 89.87% examples, 120829 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:03,401 - gensim.models.word2vec - INFO - PROGRESS: at 90.71% examples, 120743 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:04,425 - gensim.models.word2vec - INFO - PROGRESS: at 91.54% examples, 120679 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:05,458 - gensim.models.word2vec - INFO - PROGRESS: at 92.44% examples, 120698 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:06,521 - gensim.models.word2vec - INFO - PROGRESS: at 93.35% examples, 120681 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:07,560 - gensim.models.word2vec - INFO - PROGRESS: at 94.25% examples, 120693 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:08,583 - gensim.models.word2vec - INFO - PROGRESS: at 95.02% examples, 120545 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:09,597 - gensim.models.word2vec - INFO - PROGRESS: at 95.85% examples, 120497 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:10,638 - gensim.models.word2vec - INFO - PROGRESS: at 96.75% examples, 120506 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:11,662 - gensim.models.word2vec - INFO - PROGRESS: at 97.66% examples, 120535 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:12,702 - gensim.models.word2vec - INFO - PROGRESS: at 98.56% examples, 120546 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:13,751 - gensim.models.word2vec - INFO - PROGRESS: at 99.46% examples, 120548 words/s, in_qsize 0, out_qsize 0
+2017-09-30 19:30:14,321 - gensim.models.word2vec - INFO - worker thread finished; awaiting finish of 2 more threads
+2017-09-30 19:30:14,324 - gensim.models.word2vec - INFO - worker thread finished; awaiting finish of 1 more threads
+2017-09-30 19:30:14,357 - gensim.models.word2vec - INFO - worker thread finished; awaiting finish of 0 more threads
+2017-09-30 19:30:14,359 - gensim.models.word2vec - INFO - training on 14387125 raw words (14011201 effective words) took 116.2s, 120564 effective words/s
+2017-09-30 19:30:14,360 - gensim.models.keyedvectors - INFO - storing 115097x64 projection weights into data/graph_500_data_deep/deepwalk.em
+2017-09-30 19:30:50,481 - gensim.utils - INFO - saving Word2Vec object under data/graph_500_data_deep/word2vecModel.p, separately None
+2017-09-30 19:30:50,484 - gensim.utils - INFO - not storing attribute syn0norm
+2017-09-30 19:30:50,485 - gensim.utils - INFO - not storing attribute cum_table
+2017-09-30 19:30:51,662 - gensim.utils - INFO - saved data/graph_500_data_deep/word2vecModel.p
+2017-09-30 19:30:51,785 - __main__ - INFO - %%% embedding done in 293.845s
+
+
+2017-09-30 19:30:51,786 - __main__ - INFO - %%% ge calc initializing... 
+2017-09-30 19:31:06,549 - __main__ - INFO - %%% ge calc initializing done in 14.759s
+
+
+------------- evaluation -------------
+2017-09-30 19:31:06,550 - __main__ - INFO - %%% evaluation... 
+2017-09-30 19:31:06,552 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 42 playlists
+2017-09-30 19:31:06,553 - gemsearch.evaluation.playlist_query_evaluator - INFO - --- Precision@1 ---
+2017-09-30 19:31:39,612 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@1: 0.008643227071569455, recall 0.008643227071569455 @ 42 playlists (testsplit=0.2) method: evaluate_playlist
+2017-09-30 19:31:45,191 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@1: 0.0011047128703292493, recall 0.0011047128703292493 @ 42 playlists (testsplit=0.2) method: evaluate_random_guess
+2017-09-30 19:31:45,193 - gemsearch.evaluation.playlist_query_evaluator - INFO - --- Precision@2 ---
+2017-09-30 19:32:33,679 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@2: 0.010638696490608038, recall 0.021277392981216076 @ 42 playlists (testsplit=0.2) method: evaluate_playlist
+2017-09-30 19:32:44,697 - gemsearch.evaluation.playlist_query_evaluator - INFO - Avg: precision@2: 0.002292905620176543, recall 0.004585811240353086 @ 42 playlists (testsplit=0.2) method: evaluate_random_guess
+2017-09-30 19:32:44,698 - __main__ - INFO - %%% evaluation done in 98.147s
+
+
+------------- done -------------
+2017-09-30 19:32:44,700 - __main__ - INFO - %%% playlist_eval runner done in 512.535s
+
+
