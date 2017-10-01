@@ -1,5 +1,6 @@
-''''Loads data from mongodb and creates data files.
+'''Loads data from mongodb and creates data files.
 '''
+
 import json
 import csv
 from gemsearch.core.abstract_data_generator import ADataGenerator

@@ -1,4 +1,3 @@
-from pprint import pprint
 import numpy as np
 import csv
 import random
@@ -7,9 +6,9 @@ import scipy.spatial.distance
 from gemsearch.core.data_loader import traverseTypes
 
 class GeCalc:
-    '''Query embedded graph.
+    '''Class to load and query embeddings.
     '''
-
+    
     embedding = None    # embeddings array
     lookup = None       # type lookup, maps embedding key to type data
 
@@ -145,6 +144,7 @@ def find_similar_vecs(searchVec, vecs):
 
 if __name__ == '__main__':
     from gemsearch.utils.timer import Timer
+    from pprint import pprint
 
     tmpDir = 'data/tmp/'
     ge = GeCalc()

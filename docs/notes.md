@@ -10,6 +10,14 @@ https://developer.spotify.com/web-api/get-audio-features/
 
 
 
+Online learning:
+https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/online_w2v_tutorial.ipynb
+
+
+# Dim reducing
+
+most algorithms do not perform well on big datasets!
+
 # Tag Cleaning
 - remove "-" at beginning and end of string
 - trim name

@@ -154,28 +154,17 @@ class Graph(defaultdict):
 
 def build_deepwalk_corpus(G, num_paths, path_length, alpha=0,
                       rand=random.Random(0)):
-  walks = []
-
-  nodes = list(G.nodes())
-  
-  for cnt in range(num_paths):
-    rand.shuffle(nodes)
-    for node in nodes:
-      walks.append(G.random_walk(path_length, rand=rand, alpha=alpha, start=node))
-  
-  return walks
+  return list(build_deepwalk_corpus_iter(G, num_paths, path_length, alpha,rand))
 
 def build_deepwalk_corpus_iter(G, num_paths, path_length, alpha=0,
                       rand=random.Random(0)):
   walks = []
-
   nodes = list(G.nodes())
 
   for cnt in range(num_paths):
     rand.shuffle(nodes)
     for node in nodes:
       yield G.random_walk(path_length, rand=rand, alpha=alpha, start=node)
-
 
 def clique(size):
     return from_adjlist(permutations(range(1,size+1)))
@@ -249,8 +238,10 @@ def load_edgelist(file_, undirected=True):
   with open(file_) as f:
     for l in f:
       x, y = l.strip().split()[:2]
-      x = int(x)
-      y = int(y)
+      # FIXED(chris)
+      # removed int cast because it crashes with word2vec
+      ''' x = int(x)
+      y = int(y) '''
       G[x].append(y)
       if undirected:
         G[y].append(x)

@@ -1,7 +1,6 @@
 ''' Generates embedding for api.
 '''
 
-
 from gemsearch.utils.logging import setup_logging
 setup_logging()
 
@@ -28,7 +27,7 @@ dataDir = 'data/graph_50/'
 outDir = 'data/tmp/'
 
 SHOULD_EMBED = True
-SHOULD_INDEX_ES = False
+SHOULD_INDEX_ES = True
 
 # ---- /config ----
 

@@ -24,8 +24,9 @@ class PlaylistQueryEvaluator:
         self._maxPrecisionAt = maxPrecisionAt
         self._useUserContext = useUserContext
     
-    def traverse(self, playlistTraverser):
-        '''Add playlists to test on. testSplit is randomly applied to generate subset.
+    def traverseAndSplitPlaylists(self, playlistTraverser):
+        '''Add playlists to test on. testSplit is randomly applied to generate subsets 
+        for training and testing.
         '''
         playlists = list(playlistTraverser)
         training, test = train_test_split(playlists, test_size=self._testSplit, random_state=42)
@@ -52,6 +53,14 @@ class PlaylistQueryEvaluator:
         with open(dataDir+'playlist_evaluation.json', 'w', encoding="utf-8") as outFile:
             for playlist in self._playlists:
                 outFile.write(json.dumps(playlist, cls=JSONEncoder) + '\n')
+
+    def loadTestLists(self, dataDir):
+        '''read stored test playlists as test lists.
+        '''
+        with open(dataDir+'playlist_evaluation.json', 'r', encoding="utf-8") as inFile:
+            for line in inFile:
+                playlist = json.loads(line)
+                self._playlists.append(playlist)
 
     def evaluate(self, geCalc):
         '''Starts evaluation.

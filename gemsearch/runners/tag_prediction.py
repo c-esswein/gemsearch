@@ -1,3 +1,7 @@
+''' Tag prediction evaluation runner: Hides tags of songs while training and
+tries to predict tags while testing.
+'''
+
 from pprint import pprint
 from gemsearch.utils.logging import setup_logging
 setup_logging()

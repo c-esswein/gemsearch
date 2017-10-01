@@ -15,6 +15,7 @@ def resolve_item_meta(item):
         repoItem = repos.getCollection('tracks').find_one({'uri': item['id']})
         if repoItem:
             item['meta'] = copy_some(repoItem, ['preview_url', 'uri'])
+            item['meta']['artist'] = repoItem['artists'][0]['name']
             if 'album' in repoItem:
                 item['meta']['images'] = repoItem['album']['images']
 

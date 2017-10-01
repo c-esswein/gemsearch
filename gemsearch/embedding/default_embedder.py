@@ -60,14 +60,23 @@ def embed_SDNE(graphFile, outputFolder):
     X, t = em.learn_embedding(edge_f=graphFile, is_weighted=True)
     store_embedding(outputFile, X)
 
-def embed_deepwalk(graphFile, outputFile):
+def embed_deepwalk(graphFile, outputFile, modelFile=None):
     from deepwalk.runner import startDeepwalk
-    startDeepwalk(dict(
+    model = startDeepwalk(dict(
         input=graphFile, output=outputFile,
-        number_walks=10, walk_length=5,
+        number_walks=5, walk_length=5, window_size=5, 
+        representation_size=64,
+
+        workers=3, seed=42
     ))
 
+    if modelFile:
+        model.save(modelFile)
+
 if __name__ == '__main__':
+    from gemsearch.utils.logging import setup_logging
+    setup_logging()
+
     tmpDir = 'data/tmp/'
     # embed_hope(tmpDir+'graph.txt', tmpDir+'hope.em')
     #embed_gf(tmpDir+'graph.txt', tmpDir+'gf.em')

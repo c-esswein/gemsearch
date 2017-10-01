@@ -32,18 +32,6 @@ except AttributeError:
         pass
 
 logger = logging.getLogger(__name__)
-LOGFORMAT = "%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s"
-
-
-def debug(type_, value, tb):
-  if hasattr(sys, 'ps1') or not sys.stderr.isatty():
-    sys.__excepthook__(type_, value, tb)
-  else:
-    import traceback
-    import pdb
-    traceback.print_exception(type_, value, tb)
-    print(u"\n")
-    pdb.pm()
 
 
 defaultConfig = dict(
@@ -54,8 +42,7 @@ defaultConfig = dict(
   undirected=True, vertex_freq_degree=False
 )
 
-def startDeepwalk(params):
-
+def _extendWithDefaultConfig(params):
   # create config args with params and defaultConfig
   args = Namespace()
   
@@ -68,6 +55,13 @@ def startDeepwalk(params):
     if not hasattr(args, key):
       setattr(args, key, defaultConfig[key])
 
+  return args
+
+def startDeepwalk(params):
+  '''Start deepwalk embedding with given params. Params are extended using defaultConfig.
+  Word2Vec model is returned.
+  '''
+  args = _extendWithDefaultConfig(params)
   return _process(args)
 
 def _process(args):
@@ -123,6 +117,45 @@ def _process(args):
 
   model.wv.save_word2vec_format(args.output)
 
+  return model
+
+def extendModel(prevModelPath, newNodes, newEdges, params):
+  args = _extendWithDefaultConfig(params)
+  logger.info('started deepwalk extend with config: %s', args)  
+
+  logger.info('Load previous model and graph')  
+  # load model and graph
+  model = Word2Vec.load(prevModelPath)
+  G = graph.load_edgelist(args.input, undirected=args.undirected)
+
+  # append new edges
+  for x,y in newEdges:
+      G[x].append(y)
+      if args.undirected:
+        G[y].append(x)
+  G.make_consistent()
+
+  logger.info('Create random walks')
+  # create new walks
+  # TODO: new node is allways at start -> problem?
+  newWalks = []
+  for cnt in range(args.number_walks):
+    for node in newNodes:
+      path = G.random_walk(path_length=args.walk_length, rand=random.Random(args.seed), alpha=0, start=node)
+      # loaded word2vec model contains strings --> cast to string array
+      # newWalks.append([str(node) for node in path])
+      newWalks.append(path)
+
+  print(newWalks)
+
+  logger.info('Start training')  
+  model.build_vocab(newWalks, update=True)
+  model.train(newWalks, total_examples=model.corpus_count, epochs=model.iter)
+
+  logger.info('Save new model')    
+  model.wv.save_word2vec_format(args.output)
+  return model
+
 def main():
   parser = ArgumentParser("deepwalk",
                           formatter_class=ArgumentDefaultsHelpFormatter,
@@ -136,9 +169,6 @@ def main():
 
   parser.add_argument('--input', nargs='?', required=True,
                       help='Input graph file')
-
-  parser.add_argument("-l", "--log", dest="log", default="INFO",
-                      help="log verbosity level")
 
   parser.add_argument('--matfile-variable-name', default='network',
                       help='variable name of adjacency matrix inside a .mat file.')
@@ -186,13 +216,6 @@ def main():
                 "5"
             ])
   print(args)
-
-  numeric_level = getattr(logging, args.log.upper(), None)
-  logging.basicConfig(format=LOGFORMAT)
-  logger.setLevel(numeric_level)
-
-  if args.debug:
-   sys.excepthook = debug
 
   _process(args)
 

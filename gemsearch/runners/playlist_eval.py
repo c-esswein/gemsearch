@@ -1,3 +1,7 @@
+''' Playlist evaluation runner: Extracts query from playlist name
+and tries to predict playlist tracks.
+'''
+
 from gemsearch.utils.logging import setup_logging
 setup_logging()
 
@@ -19,15 +23,15 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
-outDir = 'data/tmp/'
+dataDir = 'data/graph_500/'
+outDir = 'data/graph_500_data_deep/'
 
-SHOULD_EMBED = False
-SHOULD_INDEX_ES = False
+SHOULD_EMBED = True
+SHOULD_INDEX_ES = True
 
 TEST_PLAYLIST_SPLIT=0.2
 MAX_PRECISION_AT=2
-USE_USER_IN_QUERY = False
+USE_USER_IN_QUERY = True
 # ---- /config ----
 
 logger.info('started playlist eval with config: %s', {
@@ -44,7 +48,8 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
 
     playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
     if USE_USER_IN_QUERY:
-        trainingPlaylists = playlistEval.traverse(traversePlaylists(dataDir+'playlist.csv'))
+        trainingPlaylists = playlistEval.traverseAndSplitPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+        playlistEval.writeTestLists(outDir)
     else:
         playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
 
@@ -83,12 +88,12 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             ''' em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
             em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em') '''
             from gemsearch.embedding.default_embedder import embed_deepwalk
-            embed_deepwalk(outDir+'graph.txt', outDir+'node2vec.em')
+            embed_deepwalk(outDir+'graph.txt', outDir+'deepwalk.em', modelFile=outDir+'word2vecModel.p')
 
     # load embedding
     with Timer(logger=logger, message='ge calc initializing') as t:
         geCalc = GeCalc()
-        geCalc.load_node2vec_data(outDir+'node2vec.em', outDir+'types.csv')
+        geCalc.load_node2vec_data(outDir+'deepwalk.em', outDir+'types.csv')
 
 
     print('------------- evaluation -------------')

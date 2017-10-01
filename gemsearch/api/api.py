@@ -107,7 +107,7 @@ def suggest_item(term):
 
     return jsonify({
         'success': True,
-        'data': list(resultItems)
+        'data': resolve_items_meta(resultItems)
     })
 
 # ------- user routes -------
