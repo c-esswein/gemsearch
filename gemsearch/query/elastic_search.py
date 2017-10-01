@@ -1,8 +1,12 @@
 from pprint import pprint
 from elasticsearch import Elasticsearch
+import os
 
-hostIp = 'localhost'
-es = Elasticsearch([hostIp])
+dbHost = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST', 'localhost')
+es = Elasticsearch([dbHost])
+
+# default es auth:
+# http_auth=('elastic', 'changeme'),
 
 def search(queryStr, limit=10):
         # "match_all": {}

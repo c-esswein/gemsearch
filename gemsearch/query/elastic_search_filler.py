@@ -2,30 +2,10 @@ from elasticsearch import Elasticsearch
 from pprint import pprint
 from elasticsearch.helpers import parallel_bulk
 
-# TODO: delete old handler
-class EsTypeWriter_OLD:
-    '''Writes all entities into elastic search.
-    '''
-
-    def __init__(self, indexPrefix = ''):
-        self.es = Elasticsearch()
-        self._indexPrefix = indexPrefix
-
-    def addItem(self, idCounter, uidObj, type, name):
-        doc = {
-            'name': name
-        }
-
-        index = self._indexPrefix + type + '-index'
-        self.es.index(index=index, doc_type=type, id=uidObj, body=doc)
-
-    def close_handler(self):
-        self.es.indices.refresh(index='_all')
-
-# ------------- static functions ------------
+dbHost = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST', 'localhost')
 
 def es_get_instance():
-    return Elasticsearch()
+    return Elasticsearch([dbHost])
 
 def es_create_indices(index_name):
     # TODO: not implemented

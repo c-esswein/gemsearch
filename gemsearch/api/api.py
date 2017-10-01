@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, make_response
 import numpy as np
 import itertools
 import os.path
+import os
 
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.query.elastic_search import search as es_search
@@ -12,7 +13,7 @@ from gemsearch.api.user import syncUserMusic
 
 app = Flask(__name__)
 
-dataFolder = 'data/tmp/'
+dataFolder = os.environ.get('GEMSEARCH_API_FOLDER', 'data/tmp/')
 VIZ_EMBEDDING_FILE = dataFolder + 'pca.em.npy'
 
 print('initialize geCalc')

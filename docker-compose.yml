@@ -1,0 +1,42 @@
+version: '2'
+services:
+  api_server_i:
+    image: api_server
+    ports:
+    - "80:80"
+    environment:
+      GEMSEARCH_API_FOLDER: "/opt/gemsearch_data/api/"
+      GEMSEARCH_MONGO_HOST: "mongodb"
+      GEMSEARCH_ELASTICSEARCH_HOST: "elasticsearch_api"
+    volumes:
+    - gemsearch_data:/opt/gemsearch_data
+    links:
+    - mongodb
+    - elasticsearch_api
+
+  mongodb:
+      image: mongo:latest
+      container_name: "mongodb"
+      ports:
+      - 27017:27017
+
+  elasticsearch_api:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.2
+    container_name: elasticsearch_api
+    ports:
+      - 9200:9200
+    environment:    
+      xpack.security.enabled: "false"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    volumes:
+      - esdata_api:/usr/share/elasticsearch/data
+
+volumes:
+  gemsearch_data:
+    external: true
+  esdata_api:
+    driver: local

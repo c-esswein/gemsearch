@@ -1,10 +1,13 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from pprint import pprint
+import os
+
+dbHost = os.environ.get('GEMSEARCH_MONGO_HOST', 'localhost')
 
 class Storage:
     DB_NAME = "dbis"
-    client = MongoClient()
+    client = MongoClient(host=dbHost)
     db = client.get_database(DB_NAME)
 
     def getDb(self):
