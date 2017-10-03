@@ -25,13 +25,10 @@ services:
     container_name: elasticsearch_api
     ports:
       - 9200:9200
-    environment:    
-      xpack.security.enabled: "false"
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    mem_limit: 1g
     volumes:
       - esdata_api:/usr/share/elasticsearch/data
 

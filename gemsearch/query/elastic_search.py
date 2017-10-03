@@ -3,7 +3,10 @@ from elasticsearch import Elasticsearch
 import os
 
 dbHost = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST', 'localhost')
-es = Elasticsearch([dbHost])
+es = Elasticsearch(
+    [dbHost],
+    http_auth=('elastic', 'changeme')
+)
 
 # default es auth:
 # http_auth=('elastic', 'changeme'),
