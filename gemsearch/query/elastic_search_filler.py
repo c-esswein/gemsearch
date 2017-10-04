@@ -1,6 +1,7 @@
 from elasticsearch import Elasticsearch
 from pprint import pprint
 from elasticsearch.helpers import parallel_bulk
+import os
 
 dbHost = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST', 'localhost')
 
