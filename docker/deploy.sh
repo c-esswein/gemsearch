@@ -3,7 +3,7 @@ function copyInitialVolumeData {
     # create volume and copy data
     echo "Copy initial data to shared volume"
     docker run -v gemsearch_data:/data --name copy-helper alpine
-    docker cp data/api_1/. copy-helper:/data/api
+    docker cp data/api_graph_15000/. copy-helper:/data/api
     docker rm copy-helper
 
     # TODO: import data to mongodb and elasticsearch

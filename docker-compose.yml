@@ -1,7 +1,7 @@
 version: '2'
 services:
-  api_server_i:
-    image: api_server
+  api_server:
+    image: local/api_server
     ports:
     - "80:80"
     environment:
