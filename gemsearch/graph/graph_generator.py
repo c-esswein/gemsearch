@@ -19,11 +19,20 @@ class GraphGenerator():
         for item1, item2, weight in traverser:
             self.addEdge(self.addNode(item1), self.addNode(item2), weight)
 
-    def close_generation(self):
+    def getEdges(self):
+        return self._edges
+
+    def close_generation(self, extendExistingFile = False):
+        ''' Finalizes generation and writes edges into file.
+        '''
         # ge algos require list do be sorted...
         #self._edges.sort(key=lambda tup: tup[0])
 
-        with open(self._storagePath, 'w') as outFile:
+        fileMode = 'w'
+        if extendExistingFile:
+            fileMode = 'a'
+
+        with open(self._storagePath, fileMode) as outFile:
             for edge in self._edges:
                 outFile.write(edge[0]+' '+edge[1]+' '+str(edge[2])+'\n')
 

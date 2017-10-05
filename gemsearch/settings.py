@@ -20,3 +20,7 @@ SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
 '''Spotify api client secret.
 '''
 SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
+
+'''Last fm api key.
+'''
+LASTFM_API_KEY = os.environ.get('LASTFM_API_KEY')

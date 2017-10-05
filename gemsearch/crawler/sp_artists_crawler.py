@@ -11,11 +11,21 @@ from gemsearch.utils.slack import slack_send_message, slack_error_message
 
 @rate_limited(1)
 def crawl_artist(sp, artistId):
+    ''' Get artists data from spotify api
+    '''
     artist = sp.artist(artistId.strip())
 
     return artist
 
+
+
+# ---------------------------------
+# ----------------- standalone list crawler methods
+# ---------------------------------
+
 def create_artist_list(exportFileName):
+    ''' Export all artist ids from db.
+    '''
     from gemsearch.storage.Storage import Storage
     artistCol = Storage().getCollection('artists')
     artists = artistCol.find({})
@@ -25,6 +35,8 @@ def create_artist_list(exportFileName):
             outFile.write(str(artist['id']) + '\n')
 
 def process_list(listPath, outputFileName):
+    ''' Process list of artist ids. Result is stored in single output file.
+    '''
     credentials = spotipy.oauth2.SpotifyClientCredentials(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET)
     token = credentials.get_access_token()
     sp = spotipy.Spotify(client_credentials_manager=credentials)

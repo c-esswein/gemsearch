@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
-from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes
+from gemsearch.core.data_loader import traverseUserTrackInPlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes
 
 from gemsearch.core.type_counter import TypeCounter
 
@@ -23,7 +23,7 @@ from pprint import pprint
 import numpy as np
 
 # ---- config ----
-dataDir = 'data/graph_50/'
+dataDir = 'data/tmp/'
 outDir = 'data/tmp/'
 
 SHOULD_EMBED = True
@@ -53,7 +53,8 @@ with Timer(logger=logger, message='api embedding') as t:
 
             graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
             graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
-            graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
+            graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))                
+            graphGenerator.add(traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
 
             graphGenerator.close_generation()
 
@@ -70,8 +71,11 @@ with Timer(logger=logger, message='api embedding') as t:
         print('------------- graph embedding -------------')
 
         with Timer(logger=logger, message='embedding') as t:
-            em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
-            em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')
+            # em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
+            # em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')
+
+            from gemsearch.embedding.default_embedder import embed_deepwalk
+            embed_deepwalk(outDir+'graph.txt', outDir+'node2vec.em', modelFile=outDir+'word2vecModel.p')
 
         with Timer(logger=logger, message='weight assigning for graph') as t:
             geCalc = GeCalc()

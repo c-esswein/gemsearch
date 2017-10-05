@@ -1,12 +1,13 @@
 '''Utility for exporting crawled data.
 '''
 
-from pprint import pprint
 import json
 
 from gemsearch.storage.Tracks import Tracks
 
 def export_tags(filePath):
+    ''' Export all crawled tags into json file.
+    '''
     trackCol = Tracks().getTracks()
     tracks = trackCol.find({ 
         'tags' : { '$exists': True }
@@ -21,8 +22,8 @@ def export_tags(filePath):
             f.write(json.dumps(item))
             f.write('\n')
 
-if __name__ == '__main__':
-    
-    export_tags('data/export/track-tags.json')
 
+
+if __name__ == '__main__':
+    export_tags('data/export/track-tags.json')
     print("done")

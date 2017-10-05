@@ -78,39 +78,39 @@ def _process(args):
     raise Exception("Unknown file format: '%s'.  Valid formats: 'adjlist', 'edgelist', 'mat'" % args.format)
 
     G = graph.load_edgelist(args.input, undirected=args.undirected)
-    print("Number of nodes: {}".format(len(G.nodes())))
+    logger.info("Number of nodes: {}".format(len(G.nodes())))
 
   num_walks = len(G.nodes()) * args.number_walks
 
-  print("Number of walks: {}".format(num_walks))
+  logger.info("Number of walks: {}".format(num_walks))
 
   data_size = num_walks * args.walk_length
 
-  print("Data size (walks*length): {}".format(data_size))
+  logger.info("Data size (walks*length): {}".format(data_size))
 
   if data_size < args.max_memory_data_size:
-    print("Walking...")
+    logger.info("Walking...")
     walks = graph.build_deepwalk_corpus(G, num_paths=args.number_walks,
                                         path_length=args.walk_length, alpha=0, rand=random.Random(args.seed))
-    print("Training...")
+    logger.info("Training...")
     model = Word2Vec(walks, size=args.representation_size, window=args.window_size, min_count=0, workers=args.workers)
   else:
-    print("Data size {} is larger than limit (max-memory-data-size: {}).  Dumping walks to disk.".format(data_size, args.max_memory_data_size))
-    print("Walking...")
+    logger.info("Data size {} is larger than limit (max-memory-data-size: {}).  Dumping walks to disk.".format(data_size, args.max_memory_data_size))
+    logger.info("Walking...")
 
     walks_filebase = args.output + ".walks"
     walk_files = serialized_walks.write_walks_to_disk(G, walks_filebase, num_paths=args.number_walks,
                                          path_length=args.walk_length, alpha=0, rand=random.Random(args.seed),
                                          num_workers=args.workers)
 
-    print("Counting vertex frequency...")
+    logger.info("Counting vertex frequency...")
     if not args.vertex_freq_degree:
       vertex_counts = serialized_walks.count_textfiles(walk_files, args.workers)
     else:
       # use degree distribution for frequency in tree
       vertex_counts = G.degree(nodes=G.iterkeys())
 
-    print("Training...")
+    logger.info("Training...")
     model = Skipgram(sentences=serialized_walks.combine_files_iter(walk_files), vocabulary_counts=vertex_counts,
                      size=args.representation_size,
                      window=args.window_size, min_count=0, workers=args.workers)
@@ -120,6 +120,10 @@ def _process(args):
   return model
 
 def extendModel(prevModelPath, newNodes, newEdges, params):
+  ''' Continue learning with existing model. Graph given with args.input needs
+  to contain the new nodes.
+  '''
+
   args = _extendWithDefaultConfig(params)
   logger.info('started deepwalk extend with config: %s', args)  
 
@@ -129,10 +133,10 @@ def extendModel(prevModelPath, newNodes, newEdges, params):
   G = graph.load_edgelist(args.input, undirected=args.undirected)
 
   # append new edges
-  for x,y in newEdges:
-      G[x].append(y)
+  for x,y, w in newEdges:
+      G[x].append(str(y))
       if args.undirected:
-        G[y].append(x)
+        G[y].append(str(x))
   G.make_consistent()
 
   logger.info('Create random walks')
@@ -141,18 +145,17 @@ def extendModel(prevModelPath, newNodes, newEdges, params):
   newWalks = []
   for cnt in range(args.number_walks):
     for node in newNodes:
+      node = str(node)
       path = G.random_walk(path_length=args.walk_length, rand=random.Random(args.seed), alpha=0, start=node)
       # loaded word2vec model contains strings --> cast to string array
       # newWalks.append([str(node) for node in path])
       newWalks.append(path)
-
-  print(newWalks)
-
+    
   logger.info('Start training')  
   model.build_vocab(newWalks, update=True)
   model.train(newWalks, total_examples=model.corpus_count, epochs=model.iter)
 
-  logger.info('Save new model')    
+  logger.info('Save new embedding')    
   model.wv.save_word2vec_format(args.output)
   return model
 
@@ -215,7 +218,7 @@ def main():
                 "--walk-length",
                 "5"
             ])
-  print(args)
+  logger.info(args)
 
   _process(args)
 

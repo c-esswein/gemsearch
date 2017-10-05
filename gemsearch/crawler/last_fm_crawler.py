@@ -11,12 +11,11 @@ import json
 import time
 
 from gemsearch.utils.slack import slack_send_message, slack_error_message
-#from slack import slack_send_message, slack_error_message
-
-API_KEY = 'f40c6192f19aabed7b3a48910c61587f'
+from gemsearch.settings import LASTFM_API_KEY
 
 from requests.adapters import HTTPAdapter
 
+# retry every failed request 5 times
 s = requests.Session()
 s.mount('http://', HTTPAdapter(max_retries=5))
 s.mount('https://', HTTPAdapter(max_retries=5))
@@ -35,8 +34,17 @@ def call_api(url):
     return response
 
 
+def getTagsForTrack(track):
+    ''' Get tags for given track from last fm api.
+        None is returned if track was not found.
+    '''
+    artistName = track['artists'][0]['name']
+    trackName = track['name']
+    return get_tags(artistName, trackName)
+
 def get_tags(artistName, trackName):
-    ''' get tags for given track info
+    ''' Get tags for given track info from last fm api.
+        None is returned if track was not found.
     '''
     if not artistName or not trackName:
         return None
@@ -45,7 +53,7 @@ def get_tags(artistName, trackName):
          'method': 'track.gettoptags',
          'artist': artistName,
          'track': trackName,
-         'api_key': API_KEY,
+         'api_key': LASTFM_API_KEY,
          'format': 'json'
     })
     url = 'http://ws.audioscrobbler.com/2.0/?' + queryStr
@@ -56,8 +64,14 @@ def get_tags(artistName, trackName):
     else:    
         return response['toptags']['tag']
 
+
+
+# ---------------------------------
+# ----------------- standalone list crawler methods
+# ---------------------------------
+
 def process_list(listPath, outputFileName):
-    ''' process list with given missing tracks
+    ''' process file with track info, result is written into single output file.
     '''
     csvFile = open(listPath, 'r', encoding="utf-8")
     typeReader = csv.reader(csvFile, delimiter=',', quotechar='|')
