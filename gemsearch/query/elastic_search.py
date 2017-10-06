@@ -65,7 +65,4 @@ def tester():
 
 
 if __name__ == '__main__':
-    #pprint(search('ni'))
-
-    pprint(es.count())
-    #suggest('ni')
+    tester()

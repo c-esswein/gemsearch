@@ -85,10 +85,15 @@ class GeCalc:
         '''Returns random entries with given optional typeFilter
         '''
         maxIndex = len(self.lookup)
-        randomIndices = [random.randint(0, maxIndex - 1) for i in range(0, limit)]
-        result_items = self.get_items_from_embedding_indices(randomIndices, typeFilter, limit)
+        result = []
 
-        return result_items
+        while len(result) < limit:
+            randomIndex = random.randint(0, maxIndex - 1)
+            itemInfo = self.get_item_info_by_index(randomIndex)            
+            if (typeFilter is None) or (itemInfo['type'] in typeFilter):
+                result.append(itemInfo)
+
+        return result
 
 
     def get_distance(self, nodeAId, nodeBId):

@@ -13,7 +13,7 @@ from gemsearch.api.user import syncUserMusic
 
 app = Flask(__name__)
 
-dataFolder = os.environ.get('GEMSEARCH_API_FOLDER', 'data/tmp/')
+dataFolder = os.environ.get('GEMSEARCH_API_FOLDER', 'data/api_1/')
 VIZ_EMBEDDING_FILE = dataFolder + 'pca.em.npy'
 
 print('initialize geCalc')
