@@ -3,23 +3,16 @@ import scipy.spatial.distance
 from gemsearch.embedding.ge_calc import cos_cdist
 
 def calc_viz_data(items, vizEmbedding):
-    ''' Resolve visualization 3d positions, calculate relative position to first position.
+    ''' Resolve visualization 3d positions.
     '''
 
     if len(items) < 1:
         return items
 
     # resolve 3d position and calc relative pos to first point
-    centerPos = None
     for idx, item in enumerate(items):
         absPosition = vizEmbedding[item['embeddingIndex']]
-
-        if idx > 0:
-            item['position'] = np.subtract(absPosition, centerPos).tolist()
-        else:
-            # center point
-            centerPos = absPosition
-            item['position'] = [0, 0, 0]
+        item['position'] = absPosition.tolist()
 
     return items
 
@@ -31,11 +24,8 @@ def cluster_items(items, minClusterDistance):
     if len(items) < 1:
         return items, boundingBox
 
-    # calculate distances to center (center is 0,0,0 --> length of vector)
+    # calculate bounding box
     for item in items:
-        item['distanceToCenter'] = np.linalg.norm(item['position'])
-
-        # calculating boundingBox
         boundingBox = [
             np.minimum(boundingBox[0], item['position']),
             np.maximum(boundingBox[1], item['position'])
@@ -46,18 +36,23 @@ def cluster_items(items, minClusterDistance):
 
     # ---- calculate clusters ----
     minElementDistance = minClusterDistance * boundingSize
-    print('boundingSize {}'.format(boundingSize))    
-    print('minElementDistance {}'.format(minElementDistance))
+    ''' print('boundingSize {}'.format(boundingSize))    
+    print('minElementDistance {}'.format(minElementDistance)) '''
 
     clusters = []
     for item in items:
         isInCluster = False
         # check if element can be appended to existing cluster
         for cluster in clusters:
-            dist = scipy.spatial.distance.euclidean(item['position'], cluster[0]['position'])
+            centerPos = cluster[0]['position']
+            dist = scipy.spatial.distance.euclidean(item['position'], centerPos)
             if dist < minElementDistance:
+                # append to existing cluster
                 cluster.append(item)
-                isInCluster = True # to continue also in second loop
+                isInCluster = True
+
+                # update position to be relative from center
+                item['position'] = np.subtract(item['position'], centerPos).tolist()
                 break
         
         if not isInCluster:
