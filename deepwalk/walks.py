@@ -65,7 +65,7 @@ def write_walks_to_disk(G, filebase, num_paths, path_length, alpha=0, rand=rando
   global __vertex2str
   __current_graph = G
   __vertex2str = {v:str(v) for v in G.nodes()}
-  files_list = ["{}.{}".format(filebase, str(x)) for x in xrange(num_paths)]
+  files_list = ["{}.{}".format(filebase, str(x)) for x in range(num_paths)]
   expected_size = len(G)
   args_list = []
   files = []
