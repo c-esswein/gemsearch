@@ -65,7 +65,6 @@ def startDeepwalk(params):
   return _process(args)
 
 def _process(args):
-
   logger.info('started deepwalk with config: %s', args)
 
   if args.format == "adjlist":
@@ -111,7 +110,8 @@ def _process(args):
       vertex_counts = G.degree(nodes=G.iterkeys())
 
     logger.info("Training...")
-    model = Skipgram(sentences=serialized_walks.combine_files_iter(walk_files), vocabulary_counts=vertex_counts,
+    sentences = serialized_walks.combine_files_iter(walk_files)
+    model = Skipgram(sentences=sentences, vocabulary_counts=vertex_counts,
                      size=args.representation_size,
                      window=args.window_size, min_count=0, workers=args.workers)
 
