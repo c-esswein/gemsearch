@@ -1,0 +1,104 @@
+2017-10-09 08:40:53,836 - __main__ - INFO - started playlist eval with config: {'dataDir': 'data/graph_15000/', 'outDir': 'data/rec/', 'SHOULD_CREATE_GRAPH': True, 'TEST_SPLIT': 0.2, 'MAX_PRECISION_AT': 5, 'MIN_TRACKS_PER_USER': 20}
+2017-10-09 08:40:53,991 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2017-10-09 08:40:54,019 - __main__ - INFO - %%% playlist_eval runner... 
+2017-10-09 08:40:54,019 - __main__ - INFO - ------------- split training data -------------
+2017-10-09 08:40:58,949 - gemsearch.evaluation.user_evaluator - INFO - Generated test data for 1007 users (discarded 68). User-Track training count: 858596
+2017-10-09 08:40:59,501 - __main__ - INFO - ------------- generate graph -------------
+2017-10-09 08:40:59,501 - __main__ - INFO - %%% graph generation... 
+2017-10-09 08:42:26,243 - __main__ - INFO - %%% graph generation done in 86.742s
+
+
+2017-10-09 08:42:26,244 - __main__ - INFO - ------------- graph embedding -------------
+2017-10-09 08:42:26,244 - __main__ - INFO - %%% embedding 5_5_5_64... 
+2017-10-09 08:42:26,244 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=1000000000, number_walks=5, output='data/rec/deepwalk_5_5_5_64.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=5, window_size=5, workers=3)
+2017-10-09 08:42:53,898 - deepwalk - INFO - make_consistent: made consistent in 10.001282453536987s
+2017-10-09 08:42:55,815 - deepwalk - INFO - remove_self_loops: removed 0 loops in 1.9161815643310547s
+2017-10-09 08:42:55,815 - deepwalk.runner - INFO - Number of walks: 4702200
+2017-10-09 08:42:55,816 - deepwalk.runner - INFO - Data size (walks*length): 23511000
+2017-10-09 08:42:55,816 - deepwalk.runner - INFO - Walking...
+2017-10-09 08:44:21,365 - deepwalk.runner - INFO - Training...
+2017-10-09 08:49:57,622 - gensim.models.keyedvectors - INFO - storing 940440x64 projection weights into data/rec/deepwalk_5_5_5_64.em
+2017-10-09 08:50:32,115 - gensim.utils - INFO - saving Word2Vec object under data/rec/word2vecModel_5_5_5_64.p, separately None
+2017-10-09 08:50:32,116 - gensim.utils - INFO - storing np array 'syn0' to data/rec/word2vecModel_5_5_5_64.p.wv.syn0.npy
+2017-10-09 08:50:32,300 - gensim.utils - INFO - not storing attribute syn0norm
+2017-10-09 08:50:32,302 - gensim.utils - INFO - storing np array 'syn1neg' to data/rec/word2vecModel_5_5_5_64.p.syn1neg.npy
+2017-10-09 08:50:32,508 - gensim.utils - INFO - not storing attribute cum_table
+2017-10-09 08:50:36,045 - gensim.utils - INFO - saved data/rec/word2vecModel_5_5_5_64.p
+2017-10-09 08:50:36,046 - __main__ - INFO - %%% embedding 5_5_5_64 done in 489.801s
+
+
+2017-10-09 08:50:36,046 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-09 08:51:04,613 - __main__ - INFO - %%% ge calc initializing done in 28.567s
+
+
+2017-10-09 08:51:04,614 - __main__ - INFO - ------------- evaluation -------------
+2017-10-09 08:51:04,614 - __main__ - INFO - %%% evaluation... 
+2017-10-09 08:51:04,614 - gemsearch.evaluation.user_evaluator - INFO - Started user evaluation with 1007 users
+2017-10-09 09:12:16,502 - gemsearch.evaluation.user_evaluator - INFO - Finished user eval, results:
+2017-10-09 09:12:16,503 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @1: precision: 0.013761864207275636, recall 0.013761864207275636
+2017-10-09 09:12:16,503 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @2: precision: 0.012231166682046666, recall 0.02446233336409333
+2017-10-09 09:12:16,503 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @3: precision: 0.011349487326850248, recall 0.034048461980550754
+2017-10-09 09:12:16,503 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @4: precision: 0.010576063410785305, recall 0.04230425364314122
+2017-10-09 09:12:16,503 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @5: precision: 0.009907675466624116, recall 0.04953837733312062
+2017-10-09 09:12:16,503 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @1: precision: 0.0003431561672142549, recall 0.0003431561672142549
+2017-10-09 09:12:16,503 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @2: precision: 0.0003400727369964089, recall 0.0006801454739928178
+2017-10-09 09:12:16,504 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @3: precision: 0.000377465931502757, recall 0.0011323977945082715
+2017-10-09 09:12:16,504 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @4: precision: 0.0003592734858772507, recall 0.0014370939435090029
+2017-10-09 09:12:16,504 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @5: precision: 0.00035513525101777625, recall 0.0017756762550888818
+2017-10-09 09:12:16,505 - __main__ - INFO - %%% evaluation done in 1271.891s
+
+
+2017-10-09 09:12:16,505 - __main__ - INFO - %%% embedding 20_5_5_64... 
+2017-10-09 09:12:16,505 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=1000000000, number_walks=20, output='data/rec/deepwalk_20_5_5_64.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=5, window_size=5, workers=3)
+2017-10-09 09:12:41,758 - deepwalk - INFO - make_consistent: made consistent in 9.794034957885742s
+2017-10-09 09:12:43,857 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.0979597568511963s
+2017-10-09 09:12:43,858 - deepwalk.runner - INFO - Number of walks: 18808800
+2017-10-09 09:12:43,858 - deepwalk.runner - INFO - Data size (walks*length): 94044000
+2017-10-09 09:12:43,858 - deepwalk.runner - INFO - Walking...
+2017-10-09 09:18:08,080 - deepwalk.runner - INFO - Training...
+2017-10-09 09:40:52,786 - gensim.models.keyedvectors - INFO - storing 940440x64 projection weights into data/rec/deepwalk_20_5_5_64.em
+2017-10-09 09:41:35,720 - gensim.utils - INFO - saving Word2Vec object under data/rec/word2vecModel_20_5_5_64.p, separately None
+2017-10-09 09:41:35,722 - gensim.utils - INFO - storing np array 'syn0' to data/rec/word2vecModel_20_5_5_64.p.wv.syn0.npy
+2017-10-09 09:41:35,990 - gensim.utils - INFO - not storing attribute syn0norm
+2017-10-09 09:41:35,990 - gensim.utils - INFO - storing np array 'syn1neg' to data/rec/word2vecModel_20_5_5_64.p.syn1neg.npy
+2017-10-09 09:41:36,443 - gensim.utils - INFO - not storing attribute cum_table
+2017-10-09 09:41:40,086 - gensim.utils - INFO - saved data/rec/word2vecModel_20_5_5_64.p
+2017-10-09 09:41:40,086 - __main__ - INFO - %%% embedding 20_5_5_64 done in 1763.581s
+
+
+2017-10-09 09:41:40,086 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-09 09:43:09,251 - __main__ - INFO - %%% ge calc initializing done in 89.164s
+
+
+2017-10-09 09:43:09,252 - __main__ - INFO - ------------- evaluation -------------
+2017-10-09 09:43:09,252 - __main__ - INFO - %%% evaluation... 
+2017-10-09 09:43:09,252 - gemsearch.evaluation.user_evaluator - INFO - Started user evaluation with 1007 users
+2017-10-09 10:04:27,365 - gemsearch.evaluation.user_evaluator - INFO - Finished user eval, results:
+2017-10-09 10:04:27,366 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @1: precision: 0.02890771405586215, recall 0.02890771405586215
+2017-10-09 10:04:27,366 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @2: precision: 0.028285169080608106, recall 0.05657033816121621
+2017-10-09 10:04:27,366 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @3: precision: 0.027362888765768114, recall 0.08208866629730444
+2017-10-09 10:04:27,366 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @4: precision: 0.025527743322062587, recall 0.10211097328825035
+2017-10-09 10:04:27,366 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @5: precision: 0.02363328497153798, recall 0.11816642485769
+2017-10-09 10:04:27,366 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @1: precision: 0.00037171322589716114, recall 0.00037171322589716114
+2017-10-09 10:04:27,366 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @2: precision: 0.00038204715084279984, recall 0.0007640943016855997
+2017-10-09 10:04:27,367 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @3: precision: 0.00036804910926172755, recall 0.0011041473277851842
+2017-10-09 10:04:27,367 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @4: precision: 0.00038009007696552724, recall 0.001520360307862109
+2017-10-09 10:04:27,367 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @5: precision: 0.0003886789716177434, recall 0.0019433948580887196
+2017-10-09 10:04:27,368 - __main__ - INFO - %%% evaluation done in 1278.116s
+
+
+2017-10-09 10:04:27,388 - __main__ - INFO - %%% embedding 5_20_5_64... 
+2017-10-09 10:04:27,389 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=1000000000, number_walks=5, output='data/rec/deepwalk_5_20_5_64.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=20, window_size=5, workers=3)
+2017-10-09 10:04:52,209 - deepwalk - INFO - make_consistent: made consistent in 10.377787351608276s
+2017-10-09 10:04:54,371 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.161190986633301s
+2017-10-09 10:04:54,371 - deepwalk.runner - INFO - Number of walks: 4702200
+2017-10-09 10:04:54,372 - deepwalk.runner - INFO - Data size (walks*length): 94044000
+2017-10-09 10:04:54,372 - deepwalk.runner - INFO - Walking...
+2017-10-09 10:09:59,596 - deepwalk.runner - INFO - Training...
+2017-10-09 10:30:33,709 - gensim.models.keyedvectors - INFO - storing 940440x64 projection weights into data/rec/deepwalk_5_20_5_64.em
+2017-10-09 10:31:08,380 - __main__ - INFO - %%% embedding 5_20_5_64 done in 1600.991s
+
+
+2017-10-09 10:31:08,398 - __main__ - INFO - %%% playlist_eval runner done in 6614.379s
+
+
