@@ -79,7 +79,8 @@ def _process(args):
     G = graph.load_edgelist(args.input, undirected=args.undirected)
     logger.info("Number of nodes: {}".format(len(G.nodes())))
 
-  num_walks = len(G.nodes()) * args.number_walks
+  num_nodes = len(G.nodes())
+  num_walks = num_nodes * args.number_walks
 
   logger.info("Number of walks: {}".format(num_walks))
 
@@ -102,6 +103,10 @@ def _process(args):
                                          path_length=args.walk_length, alpha=0, rand=random.Random(args.seed),
                                          num_workers=args.workers)
 
+    walks = serialized_walks.combine_files_iter(walk_files)    
+    model = Word2Vec(walks, size=args.representation_size, window=args.window_size, min_count=0, workers=args.workers)
+    
+    ''' 
     logger.info("Counting vertex frequency...")
     if not args.vertex_freq_degree:
       vertex_counts = serialized_walks.count_textfiles(walk_files, args.workers)
@@ -112,9 +117,9 @@ def _process(args):
     logger.info("Training...")
     sentences = serialized_walks.combine_files_iter(walk_files)
     model = Skipgram(sentences=sentences, vocabulary_counts=vertex_counts,
-                     size=args.representation_size,
+                     size=args.representation_size, node_count=num_nodes,
                      window=args.window_size, min_count=0, workers=args.workers)
-
+    '''
   model.wv.save_word2vec_format(args.output)
 
   return model

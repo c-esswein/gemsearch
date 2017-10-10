@@ -12,21 +12,44 @@ logger = logging.getLogger("deepwalk")
 class Skipgram(Word2Vec):
     """A subclass to allow more customization of the Word2Vec internals."""
 
-    def __init__(self, vocabulary_counts=None, **kwargs):
-
-        self.vocabulary_counts = None
+    def __init__(self, vocabulary_counts=None, node_count=None, **kwargs):
 
         kwargs["min_count"] = kwargs.get("min_count", 1)
         kwargs["workers"] = kwargs.get("workers", cpu_count())
         kwargs["size"] = kwargs.get("size", 128)
         kwargs["sentences"] = kwargs.get("sentences", None)
 
+        self.vocabulary_counts = None        
         if vocabulary_counts != None:
           self.vocabulary_counts = vocabulary_counts
+        
+        self.node_count = None
+        if node_count != None:
+            self.node_count = node_count
 
         super(Skipgram, self).__init__(**kwargs)
 
-    def build_vocab(self, corpus):
+    def build_vocab(self, sentences, keep_raw_vocab=False, trim_rule=None, progress_per=10000, update=False):
+        """
+        Build vocabulary from a sequence of sentences or from a frequency dictionary, if one was provided.
+        """
+        if (self.vocabulary_counts != None):
+          logger.debug("building vocabulary from provided frequency map")
+          vocab = self.vocabulary_counts
+        else:
+          logger.debug("default vocabulary building")
+          super(Skipgram, self).build_vocab(corpus)
+          return
+
+        # self.scan_vocab:
+        self.corpus_count = self.node_count
+        self.raw_vocab = vocab
+        
+        self.scale_vocab(keep_raw_vocab=keep_raw_vocab, trim_rule=trim_rule, update=update)  # trim by min_count & precalculate downsampling
+        self.finalize_vocab(update=update)  # build tables & arrays
+
+    # old impl
+    def build_vocab__disabled(self, corpus, trim_rule=None):
         """
         Build vocabulary from a sequence of sentences or from a frequency dictionary, if one was provided.
         """
