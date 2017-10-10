@@ -1,4 +1,7 @@
 
+import logging
+logger = logging.getLogger(__name__)
+
 class TypeCounter:
     '''Counts number of entities for each type and prints statistics.
     '''
@@ -12,10 +15,10 @@ class TypeCounter:
         self._counter[type] += 1
 
     def close_handler(self):
-        print('Collected items by type:')
+        logger.info('Collected items by type:')
         totalCount = 0
         for type in self._counter:
             totalCount += self._counter[type]
-            print('{}: {}'.format(type, self._counter[type]))
+            logger.info('{}: {}'.format(type, self._counter[type]))
 
-        print('-- Total: {} --'.format(totalCount))
+        logger.info('-- Total: {} --'.format(totalCount))
