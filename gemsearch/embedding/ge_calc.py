@@ -33,7 +33,7 @@ class GeCalc:
         '''
         return self.lookup[index]
 
-    def get_items_from_embedding_indices(self, indices, typeFilter = None, limit = sys.maxsize):
+    def get_items_from_embedding_indices(self, indices, typeFilter = None, limit = sys.maxsize, offset = 0):
         '''Maps embedding indices to items. Optional type Filter can be applied.
         '''
         result = []
@@ -42,6 +42,13 @@ class GeCalc:
             itemInfo = self.get_item_info_by_index(itemIndex)
             # filter type based on typeFilter
             if (typeFilter is None) or (itemInfo['type'] in typeFilter):
+                # valid item
+
+                # check offset
+                if offset > 0:
+                    offset -= 1
+                    continue
+
                 result.append(itemInfo)
                 found += 1
                 if found == limit:
@@ -57,7 +64,7 @@ class GeCalc:
                 return item
         return None
 
-    def query_by_ids(self, ids, typeFilter = None, limit = 20):
+    def query_by_ids(self, ids, typeFilter = None, limit = 20, offset = 0):
         '''Query by obj ids.
         '''
         searchVec = None
@@ -77,7 +84,7 @@ class GeCalc:
                 searchVec = itemVec
 
         result = find_similar_vecs(searchVec, self.embedding)
-        result_items = self.get_items_from_embedding_indices(result, typeFilter, limit)
+        result_items = self.get_items_from_embedding_indices(result, typeFilter, limit, offset)
 
         return result_items
 

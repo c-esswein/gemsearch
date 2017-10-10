@@ -43,22 +43,66 @@ def query():
     limit = request.args.get('limit') or 20
     limit = int(limit)
 
+    offset = request.args.get('offset') or 0
+    offset = int(offset)
+
+    try:
+        result = geCalc.query_by_ids(idList, types, limit, offset)
+        resolvedItems = resolve_items_meta(result)
+
+        return jsonify({
+            'success': True,
+            'data': resolvedItems
+        })
+    except ValueError as exc:
+        return jsonify({
+            'success': False,
+            'errors': [
+                str(exc)
+            ]
+        })
+
+@app.route("/api/query_viz")
+def queryViz():
+    ''' Query for items with multiple object ids. Results includes positions and
+    items are clustered.
+    '''
+    ids = request.args.get('ids')
+
+    # no ids in query
+    if ids is None or ids == '':
+        return jsonify({
+            'success': True,
+            'data': []
+        })    
+    idList = ids.split('|')
+
+    # type filter
+    types = request.args.get('types')
+    if types is not None:
+        types = types.split('|')
+
+    limit = request.args.get('limit') or 20
+    limit = int(limit)
+
+    offset = request.args.get('offset') or 0
+    offset = int(offset)
+
     minClusterDistance = request.args.get('minClusterDistance') or 0.05
     minClusterDistance = float(minClusterDistance)
 
     try:
-        result = geCalc.query_by_ids(idList, types, limit)
+        result = geCalc.query_by_ids(idList, types, limit, offset)
         resolvedItems = resolve_items_meta(result)
 
         # append 3D positions
-        # TODO: only include in graph search
+        # TODO: only load once?
         vizEmbedding = np.load(VIZ_EMBEDDING_FILE)
         vizItems = calc_viz_data(resolvedItems, vizEmbedding)
         clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance)
 
         return jsonify({
             'success': True,
-            'data': resolvedItems, # TODO: remove data
             'clusters': clusteredResult,
             'boundingBox': boundingBox.tolist()
         })
