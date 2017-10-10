@@ -24,8 +24,8 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
-outDir = 'data/tmp/'
+dataDir = 'data/graph_15000/'
+outDir = 'data/rec/'
 
 SHOULD_GENERATE_GRAPH = True
 SHOULD_INDEX_ES = True
