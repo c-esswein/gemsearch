@@ -23,8 +23,8 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_500/'
-outDir = 'data/graph_500_data_deep/'
+dataDir = 'data/graph_50/'
+outDir = 'data/tmp/'
 
 SHOULD_EMBED = True
 SHOULD_INDEX_ES = True

@@ -97,23 +97,35 @@ class PlaylistQueryEvaluator:
                     if not statName in stats:
                         stats[statName] = {
                             'precision': 0,
+                            'precision_on_hits': 0,
                             'recall': 0,
+                            'avg_hits': 0,
+                            'has_hits': 0,
                         }
 
                     # execute and store performance
-                    recall, precision = evalFunc(geCalc, playlist, queryIds, precisionAt)
-                    stats[statName]['precision'] = stats[statName]['precision'] + precision
-                    stats[statName]['recall'] = stats[statName]['recall'] + recall
+                    hits, recall, precision = evalFunc(geCalc, playlist, queryIds, precisionAt)
+                    stats[statName]['precision'] += precision
+                    stats[statName]['recall'] += recall
+                    stats[statName]['avg_hits'] += hits
+
+                    if hits > 0:
+                        stats[statName]['precision_on_hits'] += precision
+                        stats[statName]['has_hits'] += 1                                    
     
         
         # calculate average:
         for statName in stats:
             stats[statName]['precision'] = stats[statName]['precision'] / playlistCount
             stats[statName]['recall'] = stats[statName]['recall'] / playlistCount
+            stats[statName]['avg_hits'] = stats[statName]['avg_hits'] / playlistCount
+            stats[statName]['precision_on_hits'] = stats[statName]['precision_on_hits'] / stats[statName]['has_hits']
 
         logger.info('Playlist evaluation finished: total %s playlists (testsplit=%s), no query extracted for %s', playlistCount, self._testSplit, noQueryPossible)
         for statName in stats:
-            logger.info('Playlist evaluation result: %s -> precision %s, recall %s', statName, stats[statName]['precision'], stats[statName]['recall'])
+            logger.info('___ method: %s', statName)
+            for metric in stats[statName]:
+                logger.info('%s: %s', metric, stats[statName][metric])
 
         return stats
 
@@ -140,6 +152,7 @@ def evaluate_playlist(geCalc, playlist, queryIds, precisionAt = 1):
         )
 
     return (
+        numHits,
         numHits / playlistCount, # recall
         numHits / limit, # precision
     )
@@ -158,6 +171,7 @@ def evaluate_random_guess(geCalc, playlist, queryIds, precisionAt = 1):
     numHits = match_track_hits(playlist['tracks'], results)
 
     return (
+        numHits,
         numHits / playlistCount, # recall
         numHits / limit, # precision
     )

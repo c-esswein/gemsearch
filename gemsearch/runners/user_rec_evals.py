@@ -21,7 +21,7 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_15000/'
+dataDir = 'data/graph_50/'
 outDir = 'data/rec/'
 
 SHOULD_CREATE_GRAPH = True
@@ -31,7 +31,7 @@ MAX_PRECISION_AT=5
 MIN_TRACKS_PER_USER = 20
 # ---- /config ----
 
-logger.info('started playlist eval with config: %s', {
+logger.info('started user rec eval with config: %s', {
     'dataDir': dataDir,
     'outDir': outDir,
     'SHOULD_CREATE_GRAPH': SHOULD_CREATE_GRAPH,
@@ -44,7 +44,7 @@ from deepwalk.runner import startDeepwalk
 
 # from gemsearch.embedding.default_embedder import embed_deepwalk
 
-with Timer(logger=logger, message='playlist_eval runner') as t:
+with Timer(logger=logger, message='user_rec_evals runner') as t:
 
     userEval = UserEvaluator(testSplit=TEST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT, minTracksPerUser = MIN_TRACKS_PER_USER)
 
@@ -122,6 +122,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             config['output'] = outDir+'deepwalk_'+name+'.em'
             config['workers'] = 3
             config['seed'] = 42
+            # config['max_memory_data_size'] = 10000 # TODO: adapt mem size
 
             model = startDeepwalk(config)
             model.save(outDir+'word2vecModel_'+name+'.p')
