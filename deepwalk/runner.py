@@ -89,23 +89,28 @@ def _process(args):
   logger.info("Data size (walks*length): {}".format(data_size))
 
   if data_size < args.max_memory_data_size:
-    logger.info("Walking...")
+    logger.info("Start Walking...")
     walks = graph.build_deepwalk_corpus(G, num_paths=args.number_walks,
                                         path_length=args.walk_length, alpha=0, rand=random.Random(args.seed))
-    logger.info("Training...")
+    logger.info("Start Training...")
     model = Word2Vec(walks, size=args.representation_size, window=args.window_size, min_count=0, workers=args.workers)
   else:
     logger.info("Data size {} is larger than limit (max-memory-data-size: {}).  Dumping walks to disk.".format(data_size, args.max_memory_data_size))
-    logger.info("Walking...")
+    logger.info("Start Walking...")
 
     walks_filebase = args.output + ".walks"
     walk_files = serialized_walks.write_walks_to_disk(G, walks_filebase, num_paths=args.number_walks,
                                          path_length=args.walk_length, alpha=0, rand=random.Random(args.seed),
                                          num_workers=args.workers)
 
+    logger.info("Start Training...")    
     walks = serialized_walks.combine_files_iter(walk_files)    
     model = Word2Vec(walks, size=args.representation_size, window=args.window_size, min_count=0, workers=args.workers)
-    
+
+    logger.info('Delete serialized walks')
+    for walkFile in walk_files:
+      os.remove(walkFile)
+      
     ''' 
     logger.info("Counting vertex frequency...")
     if not args.vertex_freq_degree:
