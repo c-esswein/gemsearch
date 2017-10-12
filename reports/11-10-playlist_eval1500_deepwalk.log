@@ -1,0 +1,649 @@
+2017-10-10 22:17:36,743 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2017-10-10 22:17:36,841 - __main__ - INFO - started playlist eval with config: {'dataDir': 'data/graph_15000/', 'outDir': 'data/rec/', 'SHOULD_GENERATE_GRAPH': True, 'SHOULD_INDEX_ES': True, 'TEST_PLAYLIST_SPLIT': 0.2, 'MAX_PRECISION_AT': 2, 'USE_USER_IN_QUERY': True}
+2017-10-10 22:17:36,841 - __main__ - INFO - %%% playlist_eval runner... 
+2017-10-10 22:17:38,294 - gemsearch.evaluation.playlist_query_evaluator - INFO - Splitted playlists for training (11756) and test (2905), total (14696)
+------------- generate graph -------------
+2017-10-10 22:17:38,452 - __main__ - INFO - %%% graph generation... 
+2017-10-10 22:19:10,198 - gemsearch.core.type_counter - INFO - Collected items by type:
+2017-10-10 22:19:10,199 - gemsearch.core.type_counter - INFO - track: 534281
+2017-10-10 22:19:10,200 - gemsearch.core.type_counter - INFO - feature: 1
+2017-10-10 22:19:10,200 - gemsearch.core.type_counter - INFO - artist: 69599
+2017-10-10 22:19:10,200 - gemsearch.core.type_counter - INFO - tag: 335552
+2017-10-10 22:19:10,200 - gemsearch.core.type_counter - INFO - user: 1045
+2017-10-10 22:19:10,200 - gemsearch.core.type_counter - INFO - -- Total: 940478 --
+2017-10-10 22:19:10,200 - __main__ - INFO - %%% graph generation done in 91.748s
+
+
+2017-10-10 22:19:10,200 - __main__ - INFO - %%% elastic search writer... 
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 939433}
+2017-10-10 22:20:31,787 - __main__ - INFO - %%% elastic search writer done in 81.587s
+
+
+2017-10-10 22:20:31,788 - __main__ - INFO - %%% embedding 5_5_5_64... 
+2017-10-10 22:20:31,788 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=7000000, number_walks=5, output='data/rec/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=5, window_size=5, workers=3)
+2017-10-10 22:21:01,011 - deepwalk - INFO - make_consistent: made consistent in 11.208117485046387s
+2017-10-10 22:21:03,396 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.383988618850708s
+2017-10-10 22:21:03,396 - deepwalk.runner - INFO - Number of walks: 4702390
+2017-10-10 22:21:03,397 - deepwalk.runner - INFO - Data size (walks*length): 23511950
+2017-10-10 22:21:03,397 - deepwalk.runner - INFO - Data size 23511950 is larger than limit (max-memory-data-size: 7000000).  Dumping walks to disk.
+2017-10-10 22:21:03,397 - deepwalk.runner - INFO - Start Walking...
+2017-10-10 22:22:36,861 - deepwalk.runner - INFO - Start Training...
+2017-10-10 22:30:40,030 - deepwalk.runner - INFO - Delete serialized walks
+2017-10-10 22:30:40,064 - gensim.models.keyedvectors - INFO - storing 940478x64 projection weights into data/rec/deepwalk.em
+2017-10-10 22:31:14,955 - __main__ - INFO - %%% embedding 5_5_5_64 done in 643.167s
+
+
+2017-10-10 22:31:14,956 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-10 22:31:45,989 - __main__ - INFO - %%% ge calc initializing done in 31.032s
+
+
+2017-10-10 22:31:45,990 - __main__ - INFO - ------------- evaluation -------------
+2017-10-10 22:31:45,990 - __main__ - INFO - %%% evaluation... 
+2017-10-10 22:31:45,990 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2905 playlists
+2017-10-10 23:13:41,019 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2905 playlists (testsplit=0.2), no query extracted for 0
+2017-10-10 23:13:41,020 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@1
+2017-10-10 23:13:41,021 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.004460089033295544
+2017-10-10 23:13:41,021 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.04179535045717276
+2017-10-10 23:13:41,021 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.004460089033295544
+2017-10-10 23:13:41,021 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 2.751118760757315
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 310
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@1
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00015504004319316712
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.00577424776251475
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.00015504004319316712
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.21032702237521514
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 78
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@2
+2017-10-10 23:13:41,022 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.0037023124159148643
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.026621825663942278
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.007404624831829729
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 3.9800344234079175
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 404
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@2
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00015242473337047794
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.003884156582817881
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.0003048494667409559
+2017-10-10 23:13:41,023 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.4316695352839931
+2017-10-10 23:13:41,024 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 114
+{'evaluate_playlist@1': {'avg_hits': 2.751118760757315,
+                         'has_hits': 310,
+                         'precision': 0.004460089033295544,
+                         'precision_on_hits': 0.04179535045717276,
+                         'recall': 0.004460089033295544},
+ 'evaluate_playlist@2': {'avg_hits': 3.9800344234079175,
+                         'has_hits': 404,
+                         'precision': 0.0037023124159148643,
+                         'precision_on_hits': 0.026621825663942278,
+                         'recall': 0.007404624831829729},
+ 'evaluate_random_guess@1': {'avg_hits': 0.21032702237521514,
+                             'has_hits': 78,
+                             'precision': 0.00015504004319316712,
+                             'precision_on_hits': 0.00577424776251475,
+                             'recall': 0.00015504004319316712},
+ 'evaluate_random_guess@2': {'avg_hits': 0.4316695352839931,
+                             'has_hits': 114,
+                             'precision': 0.00015242473337047794,
+                             'precision_on_hits': 0.003884156582817881,
+                             'recall': 0.0003048494667409559}}
+2017-10-10 23:13:41,024 - __main__ - INFO - %%% evaluation done in 2515.034s
+
+
+2017-10-10 23:13:41,025 - __main__ - INFO - %%% embedding 20_5_5_64... 
+2017-10-10 23:13:41,025 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=7000000, number_walks=20, output='data/rec/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=5, window_size=5, workers=3)
+2017-10-10 23:14:15,849 - deepwalk - INFO - make_consistent: made consistent in 11.510656118392944s
+2017-10-10 23:14:18,214 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.3645217418670654s
+2017-10-10 23:14:18,215 - deepwalk.runner - INFO - Number of walks: 18809560
+2017-10-10 23:14:18,215 - deepwalk.runner - INFO - Data size (walks*length): 94047800
+2017-10-10 23:14:18,215 - deepwalk.runner - INFO - Data size 94047800 is larger than limit (max-memory-data-size: 7000000).  Dumping walks to disk.
+2017-10-10 23:14:18,215 - deepwalk.runner - INFO - Start Walking...
+2017-10-10 23:20:35,508 - deepwalk.runner - INFO - Start Training...
+2017-10-10 23:52:55,253 - deepwalk.runner - INFO - Delete serialized walks
+2017-10-10 23:52:55,452 - gensim.models.keyedvectors - INFO - storing 940478x64 projection weights into data/rec/deepwalk.em
+2017-10-10 23:53:29,958 - __main__ - INFO - %%% embedding 20_5_5_64 done in 2388.932s
+
+
+2017-10-10 23:53:29,958 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-10 23:54:00,649 - __main__ - INFO - %%% ge calc initializing done in 30.69s
+
+
+2017-10-10 23:54:00,650 - __main__ - INFO - ------------- evaluation -------------
+2017-10-10 23:54:00,650 - __main__ - INFO - %%% evaluation... 
+2017-10-10 23:54:00,650 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2905 playlists
+2017-10-11 00:36:16,859 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2905 playlists (testsplit=0.2), no query extracted for 0
+2017-10-11 00:36:16,859 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@1
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.009818322566082054
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.06160308219107639
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.009818322566082054
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 3.4416523235800343
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 463
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@1
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 9.473404147103446e-05
+2017-10-11 00:36:16,860 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.004511514597923854
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 9.473404147103446e-05
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.18967297762478486
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 61
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@2
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.008207177011567533
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.04047852159355464
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.016414354023135066
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 5.148364888123925
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 589
+2017-10-11 00:36:16,861 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@2
+2017-10-11 00:36:16,862 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00010726571628300898
+2017-10-11 00:36:16,862 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.0032800726926541166
+2017-10-11 00:36:16,862 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.00021453143256601795
+2017-10-11 00:36:16,862 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.3993115318416523
+2017-10-11 00:36:16,862 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 95
+{'evaluate_playlist@1': {'avg_hits': 3.4416523235800343,
+                         'has_hits': 463,
+                         'precision': 0.009818322566082054,
+                         'precision_on_hits': 0.06160308219107639,
+                         'recall': 0.009818322566082054},
+ 'evaluate_playlist@2': {'avg_hits': 5.148364888123925,
+                         'has_hits': 589,
+                         'precision': 0.008207177011567533,
+                         'precision_on_hits': 0.04047852159355464,
+                         'recall': 0.016414354023135066},
+ 'evaluate_random_guess@1': {'avg_hits': 0.18967297762478486,
+                             'has_hits': 61,
+                             'precision': 9.473404147103446e-05,
+                             'precision_on_hits': 0.004511514597923854,
+                             'recall': 9.473404147103446e-05},
+ 'evaluate_random_guess@2': {'avg_hits': 0.3993115318416523,
+                             'has_hits': 95,
+                             'precision': 0.00010726571628300898,
+                             'precision_on_hits': 0.0032800726926541166,
+                             'recall': 0.00021453143256601795}}
+2017-10-11 00:36:16,863 - __main__ - INFO - %%% evaluation done in 2536.213s
+
+
+2017-10-11 00:36:16,863 - __main__ - INFO - %%% embedding 5_20_5_64... 
+2017-10-11 00:36:16,863 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=7000000, number_walks=5, output='data/rec/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=20, window_size=5, workers=3)
+2017-10-11 00:36:51,657 - deepwalk - INFO - make_consistent: made consistent in 11.510363101959229s
+2017-10-11 00:36:54,307 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.649634599685669s
+2017-10-11 00:36:54,308 - deepwalk.runner - INFO - Number of walks: 4702390
+2017-10-11 00:36:54,308 - deepwalk.runner - INFO - Data size (walks*length): 94047800
+2017-10-11 00:36:54,308 - deepwalk.runner - INFO - Data size 94047800 is larger than limit (max-memory-data-size: 7000000).  Dumping walks to disk.
+2017-10-11 00:36:54,308 - deepwalk.runner - INFO - Start Walking...
+2017-10-11 00:42:56,954 - deepwalk.runner - INFO - Start Training...
+2017-10-11 01:06:23,555 - deepwalk.runner - INFO - Delete serialized walks
+2017-10-11 01:06:23,716 - gensim.models.keyedvectors - INFO - storing 940478x64 projection weights into data/rec/deepwalk.em
+2017-10-11 01:06:59,176 - __main__ - INFO - %%% embedding 5_20_5_64 done in 1842.312s
+
+
+2017-10-11 01:06:59,177 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-11 01:07:28,832 - __main__ - INFO - %%% ge calc initializing done in 29.654s
+
+
+2017-10-11 01:07:28,833 - __main__ - INFO - ------------- evaluation -------------
+2017-10-11 01:07:28,833 - __main__ - INFO - %%% evaluation... 
+2017-10-11 01:07:28,833 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2905 playlists
+2017-10-11 01:49:47,727 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2905 playlists (testsplit=0.2), no query extracted for 0
+2017-10-11 01:49:47,728 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@1
+2017-10-11 01:49:47,728 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.01224703324828983
+2017-10-11 01:49:47,728 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.06828720074142411
+2017-10-11 01:49:47,728 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.01224703324828983
+2017-10-11 01:49:47,728 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 3.447160068846816
+2017-10-11 01:49:47,728 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 521
+2017-10-11 01:49:47,728 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@1
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.0001235839513407731
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.004917964091026656
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.0001235839513407731
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.21445783132530122
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 73
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@2
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.01033292596700745
+2017-10-11 01:49:47,729 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.04480171631963678
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.0206658519340149
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 5.283993115318417
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 670
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@2
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.0001413564380505045
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.00436851545251825
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.000282712876101009
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.41549053356282273
+2017-10-11 01:49:47,730 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 94
+{'evaluate_playlist@1': {'avg_hits': 3.447160068846816,
+                         'has_hits': 521,
+                         'precision': 0.01224703324828983,
+                         'precision_on_hits': 0.06828720074142411,
+                         'recall': 0.01224703324828983},
+ 'evaluate_playlist@2': {'avg_hits': 5.283993115318417,
+                         'has_hits': 670,
+                         'precision': 0.01033292596700745,
+                         'precision_on_hits': 0.04480171631963678,
+                         'recall': 0.0206658519340149},
+ 'evaluate_random_guess@1': {'avg_hits': 0.21445783132530122,
+                             'has_hits': 73,
+                             'precision': 0.0001235839513407731,
+                             'precision_on_hits': 0.004917964091026656,
+                             'recall': 0.0001235839513407731},
+ 'evaluate_random_guess@2': {'avg_hits': 0.41549053356282273,
+                             'has_hits': 94,
+                             'precision': 0.0001413564380505045,
+                             'precision_on_hits': 0.00436851545251825,
+                             'recall': 0.000282712876101009}}
+2017-10-11 01:49:47,731 - __main__ - INFO - %%% evaluation done in 2538.898s
+
+
+2017-10-11 01:49:47,732 - __main__ - INFO - %%% embedding 20_20_5_64... 
+2017-10-11 01:49:47,732 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=7000000, number_walks=20, output='data/rec/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=20, window_size=5, workers=3)
+2017-10-11 01:50:20,335 - deepwalk - INFO - make_consistent: made consistent in 11.363458633422852s
+2017-10-11 01:50:22,698 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.36250901222229s
+2017-10-11 01:50:22,699 - deepwalk.runner - INFO - Number of walks: 18809560
+2017-10-11 01:50:22,699 - deepwalk.runner - INFO - Data size (walks*length): 376191200
+2017-10-11 01:50:22,699 - deepwalk.runner - INFO - Data size 376191200 is larger than limit (max-memory-data-size: 7000000).  Dumping walks to disk.
+2017-10-11 01:50:22,699 - deepwalk.runner - INFO - Start Walking...
+2017-10-11 02:14:34,412 - deepwalk.runner - INFO - Start Training...
+2017-10-11 03:44:25,755 - deepwalk.runner - INFO - Delete serialized walks
+2017-10-11 03:44:25,978 - gensim.models.keyedvectors - INFO - storing 940478x64 projection weights into data/rec/deepwalk.em
+2017-10-11 03:45:01,670 - __main__ - INFO - %%% embedding 20_20_5_64 done in 6913.938s
+
+
+2017-10-11 03:45:01,671 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-11 03:45:31,421 - __main__ - INFO - %%% ge calc initializing done in 29.75s
+
+
+2017-10-11 03:45:31,422 - __main__ - INFO - ------------- evaluation -------------
+2017-10-11 03:45:31,422 - __main__ - INFO - %%% evaluation... 
+2017-10-11 03:45:31,422 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2905 playlists
+2017-10-11 04:27:34,467 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2905 playlists (testsplit=0.2), no query extracted for 0
+2017-10-11 04:27:34,468 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@1
+2017-10-11 04:27:34,468 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.017738505520494424
+2017-10-11 04:27:34,468 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.08545664765677662
+2017-10-11 04:27:34,468 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.017738505520494424
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 3.5586919104991392
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 603
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@1
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.0001840690605592364
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.006944423648371191
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.0001840690605592364
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.20240963855421687
+2017-10-11 04:27:34,469 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 77
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@2
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.015200556516582881
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.05734755413074451
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.030401113033165762
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 5.562134251290878
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 770
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@2
+2017-10-11 04:27:34,470 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.0001568443349496589
+2017-10-11 04:27:34,471 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.004466988166948619
+2017-10-11 04:27:34,471 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.0003136886698993178
+2017-10-11 04:27:34,471 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.4113597246127367
+2017-10-11 04:27:34,471 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 102
+{'evaluate_playlist@1': {'avg_hits': 3.5586919104991392,
+                         'has_hits': 603,
+                         'precision': 0.017738505520494424,
+                         'precision_on_hits': 0.08545664765677662,
+                         'recall': 0.017738505520494424},
+ 'evaluate_playlist@2': {'avg_hits': 5.562134251290878,
+                         'has_hits': 770,
+                         'precision': 0.015200556516582881,
+                         'precision_on_hits': 0.05734755413074451,
+                         'recall': 0.030401113033165762},
+ 'evaluate_random_guess@1': {'avg_hits': 0.20240963855421687,
+                             'has_hits': 77,
+                             'precision': 0.0001840690605592364,
+                             'precision_on_hits': 0.006944423648371191,
+                             'recall': 0.0001840690605592364},
+ 'evaluate_random_guess@2': {'avg_hits': 0.4113597246127367,
+                             'has_hits': 102,
+                             'precision': 0.0001568443349496589,
+                             'precision_on_hits': 0.004466988166948619,
+                             'recall': 0.0003136886698993178}}
+2017-10-11 04:27:34,472 - __main__ - INFO - %%% evaluation done in 2523.05s
+
+
+2017-10-11 04:27:34,472 - __main__ - INFO - %%% embedding 20_20_10_64... 
+2017-10-11 04:27:34,473 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=7000000, number_walks=20, output='data/rec/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=20, window_size=10, workers=3)
+2017-10-11 04:28:08,194 - deepwalk - INFO - make_consistent: made consistent in 11.788122653961182s
+2017-10-11 04:28:10,578 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.383481502532959s
+2017-10-11 04:28:10,579 - deepwalk.runner - INFO - Number of walks: 18809560
+2017-10-11 04:28:10,579 - deepwalk.runner - INFO - Data size (walks*length): 376191200
+2017-10-11 04:28:10,579 - deepwalk.runner - INFO - Data size 376191200 is larger than limit (max-memory-data-size: 7000000).  Dumping walks to disk.
+2017-10-11 04:28:10,579 - deepwalk.runner - INFO - Start Walking...
+2017-10-11 04:52:15,531 - deepwalk.runner - INFO - Start Training...
+2017-10-11 06:24:17,658 - deepwalk.runner - INFO - Delete serialized walks
+2017-10-11 06:24:17,947 - gensim.models.keyedvectors - INFO - storing 940478x64 projection weights into data/rec/deepwalk.em
+2017-10-11 06:24:54,292 - __main__ - INFO - %%% embedding 20_20_10_64 done in 7039.819s
+
+
+2017-10-11 06:24:54,293 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-11 06:25:24,598 - __main__ - INFO - %%% ge calc initializing done in 30.305s
+
+
+2017-10-11 06:25:24,599 - __main__ - INFO - ------------- evaluation -------------
+2017-10-11 06:25:24,599 - __main__ - INFO - %%% evaluation... 
+2017-10-11 06:25:24,599 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2905 playlists
+2017-10-11 07:07:20,287 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2905 playlists (testsplit=0.2), no query extracted for 0
+2017-10-11 07:07:20,288 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@1
+2017-10-11 07:07:20,288 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.017377093588206924
+2017-10-11 07:07:20,288 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.08512724599281807
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.017377093588206924
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 3.674354561101549
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 593
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@1
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00010958734821647458
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.004897711485674749
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.00010958734821647458
+2017-10-11 07:07:20,289 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.19483648881239243
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 65
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@2
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.01463358599990264
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.05542446848724533
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.02926717199980528
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 5.79277108433735
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 767
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@2
+2017-10-11 07:07:20,290 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00011229965390913203
+2017-10-11 07:07:20,291 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.0033982343188127973
+2017-10-11 07:07:20,291 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.00022459930781826406
+2017-10-11 07:07:20,291 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.39518072289156625
+2017-10-11 07:07:20,291 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 96
+{'evaluate_playlist@1': {'avg_hits': 3.674354561101549,
+                         'has_hits': 593,
+                         'precision': 0.017377093588206924,
+                         'precision_on_hits': 0.08512724599281807,
+                         'recall': 0.017377093588206924},
+ 'evaluate_playlist@2': {'avg_hits': 5.79277108433735,
+                         'has_hits': 767,
+                         'precision': 0.01463358599990264,
+                         'precision_on_hits': 0.05542446848724533,
+                         'recall': 0.02926717199980528},
+ 'evaluate_random_guess@1': {'avg_hits': 0.19483648881239243,
+                             'has_hits': 65,
+                             'precision': 0.00010958734821647458,
+                             'precision_on_hits': 0.004897711485674749,
+                             'recall': 0.00010958734821647458},
+ 'evaluate_random_guess@2': {'avg_hits': 0.39518072289156625,
+                             'has_hits': 96,
+                             'precision': 0.00011229965390913203,
+                             'precision_on_hits': 0.0033982343188127973,
+                             'recall': 0.00022459930781826406}}
+2017-10-11 07:07:20,292 - __main__ - INFO - %%% evaluation done in 2515.692s
+
+
+2017-10-11 07:07:20,292 - __main__ - INFO - %%% embedding 10_10_5_16... 
+2017-10-11 07:07:20,292 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=7000000, number_walks=10, output='data/rec/deepwalk.em', representation_size=16, seed=42, undirected=True, vertex_freq_degree=False, walk_length=10, window_size=5, workers=3)
+2017-10-11 07:07:52,304 - deepwalk - INFO - make_consistent: made consistent in 11.482304573059082s
+2017-10-11 07:07:54,707 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.4029088020324707s
+2017-10-11 07:07:54,707 - deepwalk.runner - INFO - Number of walks: 9404780
+2017-10-11 07:07:54,707 - deepwalk.runner - INFO - Data size (walks*length): 94047800
+2017-10-11 07:07:54,708 - deepwalk.runner - INFO - Data size 94047800 is larger than limit (max-memory-data-size: 7000000).  Dumping walks to disk.
+2017-10-11 07:07:54,708 - deepwalk.runner - INFO - Start Walking...
+2017-10-11 07:13:57,208 - deepwalk.runner - INFO - Start Training...
+2017-10-11 07:36:47,059 - deepwalk.runner - INFO - Delete serialized walks
+2017-10-11 07:36:47,221 - gensim.models.keyedvectors - INFO - storing 940478x16 projection weights into data/rec/deepwalk.em
+2017-10-11 07:37:01,595 - __main__ - INFO - %%% embedding 10_10_5_16 done in 1781.302s
+
+
+2017-10-11 07:37:01,595 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-11 07:37:12,635 - __main__ - INFO - %%% ge calc initializing done in 11.04s
+
+
+2017-10-11 07:37:12,636 - __main__ - INFO - ------------- evaluation -------------
+2017-10-11 07:37:12,636 - __main__ - INFO - %%% evaluation... 
+2017-10-11 07:37:12,636 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2905 playlists
+2017-10-11 08:13:49,533 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2905 playlists (testsplit=0.2), no query extracted for 0
+2017-10-11 08:13:49,534 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@1
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.008228216986187158
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.05173803104951016
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.008228216986187158
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 2.708777969018933
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 462
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@1
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 9.456764532977232e-05
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.00410028372661177
+2017-10-11 08:13:49,535 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 9.456764532977232e-05
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.19862306368330465
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 67
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@2
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.007154217498782308
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.03522542683722475
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.014308434997564616
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 4.359380378657487
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 590
+2017-10-11 08:13:49,536 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@2
+2017-10-11 08:13:49,537 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00011439473616356106
+2017-10-11 08:13:49,537 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.0036121381364689663
+2017-10-11 08:13:49,537 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.00022878947232712212
+2017-10-11 08:13:49,537 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.42478485370051633
+2017-10-11 08:13:49,537 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 92
+{'evaluate_playlist@1': {'avg_hits': 2.708777969018933,
+                         'has_hits': 462,
+                         'precision': 0.008228216986187158,
+                         'precision_on_hits': 0.05173803104951016,
+                         'recall': 0.008228216986187158},
+ 'evaluate_playlist@2': {'avg_hits': 4.359380378657487,
+                         'has_hits': 590,
+                         'precision': 0.007154217498782308,
+                         'precision_on_hits': 0.03522542683722475,
+                         'recall': 0.014308434997564616},
+ 'evaluate_random_guess@1': {'avg_hits': 0.19862306368330465,
+                             'has_hits': 67,
+                             'precision': 9.456764532977232e-05,
+                             'precision_on_hits': 0.00410028372661177,
+                             'recall': 9.456764532977232e-05},
+ 'evaluate_random_guess@2': {'avg_hits': 0.42478485370051633,
+                             'has_hits': 92,
+                             'precision': 0.00011439473616356106,
+                             'precision_on_hits': 0.0036121381364689663,
+                             'recall': 0.00022878947232712212}}
+2017-10-11 08:13:49,538 - __main__ - INFO - %%% evaluation done in 2196.902s
+
+
+2017-10-11 08:13:49,538 - __main__ - INFO - %%% embedding 10_10_5_32... 
+2017-10-11 08:13:49,538 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/rec/graph.txt', log='INFO', max_memory_data_size=7000000, number_walks=10, output='data/rec/deepwalk.em', representation_size=32, seed=42, undirected=True, vertex_freq_degree=False, walk_length=10, window_size=5, workers=3)
+2017-10-11 08:14:20,641 - deepwalk - INFO - make_consistent: made consistent in 11.933136940002441s
+2017-10-11 08:14:23,191 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.5482757091522217s
+2017-10-11 08:14:23,192 - deepwalk.runner - INFO - Number of walks: 9404780
+2017-10-11 08:14:23,192 - deepwalk.runner - INFO - Data size (walks*length): 94047800
+2017-10-11 08:14:23,192 - deepwalk.runner - INFO - Data size 94047800 is larger than limit (max-memory-data-size: 7000000).  Dumping walks to disk.
+2017-10-11 08:14:23,192 - deepwalk.runner - INFO - Start Walking...
+2017-10-11 08:20:24,822 - deepwalk.runner - INFO - Start Training...
+2017-10-11 08:42:46,496 - deepwalk.runner - INFO - Delete serialized walks
+2017-10-11 08:42:46,640 - gensim.models.keyedvectors - INFO - storing 940478x32 projection weights into data/rec/deepwalk.em
+2017-10-11 08:43:08,313 - __main__ - INFO - %%% embedding 10_10_5_32 done in 1758.774s
+
+
+2017-10-11 08:43:08,313 - __main__ - INFO - %%% ge calc initializing... 
+2017-10-11 08:43:26,199 - __main__ - INFO - %%% ge calc initializing done in 17.885s
+
+
+2017-10-11 08:43:26,199 - __main__ - INFO - ------------- evaluation -------------
+2017-10-11 08:43:26,200 - __main__ - INFO - %%% evaluation... 
+2017-10-11 08:43:26,200 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2905 playlists
+2017-10-11 09:21:44,232 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2905 playlists (testsplit=0.2), no query extracted for 0
+2017-10-11 09:21:44,233 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@1
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.01089402678474671
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.06316795969997842
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.01089402678474671
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 3.131497418244406
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 501
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@1
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00013714207161444737
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.0053837529464860765
+2017-10-11 09:21:44,234 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.00013714207161444737
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.2089500860585198
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 74
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_playlist@2
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.009720746170454323
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.04272128233762452
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.019441492340908646
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 4.769363166953529
+2017-10-11 09:21:44,235 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 661
+2017-10-11 09:21:44,236 - gemsearch.evaluation.playlist_query_evaluator - INFO - ___ method: evaluate_random_guess@2
+2017-10-11 09:21:44,236 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision: 0.00011804772066551506
+2017-10-11 09:21:44,236 - gemsearch.evaluation.playlist_query_evaluator - INFO - precision_on_hits: 0.0034639255407406186
+2017-10-11 09:21:44,236 - gemsearch.evaluation.playlist_query_evaluator - INFO - recall: 0.00023609544133103012
+2017-10-11 09:21:44,236 - gemsearch.evaluation.playlist_query_evaluator - INFO - avg_hits: 0.4065404475043029
+2017-10-11 09:21:44,236 - gemsearch.evaluation.playlist_query_evaluator - INFO - has_hits: 99
+{'evaluate_playlist@1': {'avg_hits': 3.131497418244406,
+                         'has_hits': 501,
+                         'precision': 0.01089402678474671,
+                         'precision_on_hits': 0.06316795969997842,
+                         'recall': 0.01089402678474671},
+ 'evaluate_playlist@2': {'avg_hits': 4.769363166953529,
+                         'has_hits': 661,
+                         'precision': 0.009720746170454323,
+                         'precision_on_hits': 0.04272128233762452,
+                         'recall': 0.019441492340908646},
+ 'evaluate_random_guess@1': {'avg_hits': 0.2089500860585198,
+                             'has_hits': 74,
+                             'precision': 0.00013714207161444737,
+                             'precision_on_hits': 0.0053837529464860765,
+                             'recall': 0.00013714207161444737},
+ 'evaluate_random_guess@2': {'avg_hits': 0.4065404475043029,
+                             'has_hits': 99,
+                             'precision': 0.00011804772066551506,
+                             'precision_on_hits': 0.0034639255407406186,
+                             'recall': 0.00023609544133103012}}
+2017-10-11 09:21:44,237 - __main__ - INFO - %%% evaluation done in 2298.037s
+
+
+[{'evaluate_playlist@1': {'avg_hits': 2.751118760757315,
+                          'has_hits': 310,
+                          'precision': 0.004460089033295544,
+                          'precision_on_hits': 0.04179535045717276,
+                          'recall': 0.004460089033295544},
+  'evaluate_playlist@2': {'avg_hits': 3.9800344234079175,
+                          'has_hits': 404,
+                          'precision': 0.0037023124159148643,
+                          'precision_on_hits': 0.026621825663942278,
+                          'recall': 0.007404624831829729},
+  'evaluate_random_guess@1': {'avg_hits': 0.21032702237521514,
+                              'has_hits': 78,
+                              'precision': 0.00015504004319316712,
+                              'precision_on_hits': 0.00577424776251475,
+                              'recall': 0.00015504004319316712},
+  'evaluate_random_guess@2': {'avg_hits': 0.4316695352839931,
+                              'has_hits': 114,
+                              'precision': 0.00015242473337047794,
+                              'precision_on_hits': 0.003884156582817881,
+                              'recall': 0.0003048494667409559}},
+ {'evaluate_playlist@1': {'avg_hits': 3.4416523235800343,
+                          'has_hits': 463,
+                          'precision': 0.009818322566082054,
+                          'precision_on_hits': 0.06160308219107639,
+                          'recall': 0.009818322566082054},
+  'evaluate_playlist@2': {'avg_hits': 5.148364888123925,
+                          'has_hits': 589,
+                          'precision': 0.008207177011567533,
+                          'precision_on_hits': 0.04047852159355464,
+                          'recall': 0.016414354023135066},
+  'evaluate_random_guess@1': {'avg_hits': 0.18967297762478486,
+                              'has_hits': 61,
+                              'precision': 9.473404147103446e-05,
+                              'precision_on_hits': 0.004511514597923854,
+                              'recall': 9.473404147103446e-05},
+  'evaluate_random_guess@2': {'avg_hits': 0.3993115318416523,
+                              'has_hits': 95,
+                              'precision': 0.00010726571628300898,
+                              'precision_on_hits': 0.0032800726926541166,
+                              'recall': 0.00021453143256601795}},
+ {'evaluate_playlist@1': {'avg_hits': 3.447160068846816,
+                          'has_hits': 521,
+                          'precision': 0.01224703324828983,
+                          'precision_on_hits': 0.06828720074142411,
+                          'recall': 0.01224703324828983},
+  'evaluate_playlist@2': {'avg_hits': 5.283993115318417,
+                          'has_hits': 670,
+                          'precision': 0.01033292596700745,
+                          'precision_on_hits': 0.04480171631963678,
+                          'recall': 0.0206658519340149},
+  'evaluate_random_guess@1': {'avg_hits': 0.21445783132530122,
+                              'has_hits': 73,
+                              'precision': 0.0001235839513407731,
+                              'precision_on_hits': 0.004917964091026656,
+                              'recall': 0.0001235839513407731},
+  'evaluate_random_guess@2': {'avg_hits': 0.41549053356282273,
+                              'has_hits': 94,
+                              'precision': 0.0001413564380505045,
+                              'precision_on_hits': 0.00436851545251825,
+                              'recall': 0.000282712876101009}},
+ {'evaluate_playlist@1': {'avg_hits': 3.5586919104991392,
+                          'has_hits': 603,
+                          'precision': 0.017738505520494424,
+                          'precision_on_hits': 0.08545664765677662,
+                          'recall': 0.017738505520494424},
+  'evaluate_playlist@2': {'avg_hits': 5.562134251290878,
+                          'has_hits': 770,
+                          'precision': 0.015200556516582881,
+                          'precision_on_hits': 0.05734755413074451,
+                          'recall': 0.030401113033165762},
+  'evaluate_random_guess@1': {'avg_hits': 0.20240963855421687,
+                              'has_hits': 77,
+                              'precision': 0.0001840690605592364,
+                              'precision_on_hits': 0.006944423648371191,
+                              'recall': 0.0001840690605592364},
+  'evaluate_random_guess@2': {'avg_hits': 0.4113597246127367,
+                              'has_hits': 102,
+                              'precision': 0.0001568443349496589,
+                              'precision_on_hits': 0.004466988166948619,
+                              'recall': 0.0003136886698993178}},
+ {'evaluate_playlist@1': {'avg_hits': 3.674354561101549,
+                          'has_hits': 593,
+                          'precision': 0.017377093588206924,
+                          'precision_on_hits': 0.08512724599281807,
+                          'recall': 0.017377093588206924},
+  'evaluate_playlist@2': {'avg_hits': 5.79277108433735,
+                          'has_hits': 767,
+                          'precision': 0.01463358599990264,
+                          'precision_on_hits': 0.05542446848724533,
+                          'recall': 0.02926717199980528},
+  'evaluate_random_guess@1': {'avg_hits': 0.19483648881239243,
+                              'has_hits': 65,
+                              'precision': 0.00010958734821647458,
+                              'precision_on_hits': 0.004897711485674749,
+                              'recall': 0.00010958734821647458},
+  'evaluate_random_guess@2': {'avg_hits': 0.39518072289156625,
+                              'has_hits': 96,
+                              'precision': 0.00011229965390913203,
+                              'precision_on_hits': 0.0033982343188127973,
+                              'recall': 0.00022459930781826406}},
+ {'evaluate_playlist@1': {'avg_hits': 2.708777969018933,
+                          'has_hits': 462,
+                          'precision': 0.008228216986187158,
+                          'precision_on_hits': 0.05173803104951016,
+                          'recall': 0.008228216986187158},
+  'evaluate_playlist@2': {'avg_hits': 4.359380378657487,
+                          'has_hits': 590,
+                          'precision': 0.007154217498782308,
+                          'precision_on_hits': 0.03522542683722475,
+                          'recall': 0.014308434997564616},
+  'evaluate_random_guess@1': {'avg_hits': 0.19862306368330465,
+                              'has_hits': 67,
+                              'precision': 9.456764532977232e-05,
+                              'precision_on_hits': 0.00410028372661177,
+                              'recall': 9.456764532977232e-05},
+  'evaluate_random_guess@2': {'avg_hits': 0.42478485370051633,
+                              'has_hits': 92,
+                              'precision': 0.00011439473616356106,
+                              'precision_on_hits': 0.0036121381364689663,
+                              'recall': 0.00022878947232712212}},
+ {'evaluate_playlist@1': {'avg_hits': 3.131497418244406,
+                          'has_hits': 501,
+                          'precision': 0.01089402678474671,
+                          'precision_on_hits': 0.06316795969997842,
+                          'recall': 0.01089402678474671},
+  'evaluate_playlist@2': {'avg_hits': 4.769363166953529,
+                          'has_hits': 661,
+                          'precision': 0.009720746170454323,
+                          'precision_on_hits': 0.04272128233762452,
+                          'recall': 0.019441492340908646},
+  'evaluate_random_guess@1': {'avg_hits': 0.2089500860585198,
+                              'has_hits': 74,
+                              'precision': 0.00013714207161444737,
+                              'precision_on_hits': 0.0053837529464860765,
+                              'recall': 0.00013714207161444737},
+  'evaluate_random_guess@2': {'avg_hits': 0.4065404475043029,
+                              'has_hits': 99,
+                              'precision': 0.00011804772066551506,
+                              'precision_on_hits': 0.0034639255407406186,
+                              'recall': 0.00023609544133103012}}]
+------------- done -------------
+2017-10-11 09:21:44,257 - __main__ - INFO - %%% playlist_eval runner done in 39847.415s
+
+
