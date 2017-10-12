@@ -17,14 +17,18 @@ from gemsearch.core.type_counter import TypeCounter
 from gemsearch.evaluation.user_evaluator import UserEvaluator
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
+from deepwalk.runner import startDeepwalk
+
+import gemsearch.evaluation.my_media_lite_evaluator as my_media_lite_eval
 
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
+dataDir = 'data/graph_500/'
 outDir = 'data/rec/'
 
 SHOULD_CREATE_GRAPH = True
+SHOULD_EVAL_BASELINE = True
 
 TEST_SPLIT=0.2
 MAX_PRECISION_AT=5
@@ -35,14 +39,11 @@ logger.info('started user rec eval with config: %s', {
     'dataDir': dataDir,
     'outDir': outDir,
     'SHOULD_CREATE_GRAPH': SHOULD_CREATE_GRAPH,
+    'SHOULD_EVAL_BASELINE': SHOULD_EVAL_BASELINE,
     'TEST_SPLIT': TEST_SPLIT,
     'MAX_PRECISION_AT': MAX_PRECISION_AT,
     'MIN_TRACKS_PER_USER': MIN_TRACKS_PER_USER,
 })
-
-from deepwalk.runner import startDeepwalk
-
-# from gemsearch.embedding.default_embedder import embed_deepwalk
 
 with Timer(logger=logger, message='user_rec_evals runner') as t:
 
@@ -69,12 +70,21 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
             graphGenerator.add(trainingUserTrack)
             graphGenerator.close_generation()
 
+        # write files for MyMediaLite
+        my_media_lite_eval.writeUserRatingEdges(outDir+'media_lite_training.csv', trainingUserTrack)
+        my_media_lite_eval.writeUserRating(outDir+'media_lite_test.csv', userEval.getTestPairs())
+
     else:
         # load stored test data if not in embedding mode
         logger.info('No embedding + splitting, loading previous split')
         userEval.loadTestData(outDir+'user_eval.pk')
 
-    
+
+    if SHOULD_EVAL_BASELINE:
+        # calculate baseline performance with my media lite
+        my_media_lite_eval.evalRandom(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
+        my_media_lite_eval.evalMostPopular(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
+        my_media_lite_eval.evalUserKNN(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
 
     logger.info('------------- graph embedding -------------')
 
@@ -84,7 +94,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
             number_walks=5, walk_length=5, window_size=5, 
             representation_size=64
         ),
-        dict(
+        ''' dict(
             number_walks=20, walk_length=5, window_size=5, 
             representation_size=64
         ),
@@ -107,7 +117,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
         dict(
             number_walks=10, walk_length=10, window_size=5, 
             representation_size=32
-        )
+        ) '''
     ]
 
     results = []

@@ -74,6 +74,14 @@ class UserEvaluator:
 
         return training
 
+    def getTestPairs(self):
+        ''' Generator to iterate over all test user-item pairs.
+        yields: (userId, trackId, weight)
+        '''
+        for userId in self._users:
+            (training, test) = self._users[userId]
+            for testTrack in test:
+                yield (userId, testTrack, 1)
     
     def writeTestData(self, dataPath):
         '''Writes splitted test data to dataDir.
