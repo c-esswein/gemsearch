@@ -9,7 +9,7 @@ from gemsearch.query.elastic_search import search as es_search
 from gemsearch.api.metadata import resolve_items_meta
 from gemsearch.api.graph import Graph
 from gemsearch.api.positions import calc_viz_data, cluster_items
-from gemsearch.api.user import syncUserMusic
+import gemsearch.api.user as userApi
 
 app = Flask(__name__)
 
@@ -157,22 +157,47 @@ def suggest_item(term):
 
 # ------- user routes -------
 
+@app.route("/api/user/check/<userName>", methods=['POST'])
+def check_user(userName):
+    ''' Checks if user is allready in db.
+    '''
+    user = userApi.getUser(userName)
+    missingTrackCount = userApi.getMissingTracks(userName)    
+
+    if user is None:
+        return jsonify({
+            'success': True,
+            'data': None
+        })
+    else:
+        return jsonify({
+            'success': True,
+            'data': {
+                'userName': userName,
+                'userStatus': user['userStatus'],
+                'latest_sync': user['latest_sync'],
+                'missingTrackCount': missingTrackCount
+            }
+        })
+
 @app.route("/api/user/sync", methods=['POST'])
 def sync_user():
     ''' Sync user spotify data.
     '''
     token = request.form['token']
-    print(token)
+    userName = request.form['userName']
+
     if token is None:
         return make_response(jsonify({
             'success': False,
             'errors': [
-                str(exc)
+                'Token is missing'
             ]
         }), 400)
 
+    syncedTracks = 0
     try:
-        syncUserMusic(token)
+        syncedTracks = userApi.syncUserMusic(userName, token)
     except Exception as exc:
         return jsonify({
             'success': False,
@@ -181,8 +206,14 @@ def sync_user():
             ]
         })
 
+    missingTrackCount = userApi.getMissingTracks(userName)
+
     return jsonify({
         'success': True,
+        'data': {
+            'missingTracks': missingTrackCount,
+            'syncedTracks': syncedTracks
+        }
     })
 
 # ------- graph routes -------

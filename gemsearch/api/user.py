@@ -3,18 +3,23 @@ from gemsearch.storage.Storage import Storage
 from pymongo import UpdateOne
 from pymongo.bulk import BulkWriteError
 from pprint import pprint
+import hashlib
+from datetime import datetime
 
 def getUser(userName):
     '''Returns user from storage or None if not present.
     '''
     storage = Storage()
     usersCol = storage.getCollection('users')
-    user = usersCol.find_one({'id': userName})
+    user = usersCol.find_one({'userName': userName})
     return user
 
+def getUserNameHash(userName):
+    return hashlib.sha256(userName).hexdigest()
 
-def syncUserMusic(token):
-    '''Load user spotify music library and store it into db
+def syncUserMusic(userName, token):
+    '''Load user spotify music library and store it into db. Returns number
+    of synced tracks.
     '''
 
     if not token:
@@ -22,11 +27,11 @@ def syncUserMusic(token):
 
     # load user and user music from spotify api
     sp = spotipy.Spotify(auth=token)
-    user = sp.current_user()
+    # user = sp.current_user()
     tracks = getSpotifyUserMusic(sp)
 
     # only store track id and uri in user obj
-    user['tracks'] = [{
+    userTracks = [{
         'added_at': trackMeta['added_at'],
         'track_uri': trackMeta['track']['uri'],
         'track_id': trackMeta['track']['id'],
@@ -35,7 +40,23 @@ def syncUserMusic(token):
     # store user data (insert new or replace existing user)
     storage = Storage()
     usersCol = storage.getCollection('users')
-    usersCol.replace_one(filter={'id': user['id']}, replacement=user, upsert=True)
+    dbUser = getUser(userName)
+    update = {
+        'userName': userName,
+        'tracks': userTracks,
+        'userStatus': 'SPOTIFY_SYNCED',
+        'latest_sync': datetime.now()
+    }
+    if dbUser is None:
+        # create new user
+        dbUser['userStatus'] = 'SPOTIFY_SYNCED'
+        dbUser['created'] = datetime.now()
+        usersCol.insert_one(dbUser)
+    else:
+        # update user
+        if dbUser['userStatus'] == 'EMBEDDED':
+            dbUser['userStatus'] = 'PARTIAL_EMBEDDED'
+        usersCol.replace_one(filter={'_id': dbUser['_id']}, replacement=update)
 
     # store new tracks
     tracksCol = storage.getCollection('tracks')
@@ -51,6 +72,8 @@ def syncUserMusic(token):
     except BulkWriteError as bwe:
         print(bwe.details)
         raise
+
+    return len(tracks)
 
 def getSpotifyUserMusic(sp):
     '''Load complete user music library from spotify.
@@ -77,7 +100,7 @@ def getMissingTracks(userName):
     storage = Storage()
     usersCol = storage.getCollection('users')
 
-    count = usersCol.aggregate([
+    missingCount = usersCol.aggregate([
         # select user
         { "$match" : { 'id' : userName } },
         { "$unwind": "$tracks" },
@@ -102,7 +125,7 @@ def getMissingTracks(userName):
         { "$count" : "track_count" }
     ])
 
-    pprint(list(count))
+    return missingCount
 
 
 
