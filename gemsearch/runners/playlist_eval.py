@@ -16,17 +16,18 @@ from gemsearch.core.type_counter import TypeCounter
 from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
 
 from gemsearch.evaluation.playlist_query_evaluator import PlaylistQueryEvaluator
-from gemsearch.embedding.node2vec import Node2vec
+# from gemsearch.embedding.node2vec import Node2vec
+from deepwalk.runner import startDeepwalk
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
 
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
-outDir = 'data/tmp/'
+dataDir = 'data/graph_15000/'
+outDir = 'data/rec/'
 
-SHOULD_EMBED = True
+SHOULD_GENERATE_GRAPH = True
 SHOULD_INDEX_ES = True
 
 TEST_PLAYLIST_SPLIT=0.2
@@ -37,7 +38,7 @@ USE_USER_IN_QUERY = True
 logger.info('started playlist eval with config: %s', {
     'dataDir': dataDir,
     'outDir': outDir,
-    'SHOULD_EMBED': SHOULD_EMBED,
+    'SHOULD_GENERATE_GRAPH': SHOULD_GENERATE_GRAPH,
     'SHOULD_INDEX_ES': SHOULD_INDEX_ES,
     'TEST_PLAYLIST_SPLIT': TEST_PLAYLIST_SPLIT,
     'MAX_PRECISION_AT': MAX_PRECISION_AT,
@@ -47,13 +48,14 @@ logger.info('started playlist eval with config: %s', {
 with Timer(logger=logger, message='playlist_eval runner') as t:
 
     playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
-    if USE_USER_IN_QUERY:
-        trainingPlaylists = playlistEval.traverseAndSplitPlaylists(traversePlaylists(dataDir+'playlist.csv'))
-        playlistEval.writeTestLists(outDir)
-    else:
-        playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+    
+    if SHOULD_GENERATE_GRAPH:
+        if USE_USER_IN_QUERY:
+            trainingPlaylists = playlistEval.traverseAndSplitPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+            playlistEval.writeTestLists(outDir+'test_playlists.json')
+        else:
+            playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
 
-    if SHOULD_EMBED:
         print('------------- generate graph -------------')
         with Timer(logger=logger, message='graph generation') as t:
 
@@ -72,34 +74,86 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
                 graphGenerator.add(traverseUserTrackInPlaylistsObj(trainingPlaylists))
 
             graphGenerator.close_generation()
+    else:
+        # reload existing split
+        if USE_USER_IN_QUERY:
+            playlistEval.loadTestLists(outDir+'test_playlists.json')
+        else:
+            playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
 
-        if SHOULD_INDEX_ES:
-            with Timer(logger=logger, message='elastic search writer') as t:
-                # clear all current entries in elastic search
-                es_clear_indices()
+    if SHOULD_INDEX_ES:
+        with Timer(logger=logger, message='elastic search writer') as t:
+            # clear all current entries in elastic search
+            es_clear_indices()
 
-                # insert all types
-                es_load_all_types(traverseTypes(outDir+'types.csv'), 'music_index', 'music_type', dismissTypes = ['user'])
+            # insert all types
+            es_load_all_types(traverseTypes(outDir+'types.csv'), 'music_index', 'music_type', dismissTypes = ['user'])
+
+    
+    # config for embedder factory
+    configs = [
+        dict(
+            number_walks=5, walk_length=5, window_size=5, 
+            representation_size=64
+        ),
+        dict(
+            number_walks=20, walk_length=5, window_size=5, 
+            representation_size=64
+        ),
+        dict(
+            number_walks=5, walk_length=20, window_size=5, 
+            representation_size=64
+        ),
+        dict(
+            number_walks=20, walk_length=20, window_size=5, 
+            representation_size=64
+        ),
+        dict(
+            number_walks=20, walk_length=20, window_size=10, 
+            representation_size=64
+        ),
+        dict(
+            number_walks=10, walk_length=10, window_size=5, 
+            representation_size=16
+        ),
+        dict(
+            number_walks=10, walk_length=10, window_size=5, 
+            representation_size=32
+        )
+    ]
+
+    results = []
+    
+    for config in configs:
+        name = str(config['number_walks']) +'_'+ str(config['walk_length']) +'_'+ str(config['window_size'])
+        name += '_'+ str(config['representation_size'])
+
+        with Timer(logger=logger, message='embedding '+name) as t:
+            # shared config
+            config['input'] = outDir+'graph.txt'
+            config['output'] = outDir+'deepwalk.em'
+            config['workers'] = 3
+            config['seed'] = 42
+            config['max_memory_data_size'] = 7000000 # TODO: adapt mem size
+
+            model = startDeepwalk(config)
+            # model.save(outDir+'word2vecModel_'+name+'.p')
         
 
-        print('------------- graph embedding -------------')
-
-        with Timer(logger=logger, message='embedding') as t:
-            ''' em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=False)
-            em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em') '''
-            from gemsearch.embedding.default_embedder import embed_deepwalk
-            embed_deepwalk(outDir+'graph.txt', outDir+'deepwalk.em', modelFile=outDir+'word2vecModel.p')
-
-    # load embedding
-    with Timer(logger=logger, message='ge calc initializing') as t:
-        geCalc = GeCalc()
-        geCalc.load_node2vec_data(outDir+'deepwalk.em', outDir+'types.csv')
+        # load embedding
+        with Timer(logger=logger, message='ge calc initializing') as t:
+            geCalc = GeCalc()
+            geCalc.load_node2vec_data(config['output'], outDir+'types.csv')
 
 
-    print('------------- evaluation -------------')
+        logger.info('------------- evaluation -------------')
 
-    with Timer(logger=logger, message='evaluation') as t:
-        playlistEval.evaluate(geCalc)
+        with Timer(logger=logger, message='evaluation') as t:
+            res = playlistEval.evaluate(geCalc)
+            results.append(res)
+            pprint(res)
 
 
+    # print total result json
+    pprint(results)
     print('------------- done -------------')

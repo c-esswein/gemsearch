@@ -25,6 +25,7 @@ outDir = 'data/tmp/'
 
 TEST_TAG_SPLIT = 0.02
 MAX_TOP_N_ACCURACY = 5
+
 EMBEDDING_VERBOSE = False
 # ---- /config ----
 
@@ -38,25 +39,30 @@ logger.info('started tag prediction eval with config: %s',{
 with Timer(logger=logger, message='playlist_eval runner') as t:
     tagPredictEval = TagPredictionEvaluator(testSplit=TEST_TAG_SPLIT, maxTopNAccuracy=MAX_TOP_N_ACCURACY)
 
-    logger.info('------------- generate graph -------------')
-    with Timer(logger=logger, message='graph generation') as t:
+    if SHOULD_EMBEDD:
+        logger.info('------------- generate graph -------------')
+        with Timer(logger=logger, message='graph generation') as t:
 
-        graphGenerator = GraphGenerator(
-            outDir+'graph.txt', 
-            IdManager(outDir+'types.csv', 
-                typeHandlers = [TypeCounter()]
+            graphGenerator = GraphGenerator(
+                outDir+'graph.txt', 
+                IdManager(outDir+'types.csv', 
+                    typeHandlers = [TypeCounter()]
+                )
             )
-        )
 
-        graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
-        graphGenerator.add(traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
-        graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
-        graphGenerator.add(tagPredictEval.traverse(traverseTrackTag(dataDir+'track_tag.csv')))
-        graphGenerator.close_generation()
-
+            graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
+            graphGenerator.add(traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
+            graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
+            graphGenerator.add(tagPredictEval.traverse(traverseTrackTag(dataDir+'track_tag.csv')))
+            graphGenerator.close_generation()
+    else:
+        logger.info('load previously stored tags')
+        # load previous split if runner has crashed or same split should be used again
+        tagPredictEval.loadIntermediateTags()
 
     logger.info('------------- graph embedding -------------')
     
+    # TODO: adapt to new embedding
     with Timer(logger=logger, message='embedding') as t:
         em = Node2vec(50, 1, 80, 10, 10, 1, 1, verbose=EMBEDDING_VERBOSE)
         em.learn_embedding(outDir+'graph.txt', outDir+'node2vec.em')

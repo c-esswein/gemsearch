@@ -18,7 +18,7 @@ from gemsearch.utils.JSONEncoder import JSONEncoder
 - embed training data
 
 - per user
-    - get test * precision@k tracks
+    - get tracks
     - check precision
 - accumulate
 '''
@@ -130,11 +130,9 @@ class UserEvaluator:
 
     def evalUser(self, userId, training, test, geCalc, recFunction, stats):
         ''' Evaluates training test set with given geCalc. Result is stored in stats obj.
-        '''
-        testLen = len(test)     
-        
+        '''        
         # get recommendation tracks
-        limit = len(training) + (self._maxPrecisionAt * testLen)
+        limit = len(training) + self._maxPrecisionAt
         recResult = recFunction(geCalc, userId, limit)
         
         # remove training tracks
@@ -143,7 +141,7 @@ class UserEvaluator:
 
         # calculate matches per precision@k
         for precisionAt in range(1, self._maxPrecisionAt + 1):
-            matches = checkMatchesAt(recResult, test, precisionAt * testLen)
+            matches = checkMatchesAt(recResult, test, precisionAt)
 
             methodName = recFunction.__name__ + ' @' + str(precisionAt)
             # init stats
@@ -153,8 +151,8 @@ class UserEvaluator:
                     'recall': 0
                 }
 
-            stats[methodName]['precision'] += matches / (precisionAt * testLen)
-            stats[methodName]['recall'] += matches / testLen
+            stats[methodName]['precision'] += matches / precisionAt
+            stats[methodName]['recall'] += matches / len(test)
 
 # ------------- static functions ------------
 

@@ -18,6 +18,7 @@ class PlaylistQueryEvaluator:
     _playlists = []
     _testSplit = 0
     _maxPrecisionAt = 0
+    _hasExtractedQueries = False
 
     def __init__(self, testSplit = 0.2, maxPrecisionAt = 1, useUserContext = False):
         self._testSplit = testSplit
@@ -47,20 +48,51 @@ class PlaylistQueryEvaluator:
         '''
         self._playlists = list(playlistTraverser)
 
-    def writeTestLists(self, dataDir):
+    def writeTestLists(self, filePath):
         '''write chosen playlists into file for easier testing
         '''
-        with open(dataDir+'playlist_evaluation.json', 'w', encoding="utf-8") as outFile:
+        with open(filePath, 'w', encoding="utf-8") as outFile:
             for playlist in self._playlists:
                 outFile.write(json.dumps(playlist, cls=JSONEncoder) + '\n')
 
-    def loadTestLists(self, dataDir):
+    def loadTestLists(self, filePath):
         '''read stored test playlists as test lists.
         '''
-        with open(dataDir+'playlist_evaluation.json', 'r', encoding="utf-8") as inFile:
+        with open(filePath, 'r', encoding="utf-8") as inFile:
             for line in inFile:
                 playlist = json.loads(line)
                 self._playlists.append(playlist)
+
+    def extractQueries(self):
+        ''' Extracts and stores queries from playlist names
+        '''
+        logger.info('Extract queries from playlist names (result is cached)')
+        
+        extractedPlaylists = []
+        for playlist in self._playlists:
+            
+            # extract and store queries
+            playlist['extracted_queries'] = {
+                'simple_first_match': extract_query_from_name(playlist['playlistName'])
+            }
+                
+            # check if any extraction has returned results
+            hasQuery = np.any([len(playlist['extracted_queries'][extractName]) > 0 for extractName in playlist['extracted_queries']])
+            if not hasQuery:
+                # no query could be extracted
+                logger.debug('no query possible for playlist %s', playlist['playlistName'])
+                continue
+            
+            logger.debug('query for name: %s %s', playlist['playlistName'], playlist['extracted_queries'])
+
+            extractedPlaylists.append(playlist)
+
+        logger.info('For evaluation %s of %s playlists are left', len(extractedPlaylists), len(self._playlists))        
+
+        self._playlists = extractedPlaylists
+        self._hasExtractedQueries = True
+
+        return extractedPlaylists
 
     def evaluate(self, geCalc):
         '''Starts evaluation.
@@ -70,56 +102,61 @@ class PlaylistQueryEvaluator:
 
         if playlistCount < 1:
             raise Exception('No Playlists collected to test!')
+
+        if not self._hasExtractedQueries:
+            self.extractQueries()
         
-        # functions to run for every playlist
-        evaluationFuncs = [evaluate_playlist, evaluate_random_guess]
+        # evaluation functions to run for every playlist
+        evaluationFuncs = [rec_random_tracks, rec_query_tracks]
+        if self._useUserContext:
+            evaluationFuncs.append(rec_query_tracks_with_user)
 
         # init metrics
         noQueryPossible = 0
         stats = {}
 
-        for playlist in self._playlists:        
-
-            # extract query
-            queryIds = extract_query_from_name(playlist['playlistName'])
-            if self._useUserContext:
-                queryIds.append(playlist['userId'])
-            
-            # no query could be extracted
-            if len(queryIds) < 1:
-                noQueryPossible += 1
-                continue
+        for playlist in self._playlists:
         
-            for precisionAt in range(1, self._maxPrecisionAt + 1):        
-                for evalFunc in evaluationFuncs:
+            for evalFunc in evaluationFuncs:
+
+                # execute and store performance
+                playlistTrackCount = len(playlist['tracks'])
+                limit = max(playlistTrackCount, self._maxPrecisionAt)
+                recItems = evalFunc(geCalc, playlist, limit)
+
+                for precisionAt in range(1, self._maxPrecisionAt + 1):        
                     statName = evalFunc.__name__ + '@' + str(precisionAt)
-                    # init metric entry
+
+                    # init stats entry
                     if not statName in stats:
                         stats[statName] = {
                             'precision': 0,
-                            'precision_on_hits': 0,
+                            'precision_on_has_hits': 0,
                             'recall': 0,
                             'avg_hits': 0,
+                            'avg_hits_on_has_hits': 0,
                             'has_hits': 0,
                         }
-
-                    # execute and store performance
-                    hits, recall, precision = evalFunc(geCalc, playlist, queryIds, precisionAt)
-                    stats[statName]['precision'] += precision
-                    stats[statName]['recall'] += recall
+                    
+                    hits = checkMatchesAt(playlist['tracks'], recItems, precisionAt)
+                    
+                    stats[statName]['precision'] += hits / precisionAt
+                    stats[statName]['recall'] += hits / playlistTrackCount
                     stats[statName]['avg_hits'] += hits
 
                     if hits > 0:
-                        stats[statName]['precision_on_hits'] += precision
-                        stats[statName]['has_hits'] += 1                                    
+                        stats[statName]['precision_on_has_hits'] += precision / precisionAt
+                        stats[statName]['has_hits'] += 1
+                        stats[statName]['avg_hits_on_has_hits'] += hits  
     
         
         # calculate average:
         for statName in stats:
-            stats[statName]['precision'] = stats[statName]['precision'] / playlistCount
-            stats[statName]['recall'] = stats[statName]['recall'] / playlistCount
-            stats[statName]['avg_hits'] = stats[statName]['avg_hits'] / playlistCount
-            stats[statName]['precision_on_hits'] = stats[statName]['precision_on_hits'] / stats[statName]['has_hits']
+            stats[statName]['precision'] /= playlistCount
+            stats[statName]['recall'] /= playlistCount
+            stats[statName]['avg_hits'] /= playlistCount
+            stats[statName]['precision_on_has_hits'] /= stats[statName]['has_hits']
+            stats[statName]['avg_hits_on_has_hits'] /= stats[statName]['has_hits']
 
         logger.info('Playlist evaluation finished: total %s playlists (testsplit=%s), no query extracted for %s', playlistCount, self._testSplit, noQueryPossible)
         for statName in stats:
@@ -131,57 +168,43 @@ class PlaylistQueryEvaluator:
 
 # ------------- static functions ------------
 
-def evaluate_playlist(geCalc, playlist, queryIds, precisionAt = 1):
-    '''Evaluates playlist name as query performance.
+def rec_query_tracks_with_user(geCalc, playlist, limit):
+    ''' Use queryIds to predict playlist track with User context.
     '''
-
-    playlistCount = len(playlist['tracks'])
-    limit = playlistCount * precisionAt
+    queryIds.append(playlist['userId'])
     results = geCalc.query_by_ids(
         queryIds, 
         typeFilter = ['track'], 
         limit = limit
     )
+    return results
 
-    numHits = match_track_hits(playlist['tracks'], results)
-    if numHits > 0:
-        logger.debug('Playlist: precision %s <<%s>> query:[%s]',
-            numHits / limit,
-            playlist['playlistName'],
-            queryIds[0]
-        )
-
-    return (
-        numHits,
-        numHits / playlistCount, # recall
-        numHits / limit, # precision
-    )
-
-def evaluate_random_guess(geCalc, playlist, queryIds, precisionAt = 1):
-    '''Evaluates playlist name as query performance (results are rando entries).
+def rec_query_tracks(geCalc, playlist, limit):
+    ''' Use simple queryIds to predict playlist tracks.
     '''
-    
-    playlistCount = len(playlist['tracks'])
-    limit = playlistCount * precisionAt
+    queryIds = playlist['extracted_queries']['simple_first_match']
+    results = geCalc.query_by_ids(
+        queryIds, 
+        typeFilter = ['track'], 
+        limit = limit
+    )
+    return results
+
+def rec_random_tracks(geCalc, playlist, limit):
+    ''' Use random recommender to predict playlist tracks.
+    '''    
     results = geCalc.random_query_results(
         typeFilter = ['track'], 
         limit = limit
     )
+    return results
 
-    numHits = match_track_hits(playlist['tracks'], results)
-
-    return (
-        numHits,
-        numHits / playlistCount, # recall
-        numHits / limit, # precision
-    )
-
-def match_track_hits(playlistTracks, recTracks):
+def checkMatchesAt(recResult, testTracks, firstN):
+    ''' Count matches of test in recResult within first n elements
+    '''
     hits = 0
-    for trackId in playlistTracks:
-        for recTrack in recTracks:
-            if recTrack['id'] == trackId:
-                hits += 1
-                break
+    for i in range(0, firstN):
+        if recResult[i]['id'] in testTracks:
+            hits += 1
 
     return hits
