@@ -141,7 +141,7 @@ class PlaylistQueryEvaluator:
                             'has_hits': 0,
                         }
                     
-                    hits = checkMatchesAt(playlist['tracks'], recItems, precisionAt)
+                    hits = checkMatchesAt(recItems, playlist['tracks'], precisionAt)
                     
                     stats[statName]['precision'] += hits / precisionAt
                     stats[statName]['recall'] += hits / playlistTrackCount
@@ -232,10 +232,9 @@ def rec_random_tracks(geCalc, playlist, limit):
 def checkMatchesAt(recResult, testTracks, firstN):
     ''' Counts matches of test in recResult within first n elements
     '''
-    testTrackIds = [track['id'] for track in testTracks]
     hits = 0
     for i in range(0, firstN):
-        if recResult[i] in testTrackIds:
+        if recResult[i]['id'] in testTracks:
             hits += 1
 
     return hits
