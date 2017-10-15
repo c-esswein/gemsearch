@@ -13,7 +13,7 @@ import gemsearch.api.user as userApi
 
 app = Flask(__name__)
 
-dataFolder = os.environ.get('GEMSEARCH_API_FOLDER', 'data/api_1/')
+dataFolder = os.environ.get('GEMSEARCH_API_FOLDER', 'data/api/')
 VIZ_EMBEDDING_FILE = dataFolder + 'pca.em.npy'
 
 print('initialize geCalc')
@@ -148,7 +148,7 @@ def suggest_item(term):
         'id': item['_source']['id'],
         'type': item['_source']['type'],
         'name': item['_source']['name'],
-        'highlight': item['hightlight']['name']
+        'highlightName': item['highlight']['name'][0]
     }, result)
 
     return jsonify({
@@ -290,7 +290,6 @@ def get_graph_neighbors(nodeId):
         types = types.split('|')
     
     depth = int(request.args.get('depth') or 1)
-    print(depth)
 
     node = geCalc.get_item_by_item_id(nodeId)
     nodes = get_graph_helper().get_neighbors(node['embeddingIndex'], depth)
@@ -298,6 +297,7 @@ def get_graph_neighbors(nodeId):
     items = geCalc.get_items_from_embedding_indices(nodes, types)
 
     return jsonify({
+        'success': True,
         'nodes': resolve_items_meta(items)
     })
 
