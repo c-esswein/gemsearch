@@ -16,8 +16,7 @@ def search(queryStr, limit=10):
             "fields" : {
                 "name" : {}
             }
-        },
-        "explain": True
+        }
     })
     return [hit for hit in res['hits']['hits']]
 
