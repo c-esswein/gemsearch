@@ -32,7 +32,7 @@ SHOULD_EVAL_BASELINE = True
 
 TEST_SPLIT=0.2
 MAX_PRECISION_AT=5
-MIN_TRACKS_PER_USER = 20
+MIN_TRACKS_PER_USER = 30
 # ---- /config ----
 
 logger.info('started user rec eval with config: %s', {
