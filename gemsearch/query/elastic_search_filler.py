@@ -17,6 +17,8 @@ def es_load_all_types(typeTraverser, indexName, docType, dismissTypes = []):
     es = es_get_instance()
 
     def esActionGenerator(traverser):
+        ''' Transform type definitions into es documents.
+        '''
         for typeDef in traverser:
             # check if item type should not be indexed
             if typeDef['type'] in dismissTypes:

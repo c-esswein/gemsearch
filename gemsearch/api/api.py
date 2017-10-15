@@ -5,7 +5,7 @@ import os.path
 import os
 
 from gemsearch.embedding.ge_calc import GeCalc
-from gemsearch.query.elastic_search import search as es_search
+from gemsearch.query.elastic_search import suggest as es_suggest
 from gemsearch.api.metadata import resolve_items_meta
 from gemsearch.api.graph import Graph
 from gemsearch.api.positions import calc_viz_data, cluster_items
@@ -135,7 +135,7 @@ def suggest_item(term):
     ''' Get autocomplete suggestions for given term.
     '''
     try:
-        result = es_search(term)
+        result = es_suggest(term)
     except Exception as exc:
         return jsonify({
             'success': False,
@@ -147,7 +147,8 @@ def suggest_item(term):
     resultItems = map(lambda item: {
         'id': item['_source']['id'],
         'type': item['_source']['type'],
-        'name': item['_source']['name']
+        'name': item['_source']['name'],
+        'highlight': item['hightlight']['name']
     }, result)
 
     return jsonify({

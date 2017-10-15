@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import logging
 logger = logging.getLogger(__name__)
 
-from gemsearch.query.elastic_search import extract_query_from_name
+from gemsearch.query.elastic_search import extract_query_from_name, extract_multiple_queries_from_name
 from gemsearch.utils.JSONEncoder import JSONEncoder
 
 ''' Evaluates playlist name -> query matching.abs
@@ -73,7 +73,9 @@ class PlaylistQueryEvaluator:
             
             # extract and store queries
             playlist['extracted_queries'] = {
-                'simple_first_match': extract_query_from_name(playlist['playlistName'])
+                'simple_first_match': extract_query_from_name(playlist['playlistName'], 1),
+                'simple_first_two_match': extract_query_from_name(playlist['playlistName'], 2),
+                'multiple_queries': extract_multiple_queries_from_name(playlist['playlistName'], 1)
             }
                 
             # check if any extraction has returned results
@@ -107,9 +109,10 @@ class PlaylistQueryEvaluator:
             self.extractQueries()
         
         # evaluation functions to run for every playlist
-        evaluationFuncs = [rec_random_tracks, rec_query_tracks]
+        evaluationFuncs = [rec_random_tracks, rec_query_tracks, rec_first_two_query_tracks]
         if self._useUserContext:
             evaluationFuncs.append(rec_query_tracks_with_user)
+            evaluationFuncs.append(rec_tracks_with_user)
 
         # init metrics
         noQueryPossible = 0
@@ -145,7 +148,7 @@ class PlaylistQueryEvaluator:
                     stats[statName]['avg_hits'] += hits
 
                     if hits > 0:
-                        stats[statName]['precision_on_has_hits'] += precision / precisionAt
+                        stats[statName]['precision_on_has_hits'] += hits / precisionAt
                         stats[statName]['has_hits'] += 1
                         stats[statName]['avg_hits_on_has_hits'] += hits  
     
@@ -155,11 +158,15 @@ class PlaylistQueryEvaluator:
             stats[statName]['precision'] /= playlistCount
             stats[statName]['recall'] /= playlistCount
             stats[statName]['avg_hits'] /= playlistCount
-            stats[statName]['precision_on_has_hits'] /= stats[statName]['has_hits']
-            stats[statName]['avg_hits_on_has_hits'] /= stats[statName]['has_hits']
+            if stats[statName]['has_hits'] > 0:
+                stats[statName]['precision_on_has_hits'] /= stats[statName]['has_hits']
+                stats[statName]['avg_hits_on_has_hits'] /= stats[statName]['has_hits']
+            else:
+                stats[statName]['precision_on_has_hits'] = 0
+                stats[statName]['avg_hits_on_has_hits'] = 0
 
         logger.info('Playlist evaluation finished: total %s playlists (testsplit=%s), no query extracted for %s', playlistCount, self._testSplit, noQueryPossible)
-        for statName in stats:
+        for statName in sorted(stats.keys()):
             logger.info('___ method: %s', statName)
             for metric in stats[statName]:
                 logger.info('%s: %s', metric, stats[statName][metric])
@@ -169,8 +176,9 @@ class PlaylistQueryEvaluator:
 # ------------- static functions ------------
 
 def rec_query_tracks_with_user(geCalc, playlist, limit):
-    ''' Use queryIds to predict playlist track with User context.
+    ''' Uses queryIds to predict playlist track with User context.
     '''
+    queryIds = playlist['extracted_queries']['simple_first_match']    
     queryIds.append(playlist['userId'])
     results = geCalc.query_by_ids(
         queryIds, 
@@ -179,8 +187,30 @@ def rec_query_tracks_with_user(geCalc, playlist, limit):
     )
     return results
 
+def rec_tracks_with_user(geCalc, playlist, limit):
+    ''' Uses user context alone to rec tracks (query is not included!).
+    '''
+    queryIds = [playlist['userId']]
+    results = geCalc.query_by_ids(
+        queryIds, 
+        typeFilter = ['track'], 
+        limit = limit
+    )
+    return results
+
+def rec_first_two_query_tracks(geCalc, playlist, limit):
+    ''' Uses simple queryIds to predict playlist tracks.
+    '''
+    queryIds = playlist['extracted_queries']['simple_first_two_match']
+    results = geCalc.query_by_ids(
+        queryIds, 
+        typeFilter = ['track'], 
+        limit = limit
+    )
+    return results
+
 def rec_query_tracks(geCalc, playlist, limit):
-    ''' Use simple queryIds to predict playlist tracks.
+    ''' Uses simple queryIds to predict playlist tracks.
     '''
     queryIds = playlist['extracted_queries']['simple_first_match']
     results = geCalc.query_by_ids(
@@ -191,7 +221,7 @@ def rec_query_tracks(geCalc, playlist, limit):
     return results
 
 def rec_random_tracks(geCalc, playlist, limit):
-    ''' Use random recommender to predict playlist tracks.
+    ''' Uses random recommender to predict playlist tracks.
     '''    
     results = geCalc.random_query_results(
         typeFilter = ['track'], 
@@ -200,11 +230,12 @@ def rec_random_tracks(geCalc, playlist, limit):
     return results
 
 def checkMatchesAt(recResult, testTracks, firstN):
-    ''' Count matches of test in recResult within first n elements
+    ''' Counts matches of test in recResult within first n elements
     '''
+    testTrackIds = [track['id'] for track in testTracks]
     hits = 0
     for i in range(0, firstN):
-        if recResult[i]['id'] in testTracks:
+        if recResult[i] in testTrackIds:
             hits += 1
 
     return hits
