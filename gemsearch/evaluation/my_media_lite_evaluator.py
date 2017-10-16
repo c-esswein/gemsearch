@@ -56,6 +56,7 @@ def executeMyMediaLite(trainingFilePath, testFilePath, recommenderMethod):
     args.append("--training-file=%s" % trainingFilePath)
     args.append("--test-file=%s" % testFilePath)
     args.append("--recommender=%s" % recommenderMethod)
+    args.append("--measures=prec@5")
     
     try:
         execute_cmd(args, useBash = USE_WINDOWS_BASH)
