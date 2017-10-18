@@ -1,3 +1,6 @@
+/**
+ * Aggregate all tags and store them in new collection.
+ */
 
 var tracks = db.getCollection('tracks');
 

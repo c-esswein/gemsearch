@@ -1,3 +1,7 @@
+/**
+ * Find playlists with tracks from only one artist.
+ */
+
 var tracks = db.getCollection('tracks');
 var playlists = db.getCollection('playlists');
 

@@ -1,3 +1,10 @@
+/**
+ * Find playlists with equal track array.
+ * 
+ * - per playlist: calculate hash of all track_uri's
+ * - find duplicate hashes
+ */
+
 // calculate hash
 
 var playlists = db.getCollection('playlists');
@@ -23,7 +30,7 @@ print(counter)
 
 return;
 
-// find dublicates
+// find duplicate
 var playlists = db.getCollection('playlists');
 
 playlists.aggregate(

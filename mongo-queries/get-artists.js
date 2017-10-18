@@ -1,3 +1,6 @@
+/**
+ * Find all artists and store them in new collection.
+ */
 
 var tracks = db.getCollection('tracks');
 

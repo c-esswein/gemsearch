@@ -1,8 +1,15 @@
-
+/**
+ * Filter playlists: 
+ *  - remove tracks without audio feature
+ *  - remove playlists with less than N tracks
+ * 
+ * Store result in new collection.
+ */
 var audioTracks = db.getCollection('tmp_tracks_with_audio');
 var storeColl = db.getCollection('tmp_playlists_cleaned');
 
 var counter = 0;
+var minTrackCount = 3;
 
 db.getCollection('playlists').find({}).forEach(function(playlist) {
     counter++;
@@ -17,7 +24,7 @@ db.getCollection('playlists').find({}).forEach(function(playlist) {
         }
    });
 
-   if (tracks.length > 3) {
+   if (tracks.length > minTrackCount) {
        // store playlist
        playlist.tracks = tracks;
        storeColl.insert(playlist);

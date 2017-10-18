@@ -1,3 +1,7 @@
+/**
+ * Set track id for tracks in playlists.
+ */
+
 var tracks = db.getCollection('tracks');
 var playlists = db.getCollection('playlists');
 

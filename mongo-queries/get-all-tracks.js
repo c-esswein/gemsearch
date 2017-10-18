@@ -1,4 +1,12 @@
-
+/**
+ * Find all tracks in playlists.
+ * 
+ * Find all tracks without track data.
+ * 
+ * 
+ * Optional -> filter all with audio.
+ * 
+ */
 var playlists = db.getCollection('playlists');
 
 playlists.aggregate(
@@ -25,6 +33,9 @@ playlists.aggregate(
       { $out: "found_tracks" }
    ]
 )
+
+
+return;
 
 
 // find tracks without audio

@@ -1,3 +1,6 @@
+/**
+ * Find playlists with missing track_id's
+ */
 
 var audioTracks = db.getCollection('tmp_tracks_with_audio');
 var storeColl = db.getCollection('tmp_playlists_counter');
