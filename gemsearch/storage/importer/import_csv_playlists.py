@@ -1,6 +1,9 @@
+''' Runner to import additional dbis spotify data.
+'''
+
 import csv
 from pprint import pprint
-# from gemsearch.storage.Storage import Storage
+from gemsearch.storage.Storage import Storage
 
 def readCsv(filename):
     with open(filename, "r", encoding="utf-8") as csvfile:
@@ -13,7 +16,8 @@ def readCsv(filename):
 playLists = dict()
 tracks = dict()
 
-for row in readCsv('data/playlistDataset.csv'):
+# load data
+for row in readCsv('../dbis-data/spotifyPlaylistDataset/playlistDataset.csv'):
     playlistKey = row['userID'] + '_' + row['playlistName']
     if not playlistKey in playLists:
         playLists[playlistKey] = {
@@ -24,23 +28,48 @@ for row in readCsv('data/playlistDataset.csv'):
         }
     playLists[playlistKey]['tracks'].append({
         'track_uri': row['trackID']
+        # TODO: track id is not set!
     })
 
-    tracks[row['trackID']] = True
+    # tracks[row['trackID']] = True
 
 
 print('Playlists count: {}'.format(len(playLists.items())))
-print('Tracks count: {}'.format(len(tracks.items())))
+# print('Tracks count: {}'.format(len(tracks.items())))
 
 
-
-''' 
 # insert playlists
 storage = Storage()
 playlistColl = storage.getCollection('playlists')
 
+missing = []
 for playlist in playLists.values():
-    print("insert: " + playlist['key'])
-    playlistColl.insert(playlist)
- '''
+    dbPlaylist = playlistColl.find_one({'key': playlist['key']})
+    if dbPlaylist is None:
+        print("missing: " + playlist['key'])
+        missing.append(playlist)
+
+        # insert
+        # playlistColl.insert_one(playlist)
+
+        # collect tracks
+        for track in playlist['tracks']:
+            tracks[track] = True
+            
+
+print('Playlists missing count: {}'.format(len(missing)))
+
+# check missing tracks
+missingTracks = []
+trackColl = storage.getCollection('tracks')
+for trackUri in tracks:
+    dbTrack = trackColl.find_one({'uri': trackUri})
+    if dbTrack is None:
+        missingTracks.append(dbTrack)
+
+# check missing tracks
+
+print("missing tracks: " + str(len(missingTracks)))
+pprint(missingTracks)
+
 print("import finished")

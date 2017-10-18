@@ -52,7 +52,7 @@ API:
 
 Crawler:
     Check for new tracks (every 10sec)
-    - crawl tracks
+    - crawl tracks set gemsearch_status=CRAWLED
 
 Embedder:
     Check for new users (every 10min)
@@ -60,5 +60,6 @@ Embedder:
     - create embedding
     - restart api
     - set user status -> embedded
+    - set track status -> embedded
 
     Relearn complete model (every x days / users)

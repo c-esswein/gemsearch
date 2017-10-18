@@ -38,9 +38,27 @@ def getTagsForTrack(track):
     ''' Get tags for given track from last fm api.
         None is returned if track was not found.
     '''
-    artistName = track['artists'][0]['name']
     trackName = track['name']
-    return get_tags(artistName, trackName)
+    tags = None
+
+    # load tags for each (trackName, artistName) pair and merge tags
+    for artist in track['artists']:    
+        crawledTags = get_tags(artist['name'], trackName)
+
+        # append crawled tags
+        if not crawledTags is None:
+            if tags is None:
+                tags = {}
+            
+            # add songs, use name as key to make sure tags are unique
+            for tag in crawledTags:
+                tags[tag['name']] = tag
+
+    # return unique tags
+    if tags is None:
+        return None
+    else:
+        return list(tags.values()) # convert map to list
 
 def get_tags(artistName, trackName):
     ''' Get tags for given track info from last fm api.
@@ -109,7 +127,7 @@ def process_list(listPath, outputFileName):
         resultFile.close()
         missedFile.close()
 
-if __name__ == '__main__':
+''' if __name__ == '__main__':
     try:
         process_list('last_fm_missing.csv', 'last_fm_result.json')
     except Exception as e:
@@ -117,3 +135,29 @@ if __name__ == '__main__':
         print(e)
     
     slack_send_message('Process list done')
+ '''
+
+if __name__ == '__main__':
+    from .skip_ids import SKIP_IDS
+    from gemsearch.storage.Tracks import Tracks
+
+    tracks = Tracks()
+    missed = 0
+    found = 0
+    for trackId in SKIP_IDS:
+        track = tracks.getTrackById(trackId)
+        if track is None:
+            continue
+
+        tags = getTagsForTrack(track)
+
+        if tags is None:
+            missed += 1
+        else:
+            print('found: ' + str(trackId) + ' len: ' + str(len(tags)))
+            found += 1
+
+        # TODO: store
+        # tracks.update_one({'_id': track['_id']}, {'tags': tags})
+
+        print('processed: ' + str(trackId))

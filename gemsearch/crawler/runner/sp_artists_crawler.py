@@ -1,27 +1,14 @@
+''' Standalone spotify artist list crawler.
+Use to export a list of all artists and then process this list on other server.
+Result is stored in json file which can be imported later.
+'''
 
-import spotipy
-import spotipy.oauth2
-from ratelimit import *
 import json
 import time
 from pprint import pprint
 
-from gemsearch.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 from gemsearch.utils.slack import slack_send_message, slack_error_message
-
-@rate_limited(1)
-def crawl_artist(sp, artistId):
-    ''' Get artists data from spotify api
-    '''
-    artist = sp.artist(artistId.strip())
-
-    return artist
-
-
-
-# ---------------------------------
-# ----------------- standalone list crawler methods
-# ---------------------------------
+from gemsearch.crawler.spotify_api import crawlArtist
 
 def create_artist_list(exportFileName):
     ''' Export all artist ids from db.
@@ -37,9 +24,7 @@ def create_artist_list(exportFileName):
 def process_list(listPath, outputFileName):
     ''' Process list of artist ids. Result is stored in single output file.
     '''
-    credentials = spotipy.oauth2.SpotifyClientCredentials(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET)
-    token = credentials.get_access_token()
-    sp = spotipy.Spotify(client_credentials_manager=credentials)
+    sp = getSpotipyInstance()
     
     missedFile = open('missed.csv', 'a')
     
@@ -47,12 +32,12 @@ def process_list(listPath, outputFileName):
         with open(listPath, 'r', encoding="utf-8") as idFile:
             for artistId in idFile:
                 try:
-                    result = crawl_artist(sp, artistId)
+                    result = crawlArtist(sp, artistId)
                 except Exception as e:
                     # retry once
                     slack_error_message('Error (will retry): ', e)
                     time.sleep(120)
-                    result = crawl_artist(sp, artistId)
+                    result = crawlArtist(sp, artistId)
 
                 if result is not None:
                     resultFile.write(json.dumps(result) + '\n')
@@ -66,4 +51,4 @@ if __name__ == '__main__':
     # create_artist_list('data/artists.csv')
     process_list('data/artists.csv', 'data/crawled_artists.json')
     print('done')
-    slack_send_message('Process list done')
+    slack_send_message('Spotify Artist Process list done')

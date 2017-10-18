@@ -61,7 +61,7 @@ def syncUserMusic(userName, token):
     # store new tracks
     tracksCol = storage.getCollection('tracks')
     try:
-        tracksCol.bulk_write([
+        bulkResult = tracksCol.bulk_write([
             UpdateOne(
                 {'uri': track['track']['uri']}, 
                 {'$set': track['track']},
@@ -72,6 +72,9 @@ def syncUserMusic(userName, token):
     except BulkWriteError as bwe:
         print(bwe.details)
         raise
+
+    pprint(bulkResult)
+    # TODO: return number of insert / upsert tracks --> unkown tracks
 
     return len(tracks)
 
@@ -100,6 +103,8 @@ def getMissingTracks(userName):
     storage = Storage()
     usersCol = storage.getCollection('users')
 
+    # TODO: tracks are not missing! check for missing track['gemsearch_status']
+
     missingCount = usersCol.aggregate([
         # select user
         { "$match" : { 'id' : userName } },
@@ -117,10 +122,10 @@ def getMissingTracks(userName):
         # find not matching songs
         { "$match" : { 'trackData' : { "$eq": [] } } },
         
-        { "$project": {
-            "track_id" : "$tracks.track_id",
-            "track_uri": "$tracks.track_uri",
-        }},
+        #{ "$project": {
+        #    "track_id" : "$tracks.track_id",
+        #    "track_uri": "$tracks.track_uri",
+        #}},
 
         { "$count" : "track_count" }
     ])
@@ -130,6 +135,6 @@ def getMissingTracks(userName):
 
 
 if __name__ == '__main__':
-    token = 'BQD6hF9Pn2-DyY8o-5Lk2IMm1Vbdq99pCTbB4TU1CzXn5D6Ocvzbgcz2sZ5ubMUl8WNdPvh6lIw-BCfMbBTK8E7hF021Rbo1A7K2FYuQMAd2qdYGziXe52B9oswKrlSn5RGQI1EbHa8CiXeLmNBtfQ'
+    token = ''
     syncUserMusic(token)
     # getMissingTracks('')

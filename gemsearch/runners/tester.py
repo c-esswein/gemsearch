@@ -1,60 +1,57 @@
-''' Playlist evaluation runner: Extracts query from playlist name
-and tries to predict playlist tracks.
-'''
-
-from gemsearch.utils.logging import setup_logging
-setup_logging()
-
-import logging
-logger = logging.getLogger(__name__)
-
-from gemsearch.graph.graph_generator import GraphGenerator
-from gemsearch.core.id_manager import IdManager
-from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes, traverseUserTrackInPlaylistsObj
-
-from gemsearch.core.type_counter import TypeCounter
-from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
-
-from gemsearch.evaluation.playlist_query_evaluator import PlaylistQueryEvaluator
-from gemsearch.embedding.node2vec import Node2vec
-from gemsearch.embedding.ge_calc import GeCalc
-from gemsearch.utils.timer import Timer
+# Test user rec data set for validity
+# TODO: delete
 
 from pprint import pprint
+import csv
 
-# ---- config ----
-# dataDir = 'data/graph_15000/'
-dataDir = 'data/graph_50/'
-outDir = 'data/embedder_eval/'
+outDir = 'data/rec/'
+trainingPath = outDir+'media_lite_training.csv'
+testPath = outDir+'media_lite_test.csv'
 
-SHOULD_EMBED = True
-SHOULD_INDEX_ES = False
+def traverseUserTrack(filePath):
+    with open(filePath, 'r', encoding="utf-8") as inFile:
+        fieldnames = ['userId', 'trackId']
+        for line in csv.DictReader(inFile, fieldnames=fieldnames, delimiter=',', quotechar='|'):            
+            yield line
 
-TEST_PLAYLIST_SPLIT=0.2
-MAX_PRECISION_AT=2
-USE_USER_IN_QUERY = False
-# ---- /config ----
+users = {}
+tracks = {}
+for line in traverseUserTrack(trainingPath):
+    if not (line['userId'] in users):
+        users[line['userId']] = 0
+    
+    users[line['userId']] += 1
 
-logger.info('started playlist eval with config: %s', {
-    'dataDir': dataDir,
-    'outDir': outDir,
-    'SHOULD_EMBED': SHOULD_EMBED,
-    'SHOULD_INDEX_ES': SHOULD_INDEX_ES,
-    'TEST_PLAYLIST_SPLIT': TEST_PLAYLIST_SPLIT,
-    'MAX_PRECISION_AT': MAX_PRECISION_AT,
-    'USE_USER_IN_QUERY': USE_USER_IN_QUERY
-})
+    tracks[line['trackId']] = True
 
-name = 'node2vec_dim3_wLen3_nWalks3'
-# load embedding
-with Timer(logger=logger, message='ge calc initializing') as t:
-    geCalc = GeCalc()
-    geCalc.load_node2vec_data(outDir+name+'.em', outDir+'types.csv')
+testUsers = {}
+for line in traverseUserTrack(testPath):
+    if not (line['userId'] in testUsers):
+        testUsers[line['userId']] = 0
+    
+    testUsers[line['userId']] += 1
+
+    if not (line['userId'] in users):
+        print('user is missing in training: ' + str(line['userId']))    
 
 
-print('------------- evaluation -------------')
-playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
-playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+for user in users:
+    if users[user] < 10:
+        pprint(users[user])
+    if not user in testUsers:
+        print('missing user in testUsers: ' + str(user))
 
-with Timer(logger=logger, message='evaluation') as t:
-    playlistEval.evaluate(geCalc)
+for user in testUsers:
+    if testUsers[user] < 8:
+        print('len to small: ' + str(testUsers[user]) + ' ' + str(user))
+    if not user in users:
+        print('missing user in training: ' + str(user))
+
+    if users[user] < testUsers[user]:
+        print('more test thant training: ' + str(user))
+
+
+print('usercount: ' +str(len(users)))
+print('trackcount: ' +str(len(tracks)))
+
+print('done')
