@@ -2,11 +2,9 @@
 tries to predict tags while testing.
 '''
 
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 from pprint import pprint
-from gemsearch.utils.logging import setup_logging
-setup_logging()
-import logging
-logger = logging.getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager

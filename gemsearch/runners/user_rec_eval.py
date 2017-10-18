@@ -1,12 +1,8 @@
 ''' Playlist evaluation runner: Extracts query from playlist name
 and tries to predict playlist tracks.
 '''
-
-from gemsearch.utils.logging import setup_logging
-setup_logging()
-
-import logging
-logger = logging.getLogger(__name__)
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
@@ -24,8 +20,8 @@ import gemsearch.evaluation.my_media_lite_evaluator as my_media_lite_eval
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_15000/'
-outDir = 'data/rec/'
+dataDir = 'data/graph_50/'
+outDir = 'data/tmp/'
 
 SHOULD_CREATE_GRAPH = True
 SHOULD_EVAL_BASELINE = True

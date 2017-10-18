@@ -1,12 +1,8 @@
 ''' Playlist evaluation runner: Extracts query from playlist name
 and tries to predict playlist tracks.
 '''
-
-from gemsearch.utils.logging import setup_logging
-setup_logging()
-
-import logging
-logger = logging.getLogger(__name__)
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
@@ -24,8 +20,8 @@ from gemsearch.utils.timer import Timer
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_15000/'
-outDir = 'data/rec/'
+dataDir = 'data/graph_50/'
+outDir = 'data/tmp/'
 
 SHOULD_GENERATE_GRAPH = True
 SHOULD_INDEX_ES = True
@@ -59,14 +55,16 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
         print('------------- generate graph -------------')
         with Timer(logger=logger, message='graph generation') as t:
 
-            graphGenerator = GraphGenerator(
-                outDir+'graph.txt', 
-                IdManager(outDir+'types.csv', 
+            idManager = IdManager(outDir+'types.csv', 
                     typeHandlers = [TypeCounter()]
-                )
             )
+            graphGenerator = GraphGenerator(outDir+'graph.txt', idManager)
 
-            graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
+            # graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
+            # add tracks without features
+            for track, feature, weight in traverseTrackFeatures(dataDir+'track_features.json'):
+                idManager.getId(track)
+
             graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
             graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
 

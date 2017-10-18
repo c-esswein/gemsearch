@@ -1,10 +1,10 @@
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 from pprint import pprint
 import numpy as np
 import random
 import json
 from sklearn.model_selection import train_test_split 
-import logging
-logger = logging.getLogger(__name__)
 
 from gemsearch.query.elastic_search import extract_query_from_name, extract_multiple_queries_from_name
 from gemsearch.utils.JSONEncoder import JSONEncoder

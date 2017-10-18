@@ -1,7 +1,7 @@
 
 from gemsearch.utils.proc import execute_cmd
-import logging
-logger = logging.getLogger(__name__)
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 
 from gemsearch.settings import USE_WINDOWS_BASH
 

@@ -5,10 +5,10 @@ To run the tool Mono is required:
 http://www.mono-project.com/download
 
 '''
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 import csv
 from gemsearch.utils.proc import execute_cmd
-import logging
-logger = logging.getLogger(__name__)
 
 from gemsearch.settings import USE_WINDOWS_BASH
 PATH_MY_MEDIA_LITE = '../my_media_lite/bin/item_recommendation'
@@ -56,7 +56,7 @@ def executeMyMediaLite(trainingFilePath, testFilePath, recommenderMethod):
     args.append("--training-file=%s" % trainingFilePath)
     args.append("--test-file=%s" % testFilePath)
     args.append("--recommender=%s" % recommenderMethod)
-    args.append("--measures=prec@5")
+    args.append("--measures=\"prec@5\"")
     
     try:
         execute_cmd(args, useBash = USE_WINDOWS_BASH)
@@ -68,5 +68,5 @@ def executeMyMediaLite(trainingFilePath, testFilePath, recommenderMethod):
 if __name__ == '__main__':
     tmpDir = 'data/rec/'
     evalRandom(tmpDir+'media_lite_training.csv', tmpDir+'media_lite_test.csv')
-    evalMostPopular(tmpDir+'media_lite_training.csv', tmpDir+'media_lite_test.csv')
-    evalUserKNN(tmpDir+'media_lite_training.csv', tmpDir+'media_lite_test.csv')
+    # evalMostPopular(tmpDir+'media_lite_training.csv', tmpDir+'media_lite_test.csv')
+    # evalUserKNN(tmpDir+'media_lite_training.csv', tmpDir+'media_lite_test.csv')

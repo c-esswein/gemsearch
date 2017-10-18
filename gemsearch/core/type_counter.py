@@ -1,6 +1,6 @@
 
-import logging
-logger = logging.getLogger(__name__)
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 
 class TypeCounter:
     '''Counts number of entities for each type and prints statistics.

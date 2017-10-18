@@ -1,7 +1,7 @@
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 from pprint import pprint
 from sklearn.model_selection import train_test_split
-import logging
-logger = logging.getLogger(__name__)
 import pickle
 
 
