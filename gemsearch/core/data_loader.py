@@ -104,7 +104,7 @@ def traverseTrackFeatures(filePath):
 
 def traverseTrackTag(filePath):
      with open(filePath, 'r', encoding="utf-8") as inFile:
-        fieldnames = ['trackId', 'tagName']
+        fieldnames = ['trackId', 'tagName', 'tagCount']
         for line in csv.DictReader(inFile, fieldnames=fieldnames, delimiter=',', quotechar='|'):
             yield ({
                 'type': 'track',
@@ -115,7 +115,7 @@ def traverseTrackTag(filePath):
                 'name': line['tagName'],
                 'id': 'tag::' + line['tagName']
             },
-            1)
+            line['tagCount'])
 
 
 def traverseTypes(fileName):

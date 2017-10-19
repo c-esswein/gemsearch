@@ -136,7 +136,9 @@ class DataGenerator(ADataGenerator):
                 if tagName:
                     self.write('track_tag', [
                         trackId,
-                        tagName
+                        tagName,
+                        # tag count domain is [0, 100] --> scale to 0, 1
+                        tag['count'] / 100
                     ])
 
         return True
