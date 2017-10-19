@@ -76,12 +76,10 @@ def _process(args):
   else:
     raise Exception("Unknown file format: '%s'.  Valid formats: 'adjlist', 'edgelist', 'mat'" % args.format)
 
-    G = graph.load_edgelist(args.input, undirected=args.undirected)
-    logger.info("Number of nodes: {}".format(len(G.nodes())))
-
   num_nodes = len(G.nodes())
   num_walks = num_nodes * args.number_walks
 
+  logger.info("Number of nodes: {}".format(num_nodes))
   logger.info("Number of walks: {}".format(num_walks))
 
   data_size = num_walks * args.walk_length

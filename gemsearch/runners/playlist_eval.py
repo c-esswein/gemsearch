@@ -14,14 +14,15 @@ from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_
 from gemsearch.evaluation.playlist_query_evaluator import PlaylistQueryEvaluator
 # from gemsearch.embedding.node2vec import Node2vec
 from deepwalk.runner import startDeepwalk
+import deepwalk.node2vec
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
 
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
-outDir = 'data/tmp/'
+dataDir = 'data/graph_15000/'
+outDir = 'data/rec/'
 
 SHOULD_GENERATE_GRAPH = True
 SHOULD_INDEX_ES = True
@@ -91,40 +92,43 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
     # config for embedder factory
     configs = [
         dict(
+            method='deepwalk',
             number_walks=5, walk_length=5, window_size=5, 
             representation_size=64
         ),
         dict(
-            number_walks=20, walk_length=5, window_size=5, 
-            representation_size=64
-        ),
-        dict(
-            number_walks=5, walk_length=20, window_size=5, 
-            representation_size=64
-        ),
-        dict(
+            method='deepwalk',
             number_walks=20, walk_length=20, window_size=5, 
             representation_size=64
         ),
         dict(
+            method='deepwalk',
             number_walks=20, walk_length=20, window_size=10, 
             representation_size=64
         ),
         dict(
-            number_walks=10, walk_length=10, window_size=5, 
-            representation_size=16
+            method='node2vec',
+            number_walks=5, walk_length=5, window_size=5, 
+            representation_size=64, weighted = True
         ),
         dict(
-            number_walks=10, walk_length=10, window_size=5, 
-            representation_size=32
+            method='node2vec',
+            number_walks=20, walk_length=20, window_size=5, 
+            representation_size=64, weighted = True
+        ),
+        dict(
+            method='node2vec',
+            number_walks=20, walk_length=20, window_size=10, 
+            representation_size=64, weighted = True
         )
     ]
 
-    results = []
+    results = {}
     
     for config in configs:
         name = str(config['number_walks']) +'_'+ str(config['walk_length']) +'_'+ str(config['window_size'])
         name += '_'+ str(config['representation_size'])
+        name += '_'+ str(config['method'])
 
         with Timer(logger=logger, message='embedding '+name) as t:
             # shared config
@@ -134,7 +138,10 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             config['seed'] = 42
             config['max_memory_data_size'] = 7000000 # TODO: adapt mem size
 
-            model = startDeepwalk(config)
+            if config['method'] == 'deepwalk':
+                model = startDeepwalk(config)
+            else:
+                model = deepwalk.node2vec.embeddFromConfig(config)
             # model.save(outDir+'word2vecModel_'+name+'.p')
         
 
@@ -148,10 +155,10 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
 
         with Timer(logger=logger, message='evaluation') as t:
             res = playlistEval.evaluate(geCalc)
-            results.append(res)
+            results[name] = res
             pprint(res)
 
 
     # print total result json
-    pprint(results)
     print('------------- done -------------')
+    pprint(results)
