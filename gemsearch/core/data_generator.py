@@ -34,16 +34,20 @@ class DataGenerator(ADataGenerator):
             if not playlistName:
                 continue
 
-            self.write('playlist', [
-                playlist['_id'],
-                playlist['username'],
-                playlistName,
-                [track['track_uri'] for track in playlist['tracks']]
-            ])
 
             # --- tracks ---
+            playlistTracks = []
             for track in playlist['tracks']:
-                self.writeTrack(None, track['track_uri'])
+                if self.writeTrack(None, track['track_uri']):
+                    playlistTracks.append(track['track_uri'])
+
+            if len(playlistTracks) > 0:
+                self.write('playlist', [
+                    playlist['_id'],
+                    playlist['username'],
+                    playlistName,
+                    playlistTracks
+                ])
 
     def writeUsers(self, limit):
         ''' Exports all users and contained tracks.
@@ -58,22 +62,24 @@ class DataGenerator(ADataGenerator):
 
         # --- tracks ---
         for track in user['tracks']:
-            self.write('user_tracks', [
-                user['id'],
-                track['track_uri']
-            ])
+            if self.writeTrack(None, track['track_uri']):
+                self.write('user_tracks', [
+                    user['id'],
+                    track['track_uri']
+                ])
 
-            self.writeTrack(None, track['track_uri'])
 
 
     def writeTrack(self, track = None, trackUri = None):
         ''' Exports track with tags and artists. 
         Provide either db track entry or only db track id.
+        Returns True if track was exported, False otherwise
         '''
         trackId = trackUri or track['uri']
 
+        # only export tracks once
         if self.checkIfWritten(trackId):
-            return
+            return True
 
         # load track if only id is given
         if track is None:
@@ -83,6 +89,9 @@ class DataGenerator(ADataGenerator):
         if track is None:
             raise Exception('Precondition violation: track is null')
 
+        if len(track['name'].strip()) < 1:
+            # exclude track with empty name
+            return False
 
         # --- features ---
         features = tracksRepo.getFeatures(track['_id'])
@@ -105,6 +114,8 @@ class DataGenerator(ADataGenerator):
                 }
             })
         
+        self.setIdWritten(trackId)
+
         # --- artists ---
         for artist in track['artists']:
             artistId = artist['id']
@@ -128,16 +139,28 @@ class DataGenerator(ADataGenerator):
                         tagName
                     ])
 
+        return True
+
     def writeArtist(self, artist):
         ''' Exports artist with genres.
         '''
 
-        artistId = artist['id']
-
-        if self.checkIfWritten(artistId):
+        artistId = artist['uri']
+        if self.checkAndSaveIfWritten(artistId):
             return
+        
+        # load artist because track does not include artist genres
+        dbArtistCol = Storage().getCollection('artists')
+        dbArtist = dbArtistCol.find_one({'uri': artist['uri']})
 
-        # TODO write artist genres        
+        if dbArtist is None:
+            print('Artist not found: ' + str(artist['uri']))
+
+        for genre in dbArtist['genres']:
+            self.write('artist_genre', [
+                artist['uri'],
+                genre,
+            ])
 
 
 if __name__ == "__main__":

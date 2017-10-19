@@ -44,7 +44,12 @@ class ADataGenerator():
         outputFile = self._getHandler(fileName)
         outputFile.write(json.dumps(data) + '\n')
 
-    def checkIfWritten(self, id):
+    def setIdWritten(self, id):
+        ''' Sets given id as written.
+        '''
+        self._idWritten[id] = True        
+
+    def checkAndSaveIfWritten(self, id):
         ''' Checks if id was allready written. Function will return
         true after first usage with id.
         '''
@@ -52,6 +57,14 @@ class ADataGenerator():
             return True
         else:
             self._idWritten[id] = True
+            return False
+
+    def checkIfWritten(self, id):
+        ''' Checks if id was allready written. 
+        '''
+        if id in self._idWritten:
+            return True
+        else:
             return False
 
     def loadWrittenIdsFromTypeFile(self, filePath):
