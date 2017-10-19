@@ -12,18 +12,17 @@ class GeCalc:
     embedding = None    # embeddings array
     lookup = None       # type lookup, maps embedding key to type data
 
-    def load_data(self, embeddingFile, typeFile):
-        '''Loads embedding and type mapping.
+    def load_lookup(self, typeFile):
+        '''Loads type mapping.
         '''
         
-        self.embedding = read_embedding_file(embeddingFile)
         self.lookup = list(traverseTypes(typeFile))
 
     def load_node2vec_data(self, embeddingFile, typeFile):
         '''Loads embedding (stored in node2vec format) and type mapping.
         '''
         self.embedding = read_native_embedding_file(embeddingFile)
-        self.lookup = list(traverseTypes(typeFile))
+        self.load_lookup(typeFile)
 
         if len(self.embedding) != len(self.lookup):
             raise Exception('Embeddings ({}) and type-mappings ({}) size does not match'.format(len(self.embedding), len(self.lookup)))
@@ -83,6 +82,11 @@ class GeCalc:
             else:
                 searchVec = itemVec
 
+        return self.query_by_vec(searchVec, typeFilter, limit, offset)
+
+    def query_by_vec(self, searchVec, typeFilter = None, limit = 20, offset = 0):
+        ''' Query by embeddings searchVec
+        '''
         result = find_similar_vecs(searchVec, self.embedding)
         result_items = self.get_items_from_embedding_indices(result, typeFilter, limit, offset)
 

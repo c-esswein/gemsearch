@@ -65,8 +65,6 @@ def crawlMissingTracks():
     artistCol = storage.getCollection('artists')
 
     sp = getSpotipyInstance()
-
-    from pprint import pprint
     
     trackIds = missingTrackCol.find({})
     for trackId in trackIds:

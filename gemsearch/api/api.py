@@ -1,3 +1,5 @@
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
 from flask import Flask, jsonify, request, make_response
 import numpy as np
 import itertools
@@ -13,13 +15,24 @@ import gemsearch.api.user as userApi
 
 app = Flask(__name__)
 
+# ---------- config ----------
 dataFolder = os.environ.get('GEMSEARCH_API_FOLDER', 'data/api/')
 VIZ_EMBEDDING_FILE = dataFolder + 'pca.em.npy'
+
+
+# ---------- init ----------
 
 print('initialize geCalc')
 geCalc = GeCalc()
 geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
+
+print('initialize graph geCalc')
+vizGeCalc = GeCalc()
+vizGeCalc.lookup = geCalc.lookup
+vizGeCalc.embedding = np.load(VIZ_EMBEDDING_FILE)
 print('initialize geCalc finished')
+
+# ---------- / init ----------
 
 @app.route("/api/query")
 def query():
@@ -55,6 +68,7 @@ def query():
             'data': resolvedItems
         })
     except ValueError as exc:
+        logger.error('query error', exc_info=True)        
         return jsonify({
             'success': False,
             'errors': [
@@ -92,13 +106,21 @@ def queryViz():
     minClusterDistance = float(minClusterDistance)
 
     try:
-        result = geCalc.query_by_ids(idList, types, limit, offset)
+        ''' result = geCalc.query_by_ids(idList, types, limit, offset)
         resolvedItems = resolve_items_meta(result)
 
         # append 3D positions
         # TODO: only load once?
         vizEmbedding = np.load(VIZ_EMBEDDING_FILE)
         vizItems = calc_viz_data(resolvedItems, vizEmbedding)
+        clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance) '''
+
+        # using own embedding calc for graph --> positions are too different...
+        result = vizGeCalc.query_by_ids(idList, types, limit, offset)
+        resolvedItems = resolve_items_meta(result)
+
+        # append 3D positions
+        vizItems = calc_viz_data(resolvedItems, vizGeCalc.embedding)
         clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance)
 
         return jsonify({
@@ -107,6 +129,7 @@ def queryViz():
             'boundingBox': boundingBox.tolist()
         })
     except ValueError as exc:
+        logger.error('query viz error', exc_info=True)
         return jsonify({
             'success': False,
             'errors': [
@@ -158,12 +181,11 @@ def suggest_item(term):
 
 # ------- user routes -------
 
-@app.route("/api/user/check/<userName>", methods=['POST'])
+@app.route("/api/user/check/<userName>")
 def check_user(userName):
     ''' Checks if user is allready in db.
     '''
     user = userApi.getUser(userName)
-    missingTrackCount = userApi.getMissingTracks(userName)    
 
     if user is None:
         return jsonify({
@@ -171,12 +193,15 @@ def check_user(userName):
             'data': None
         })
     else:
+        missingTrackCount = userApi.getMissingTracks(userName)
+
         return jsonify({
             'success': True,
             'data': {
                 'userName': userName,
                 'userStatus': user['userStatus'],
                 'latest_sync': user['latest_sync'],
+                'syncedTracks': len(user['tracks']),
                 'missingTrackCount': missingTrackCount
             }
         })
@@ -196,10 +221,24 @@ def sync_user():
             ]
         }), 400)
 
-    syncedTracks = 0
     try:
-        syncedTracks = userApi.syncUserMusic(userName, token)
+        # sync music
+        syncedTracks, missingTrackCount = userApi.syncUserMusic(userName, token)
+        user = userApi.getUser(userName)    
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'userName': userName,
+                'userStatus': user['userStatus'],
+                'latest_sync': user['latest_sync'],
+                'syncedTracks': len(user['tracks']),
+                'missingTrackCount': missingTrackCount,
+                'syncedTracks': syncedTracks,
+            }
+        })
     except Exception as exc:
+        logger.error('query error', exc_info=True)        
         return jsonify({
             'success': False,
             'errors': [
@@ -207,15 +246,6 @@ def sync_user():
             ]
         })
 
-    missingTrackCount = userApi.getMissingTracks(userName)
-
-    return jsonify({
-        'success': True,
-        'data': {
-            'missingTracks': missingTrackCount,
-            'syncedTracks': syncedTracks
-        }
-    })
 
 # ------- graph routes -------
 

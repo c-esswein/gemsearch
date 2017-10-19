@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.spatial.distance
 from gemsearch.embedding.ge_calc import cos_cdist
+import sys
 
 def calc_viz_data(items, vizEmbedding):
     ''' Resolve visualization 3d positions.
@@ -19,7 +20,8 @@ def calc_viz_data(items, vizEmbedding):
 def cluster_items(items, minClusterDistance):
     ''' Clusters items with distances smaller than minClusterDistance (percentage of bounding box)
     '''
-    boundingBox =[[0, 0, 0], [0, 0, 0]]
+    minInt = -sys.maxsize - 1
+    boundingBox =[[sys.maxsize, sys.maxsize, sys.maxsize], [minInt, minInt, minInt]]
 
     if len(items) < 1:
         return items, boundingBox
@@ -43,7 +45,7 @@ def cluster_items(items, minClusterDistance):
     for item in items:
         isInCluster = False
         # check if element can be appended to existing cluster
-        for cluster in clusters:
+        for cluster in reversed(clusters):
             centerPos = cluster[0]['position']
             dist = scipy.spatial.distance.euclidean(item['position'], centerPos)
             if dist < minElementDistance:
