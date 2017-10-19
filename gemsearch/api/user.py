@@ -1,3 +1,6 @@
+from gemsearch.utils.logging import getLogger
+logger = getLogger(__name__)
+
 import spotipy
 from gemsearch.storage.Storage import Storage
 from pymongo import UpdateOne
@@ -25,6 +28,8 @@ def syncUserMusic(userName, token):
     if not token:
         raise Exception('no token given')
 
+    logger.info('synced user %s', userName)
+
     # load user and user music from spotify api
     sp = spotipy.Spotify(auth=token)
     # user = sp.current_user()
@@ -42,21 +47,21 @@ def syncUserMusic(userName, token):
     usersCol = storage.getCollection('users')
     dbUser = getUser(userName)
     update = {
-        'userName': userName,
         'tracks': userTracks,
-        'userStatus': 'SPOTIFY_SYNCED',
-        'latest_sync': datetime.now()
+        'latest_sync': datetime.now(),
+        'userStatus': 'SPOTIFY_SYNCED'
     }
     if dbUser is None:
         # create new user
-        dbUser['userStatus'] = 'SPOTIFY_SYNCED'
+        dbUser = update
+        dbUser['userName'] = userName
         dbUser['created'] = datetime.now()
         usersCol.insert_one(dbUser)
     else:
         # update user
         if dbUser['userStatus'] == 'EMBEDDED':
-            dbUser['userStatus'] = 'PARTIAL_EMBEDDED'
-        usersCol.replace_one(filter={'_id': dbUser['_id']}, replacement=update)
+            update['userStatus'] = 'PARTIAL_EMBEDDED'
+        usersCol.update_one(filter={'_id': dbUser['_id']}, update=update, replacement=update)
 
     # store new tracks
     tracksCol = storage.getCollection('tracks')
@@ -74,9 +79,10 @@ def syncUserMusic(userName, token):
         raise
 
     pprint(bulkResult)
+    missingTracks = 0
     # TODO: return number of insert / upsert tracks --> unkown tracks
 
-    return len(tracks)
+    return len(tracks), missingTracks
 
 def getSpotifyUserMusic(sp):
     '''Load complete user music library from spotify.
@@ -103,11 +109,9 @@ def getMissingTracks(userName):
     storage = Storage()
     usersCol = storage.getCollection('users')
 
-    # TODO: tracks are not missing! check for missing track['gemsearch_status']
-
-    missingCount = usersCol.aggregate([
+    queryRes = usersCol.aggregate([
         # select user
-        { "$match" : { 'id' : userName } },
+        { "$match" : { 'userName' : userName } },
         { "$unwind": "$tracks" },
 
         # join with tracks collection
@@ -119,8 +123,8 @@ def getMissingTracks(userName):
             }
         },
         
-        # find not matching songs
-        { "$match" : { 'trackData' : { "$eq": [] } } },
+        # find uncrawled tracks --> check for missing track['gemsearch_status']
+        { "$match" : { 'gemsearch_status' : { '$exists': False} } },
         
         #{ "$project": {
         #    "track_id" : "$tracks.track_id",
@@ -130,9 +134,12 @@ def getMissingTracks(userName):
         { "$count" : "track_count" }
     ])
 
-    return missingCount
-
-
+    rows = list(queryRes)
+    if len(rows) < 1:
+        return 0
+    else:
+        missingCount = rows[0]['track_count']
+        return missingCount
 
 if __name__ == '__main__':
     token = ''
