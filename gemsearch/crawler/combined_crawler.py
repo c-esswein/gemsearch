@@ -4,7 +4,6 @@ logger = getLogger(__name__)
 
 from gemsearch.storage.Tracks import Tracks
 from gemsearch.storage.Storage import Storage
-from gemsearch.crawler.skip_ids import SKIP_IDS
 from gemsearch.crawler.last_fm_crawler import getTagsForTrack
 from gemsearch.crawler.spotify_api import crawlArtist, crawlTrack, getSpotipyInstance
 
