@@ -1,7 +1,5 @@
 from gemsearch.storage.Storage import Storage
 
-repos = Storage()
-
 def resolve_items_meta(items):
     ''' Resolves metadata for all items in list.
     '''
@@ -10,6 +8,7 @@ def resolve_items_meta(items):
 def resolve_item_meta(item):
     ''' Resolves metadata for given item.
     '''
+    repos = Storage()    
 
     if item['type'] == 'track':
         repoItem = repos.getCollection('tracks').find_one({'uri': item['id']})
