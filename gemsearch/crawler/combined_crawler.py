@@ -6,7 +6,7 @@ from gemsearch.storage.Tracks import Tracks
 from gemsearch.storage.Storage import Storage
 from gemsearch.crawler.last_fm_crawler import getTagsForTrack
 from gemsearch.crawler.spotify_api import crawlArtist, crawlTrack, getSpotipyInstance
-
+import time
 
 def crawlTrackMeta(track):
     ''' Starts all crawler necessary for new tracks.
@@ -55,15 +55,19 @@ def crawlNewTracks():
 
         crawlTrackArtists(sp, track, artistCol)
 
+currentSkip = 0
 def crawlMissingTracks(skip = 0):
     ''' Crawl tracks and tags which are not in db yet.
     '''
+    global currentSkip
     storage = Storage()
     missingTrackCol = storage.getCollection('tmp_missing_tracks')
     trackCol = storage.getCollection('tracks')
     artistCol = storage.getCollection('artists')
 
     sp = getSpotipyInstance()
+
+    currentSkip = skip
     
     trackIds = missingTrackCol.find({}).skip(skip)
     for trackId in trackIds:
@@ -82,11 +86,22 @@ def crawlMissingTracks(skip = 0):
         # store track
         track['gemsearch_status'] = 'CRAWLED'        
         trackCol.insert_one(track)
-        skip += 1
-        logger.info('crawled track (%s): %s', skip, trackUri)
+        currentSkip += 1
+        logger.info('crawled track (%s): %s', currentSkip, trackUri)
 
         # check if artist is in db
         crawlTrackArtists(sp, track, artistCol)
+
+
+def continueCrawling(skip):
+    global currentSkip
+    try:
+        crawlMissingTracks(skip)
+    except Exception as e:
+        logger.error('crached:', exc_info=True)
+        slack_error_message('track crawler crashed (will continue): ', e)
+        time.sleep(120)
+        continueCrawling(currentSkip)
 
 
 if __name__ == '__main__':
@@ -98,10 +113,8 @@ if __name__ == '__main__':
     for arg in sys.argv:
         if arg.startswith('--skip='):
             skip = int(arg.replace('--skip=', ''), 10)
-        
-    try:
-        crawlMissingTracks(skip)
-    except Exception as e:
-        slack_error_message('track crawler crashed: ', e)
+    
+    logger.info('started missing track crawler, will skip first: %s', skip)    
 
+    continueCrawling(skip)
     slack_send_message('track crawler is done')
