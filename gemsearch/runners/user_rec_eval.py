@@ -27,7 +27,7 @@ SHOULD_CREATE_GRAPH = True
 SHOULD_EVAL_BASELINE = True
 
 TEST_SPLIT=0.2
-MAX_PRECISION_AT=5
+PRECISION_AT=[1, 5]
 MIN_TRACKS_PER_USER = 30
 # ---- /config ----
 
@@ -37,13 +37,13 @@ logger.info('started user rec eval with config: %s', {
     'SHOULD_CREATE_GRAPH': SHOULD_CREATE_GRAPH,
     'SHOULD_EVAL_BASELINE': SHOULD_EVAL_BASELINE,
     'TEST_SPLIT': TEST_SPLIT,
-    'MAX_PRECISION_AT': MAX_PRECISION_AT,
+    'PRECISION_AT': PRECISION_AT,
     'MIN_TRACKS_PER_USER': MIN_TRACKS_PER_USER,
 })
 
 with Timer(logger=logger, message='user_rec_evals runner') as t:
 
-    userEval = UserEvaluator(testSplit=TEST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT, minTracksPerUser = MIN_TRACKS_PER_USER)
+    userEval = UserEvaluator(testSplit=TEST_SPLIT, precisionAt=PRECISION_AT, minTracksPerUser = MIN_TRACKS_PER_USER)
 
     if SHOULD_CREATE_GRAPH:
         logger.info('------------- split training data -------------')

@@ -28,7 +28,7 @@ SHOULD_GENERATE_GRAPH = True
 SHOULD_INDEX_ES = True
 
 TEST_PLAYLIST_SPLIT=0.2
-MAX_PRECISION_AT=10
+PRECISION_AT=[1, 5, 10]
 USE_USER_IN_QUERY = True
 # ---- /config ----
 
@@ -38,13 +38,13 @@ logger.info('started playlist eval with config: %s', {
     'SHOULD_GENERATE_GRAPH': SHOULD_GENERATE_GRAPH,
     'SHOULD_INDEX_ES': SHOULD_INDEX_ES,
     'TEST_PLAYLIST_SPLIT': TEST_PLAYLIST_SPLIT,
-    'MAX_PRECISION_AT': MAX_PRECISION_AT,
+    'PRECISION_AT': PRECISION_AT,
     'USE_USER_IN_QUERY': USE_USER_IN_QUERY
 })
 
 with Timer(logger=logger, message='playlist_eval runner') as t:
 
-    playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, maxPrecisionAt=MAX_PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
+    playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, precisionAt=PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
     
     if SHOULD_GENERATE_GRAPH:
         if USE_USER_IN_QUERY:
@@ -92,32 +92,22 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
     # config for embedder factory
     configs = [
         dict(
-            method='deepwalk',
+            method='node2vec',
             number_walks=5, walk_length=5, window_size=5, 
-            representation_size=64
+            representation_size=64, weighted = True
         ),
         dict(
-            method='deepwalk',
+            method='node2vec',
             number_walks=20, walk_length=20, window_size=5, 
-            representation_size=64
+            representation_size=64, weighted = True
         ),
         dict(
-            method='deepwalk',
+            method='node2vec',
             number_walks=20, walk_length=20, window_size=10, 
-            representation_size=64
-        ),
-        dict(
-            method='node2vec',
-            number_walks=5, walk_length=5, window_size=5, 
             representation_size=64, weighted = True
         ),
         dict(
-            method='node2vec',
-            number_walks=20, walk_length=20, window_size=5, 
-            representation_size=64, weighted = True
-        ),
-        dict(
-            method='node2vec',
+            method='deepwalk',
             number_walks=20, walk_length=20, window_size=10, 
             representation_size=64, weighted = True
         )

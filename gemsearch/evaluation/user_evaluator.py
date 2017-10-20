@@ -27,12 +27,12 @@ class UserEvaluator:
     name = 'User Evaluator'
     _users = {}
     _testSplit = 0
-    _maxPrecisionAt = 0
+    _precisionAt = 0
     _minTracksPerUser = 0
 
-    def __init__(self, testSplit = 0.2, maxPrecisionAt = 1, minTracksPerUser = 10):
+    def __init__(self, testSplit = 0.2, precisionAt = [1], minTracksPerUser = 10):
         self._testSplit = testSplit
-        self._maxPrecisionAt = maxPrecisionAt
+        self._precisionAt = precisionAt
         self._minTracksPerUser = minTracksPerUser
     
     def addUserTracks(self, userTracksTraverser):
@@ -132,7 +132,8 @@ class UserEvaluator:
         ''' Evaluates training test set with given geCalc. Result is stored in stats obj.
         '''        
         # get recommendation tracks
-        limit = len(training) + self._maxPrecisionAt
+        maxPrecisionAt = max(self._precisionAt)
+        limit = len(training) + maxPrecisionAtt
         recResult = recFunction(geCalc, userId, limit)
         
         # remove training tracks
@@ -140,7 +141,7 @@ class UserEvaluator:
                         if not track in training]
 
         # calculate matches per precision@k
-        for precisionAt in range(1, self._maxPrecisionAt + 1):
+        for precisionAt in self._precisionAt:
             matches = checkMatchesAt(recResult, test, precisionAt)
 
             methodName = recFunction.__name__ + ' @' + str(precisionAt)

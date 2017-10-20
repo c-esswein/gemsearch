@@ -17,12 +17,12 @@ class PlaylistQueryEvaluator:
     name = 'Playlist Query Evaluator'
     _playlists = []
     _testSplit = 0
-    _maxPrecisionAt = 0
+    _precisionAt = 0
     _hasExtractedQueries = False
 
-    def __init__(self, testSplit = 0.2, maxPrecisionAt = 1, useUserContext = False):
+    def __init__(self, testSplit = 0.2, precisionAt = [1], useUserContext = False):
         self._testSplit = testSplit
-        self._maxPrecisionAt = maxPrecisionAt
+        self._precisionAt = precisionAt
         self._useUserContext = useUserContext
     
     def traverseAndSplitPlaylists(self, playlistTraverser):
@@ -118,16 +118,18 @@ class PlaylistQueryEvaluator:
         noQueryPossible = 0
         stats = {}
 
+        maxPrecisionAt = max(self._precisionAt)
+
         for playlist in self._playlists:
         
             for evalFunc in evaluationFuncs:
 
                 # execute and store performance
                 playlistTrackCount = len(playlist['tracks'])
-                limit = max(playlistTrackCount, self._maxPrecisionAt)
+                limit = max(playlistTrackCount, maxPrecisionAt)
                 recItems = evalFunc(geCalc, playlist, limit)
 
-                for precisionAt in range(1, self._maxPrecisionAt + 1):        
+                for precisionAt in self._precisionAt:        
                     statName = evalFunc.__name__ + '@' + str(precisionAt)
 
                     # init stats entry
