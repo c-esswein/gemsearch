@@ -56,7 +56,7 @@ def crawlNewTracks():
 
         crawlTrackArtists(sp, track, artistCol)
 
-def crawlMissingTracks():
+def crawlMissingTracks(skip = 0):
     ''' Crawl tracks and tags which are not in db yet.
     '''
     storage = Storage()
@@ -66,7 +66,7 @@ def crawlMissingTracks():
 
     sp = getSpotipyInstance()
     
-    trackIds = missingTrackCol.find({})
+    trackIds = missingTrackCol.find({}).skip(skip)
     for trackId in trackIds:
         trackUri = trackId['_id']
 
@@ -83,11 +83,26 @@ def crawlMissingTracks():
         # store track
         track['gemsearch_status'] = 'CRAWLED'        
         trackCol.insert_one(track)
-        logger.info('crawled track: %s', trackUri)
+        skip += 1
+        logger.info('crawled track (%s): %s', skip, trackUri)
 
         # check if artist is in db
         crawlTrackArtists(sp, track, artistCol)
 
 
 if __name__ == '__main__':
-    crawlMissingTracks()
+    from gemsearch.utils.slack import slack_send_message, slack_error_message
+    import sys
+
+    # check if skip is in argv
+    skip = 0
+    for arg in sys.argv:
+        if arg.startswith('--skip='):
+            skip = int(arg.replace('--skip=', ''), 10)
+        
+    try:
+        crawlMissingTracks(skip)
+    except Exception as e:
+        slack_error_message('track crawler crashed: ', e)
+
+    slack_send_message('track crawler is done')
