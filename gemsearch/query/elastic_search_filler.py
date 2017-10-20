@@ -1,20 +1,19 @@
-from elasticsearch import Elasticsearch
 from pprint import pprint
 from elasticsearch.helpers import parallel_bulk
 import os
+from elasticsearch import Elasticsearch
+from gemsearch.settings import GEMSEARCH_ELASTICSEARCH_HOST
 
-dbHost = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST', 'localhost')
-
-def es_get_instance():
-    return Elasticsearch([dbHost])
-
-def es_create_indices(index_name):
-    # TODO: not implemented
-    es = es_get_instance()
-    es.indices.create(index=index_name, body=settings, ignore=404)
+def getEsInstance():
+    dbHost = GEMSEARCH_ELASTICSEARCH_HOST
+    es = Elasticsearch(
+        [dbHost],
+        http_auth=('elastic', 'changeme')
+    )
+    return es
 
 def es_load_all_types(typeTraverser, indexName, docType, dismissTypes = []):
-    es = es_get_instance()
+    es = getEsInstance()
 
     def esActionGenerator(traverser):
         ''' Transform type definitions into es documents.
@@ -34,15 +33,15 @@ def es_load_all_types(typeTraverser, indexName, docType, dismissTypes = []):
     for success, info in parallel_bulk(es, esActionGenerator(typeTraverser)):
         if not success: print('Doc failed', info)
 
-    es.indices.refresh(index='_all')
+    es.indices.refresh(index=indexName)
     pprint(es.count())
 
 def es_reindex():
-    es = es_get_instance()
+    es = getEsInstance()
     es.indices.refresh(index='_all')
 
 def es_clear_indices():
-    es = es_get_instance()
+    es = getEsInstance()
     es.indices.delete(index='_all')
     print("all indexes cleared")
 

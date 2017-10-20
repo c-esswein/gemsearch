@@ -24,3 +24,5 @@ SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
 '''Last fm api key.
 '''
 LASTFM_API_KEY = os.environ.get('LASTFM_API_KEY')
+
+GEMSEARCH_ELASTICSEARCH_HOST = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST') or 'localhost'

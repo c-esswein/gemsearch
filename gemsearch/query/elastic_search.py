@@ -1,9 +1,10 @@
 from pprint import pprint
-from elasticsearch import Elasticsearch
 import os
 import re
+from elasticsearch import Elasticsearch
+from gemsearch.settings import GEMSEARCH_ELASTICSEARCH_HOST
 
-dbHost = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST', 'localhost')
+dbHost = GEMSEARCH_ELASTICSEARCH_HOST
 es = Elasticsearch(
     [dbHost],
     http_auth=('elastic', 'changeme')
