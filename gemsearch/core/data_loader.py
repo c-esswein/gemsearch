@@ -115,7 +115,7 @@ def traverseTrackTag(filePath):
                 'name': line['tagName'],
                 'id': 'tag::' + line['tagName']
             },
-            line['tagCount'])
+            line['tagCount'] or 0)
 
 
 def traverseTypes(fileName):
