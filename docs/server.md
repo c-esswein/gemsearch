@@ -18,11 +18,23 @@ sudo chcon -t httpd_sys_rw_content_t /var/www/gemsearch_api/gemsearch.sock
 
 
 ## Deployment:
+cd /var/www/gemsearch_api
+git pull
 sudo systemctl restart gemsearch
-sudo chown -R nginx:nginx .
 sudo chcon -t httpd_sys_rw_content_t /var/www/gemsearch_api/gemsearch.sock
 
 
+
+
+sudo systemctl restart nginx
+
+sudo chown -R christian:nginx .
+
+## Logs:
+
+/var/log/uwsgi/%n.log
+and
+/var/log/uwsgi/%n.log
 
 ## MongoDb
 
