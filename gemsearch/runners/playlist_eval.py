@@ -14,7 +14,8 @@ from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_
 from gemsearch.evaluation.playlist_query_evaluator import PlaylistQueryEvaluator
 # from gemsearch.embedding.node2vec import Node2vec
 from deepwalk.runner import startDeepwalk
-import deepwalk.node2vec
+# import deepwalk.node2vec
+from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
 
@@ -110,6 +111,16 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             method='deepwalk',
             number_walks=20, walk_length=20, window_size=10, 
             representation_size=64, weighted = True
+        ),
+        dict(
+            method='deepwalk',
+            number_walks=20, walk_length=20, window_size=5, 
+            representation_size=64, weighted = True
+        ),
+        dict(
+            method='deepwalk',
+            number_walks=5, walk_length=5, window_size=5, 
+            representation_size=64, weighted = True
         )
     ]
 
@@ -129,9 +140,15 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             config['max_memory_data_size'] = 7000000 # TODO: adapt mem size
 
             if config['method'] == 'deepwalk':
+
                 model = startDeepwalk(config)
             else:
-                model = deepwalk.node2vec.embeddFromConfig(config)
+                config['context_size'] = 10
+                em = Node2vec(d=config['representation_size'], max_iter=1, ret_p=1, inout_p=1,
+                    wLen=config['walk_length'], nWalks=config['number_walks'], cSize=config['context_size'])
+                em.learn_embedding(config['input'], config['output'])
+                # model = deepwalk.node2vec.embeddFromConfig(config)
+
             # model.save(outDir+'word2vecModel_'+name+'.p')
         
 

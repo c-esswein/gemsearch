@@ -32,6 +32,9 @@ class PlaylistQueryEvaluator:
         playlists = list(playlistTraverser)
         training, test = train_test_split(playlists, test_size=self._testSplit, random_state=42)
 
+        # TODO: split per user!
+        # stat: average playlist / tracks per user
+
         # make sure all test users are present in training set
         usersInTraining = {}
         for trainingPlaylist in training:
@@ -40,6 +43,7 @@ class PlaylistQueryEvaluator:
         self._playlists = [x for x in test if (x['userId'] in usersInTraining)]
 
         logger.info('Splitted playlists for training (%s) and test (%s), total (%s)', len(training), len(self._playlists), len(playlists))
+        logger.info('dropped because of invalid split (user in test but not in training) %s', len(playlists) - (len(self._playlists) + len(training)))
 
         return training
     
@@ -115,7 +119,6 @@ class PlaylistQueryEvaluator:
             evaluationFuncs.append(rec_tracks_with_user)
 
         # init metrics
-        noQueryPossible = 0
         stats = {}
 
         maxPrecisionAt = max(self._precisionAt)
@@ -167,7 +170,7 @@ class PlaylistQueryEvaluator:
                 stats[statName]['precision_on_has_hits'] = 0
                 stats[statName]['avg_hits_on_has_hits'] = 0
 
-        logger.info('Playlist evaluation finished: total %s playlists (testsplit=%s), no query extracted for %s', playlistCount, self._testSplit, noQueryPossible)
+        logger.info('Playlist evaluation finished: total %s playlists (testsplit=%s)', playlistCount, self._testSplit)
         for statName in sorted(stats.keys()):
             logger.info('___ method: %s', statName)
             for metric in stats[statName]:
@@ -214,6 +217,18 @@ def rec_first_two_query_tracks(geCalc, playlist, limit):
 def rec_query_tracks(geCalc, playlist, limit):
     ''' Uses simple queryIds to predict playlist tracks.
     '''
+    queryIds = playlist['extracted_queries']['simple_first_match']
+    results = geCalc.query_by_ids(
+        queryIds, 
+        typeFilter = ['track'], 
+        limit = limit
+    )
+    return results
+
+def rec_query_tracks_with_boosting(geCalc, playlist, limit):
+    ''' Uses simple queryIds to predict playlist tracks.
+    '''
+    # TODO: implement boosting
     queryIds = playlist['extracted_queries']['simple_first_match']
     results = geCalc.query_by_ids(
         queryIds, 
