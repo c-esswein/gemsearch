@@ -50,17 +50,24 @@ class IdManager():
             self._lookupDict[typeDef['id']] = typeDef['embeddingIndex']
             self._idCounter = typeDef['embeddingIndex']
 
-class NewIdCollector():
-    ''' Collects new added ids.
+class NewTypeCollector():
+    ''' Collects new types.
     '''
-    _newIds = []
+    _newTypes = []
 
     def addItem(self, idCounter, uidObj, type, name):
-        self._newIds.append(idCounter)
+        self._newTypes.append({
+            'embeddingIndex': idCounter,
+            'id': uidObj,
+            'type': type,
+            'name': name
+        })
 
     def close_handler(self):
         pass
 
-    def getAddedIds(self):
-        return self._newIds
+    def getAddedEmbeddingIds(self):
+        return [typeDef['embeddingIndex'] for typeDef in self._newIds]
 
+    def getAddedTypes(self):
+        return self._newTypes

@@ -141,6 +141,30 @@ def getMissingTracks(userName):
         missingCount = rows[0]['track_count']
         return missingCount
 
+
+def getNewUsersForEmbedding():
+    ''' Returns all new users which are not yet embedded but 
+    ready (all tracks crawled).
+    '''
+    newUsers = Storage().getCollection('users').find({'userStatus': {'$in': ['SPOTIFY_SYNCED', 'PARTIAL_EMBEDDED']}})
+    # check if new tracks are already crawled:
+    res = []
+    for user in newUsers:
+        if getMissingTracks(user['userName']) < 1:
+            res.append(user)
+    
+    return res
+
+def setUsersState(users, newState):
+    ''' Updates user state for given users
+    '''
+    userCol = Storage().getCollection('users')
+
+    for user in users:
+        user['userStatus'] = newState
+        userCol.update_one({'_id': user['_id']}, user)
+
+
 if __name__ == '__main__':
     token = ''
     syncUserMusic(token)

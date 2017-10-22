@@ -20,8 +20,8 @@ from pprint import pprint
 import numpy as np
 
 # ---- config ----
-dataDir = 'data/tmp/'
-outDir = 'data/tmp/'
+dataDir = 'data/graph_100/'
+outDir = 'data/api/'
 
 SHOULD_EMBED = True
 SHOULD_INDEX_ES = True
