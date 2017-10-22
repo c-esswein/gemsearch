@@ -46,11 +46,11 @@ def cluster_items(items, minClusterDistance):
         isInCluster = False
         # check if element can be appended to existing cluster
         for cluster in reversed(clusters):
-            centerPos = cluster[0]['position']
+            centerPos = cluster['center']
             dist = scipy.spatial.distance.euclidean(item['position'], centerPos)
             if dist < minElementDistance:
                 # append to existing cluster
-                cluster.append(item)
+                cluster['items'].append(item)
                 isInCluster = True
 
                 # update position to be relative from center
@@ -59,6 +59,16 @@ def cluster_items(items, minClusterDistance):
         
         if not isInCluster:
             # create new cluster
-            clusters.append([item])
+            centerPos = item['position']
+            item['position'] = [0, 0, 0]
+            clusters.append({
+                'items': [item],
+                'center': centerPos
+            })
+
+    # reset positions for cluster with only one element
+    for cluster in clusters:
+        if len(cluster['items']) == 1:
+            cluster['items'][0]['position'] = cluster['center']
 
     return clusters, np.array(boundingBox)

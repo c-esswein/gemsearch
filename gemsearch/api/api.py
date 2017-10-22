@@ -106,17 +106,59 @@ def queryViz():
     minClusterDistance = float(minClusterDistance)
 
     try:
-        ''' result = geCalc.query_by_ids(idList, types, limit, offset)
+        # using own embedding calc for graph --> positions are too different...
+        result = vizGeCalc.query_by_ids(idList, types, limit, offset)
         resolvedItems = resolve_items_meta(result)
 
         # append 3D positions
-        # TODO: only load once?
-        vizEmbedding = np.load(VIZ_EMBEDDING_FILE)
-        vizItems = calc_viz_data(resolvedItems, vizEmbedding)
-        clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance) '''
+        vizItems = calc_viz_data(resolvedItems, vizGeCalc.embedding)
+        clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance)
 
+        return jsonify({
+            'success': True,
+            'clusters': clusteredResult,
+            'boundingBox': boundingBox.tolist()
+        })
+    except ValueError as exc:
+        logger.error('query viz error', exc_info=True)
+        return jsonify({
+            'success': False,
+            'errors': [
+                str(exc)
+            ]
+        })
+
+@app.route("/api/items_near_viz")
+def itemsNearViz():
+    ''' Query for items which are near given vec. Results includes positions and
+    items are clustered.
+    '''
+    vecStr = request.args.get('vec')
+    # no vec in query
+    if vecStr is None or vecStr == '':
+        return jsonify({
+            'success': True,
+            'data': []
+        })    
+    vec = np.array(vecStr.split(','))
+
+    # type filter
+    types = request.args.get('types')
+    if types is not None:
+        types = types.split('|')
+
+    limit = request.args.get('limit') or 20
+    limit = int(limit)
+
+    offset = request.args.get('offset') or 0
+    offset = int(offset)
+
+    minClusterDistance = request.args.get('minClusterDistance') or 0.05
+    minClusterDistance = float(minClusterDistance)
+
+    try:
         # using own embedding calc for graph --> positions are too different...
-        result = vizGeCalc.query_by_ids(idList, types, limit, offset)
+        result = vizGeCalc.query_by_vec(vec, types, limit, offset)
         resolvedItems = resolve_items_meta(result)
 
         # append 3D positions
