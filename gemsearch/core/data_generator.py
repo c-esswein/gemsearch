@@ -10,15 +10,21 @@ from gemsearch.storage.Storage import Storage
 from gemsearch.storage.Tracks import Tracks
 from gemsearch.core.name_cleaning import clean_playlist_name, clean_tag
 
+# minimum of tracks a playlist should have after cleaning
+MIN_TRACK_COUNT = 4
 
 # TODO integrate albums
 
 class DataGenerator(ADataGenerator):
 
-    def writePlaylists(self, limit):
+    def writePlaylists(self, limit = None):
         ''' Exports playlists and contained tracks.
         '''
-        playlists = Storage().getCollection('tmp_playlists_cleaned').find({}, no_cursor_timeout=True).limit(limit)
+        playlists = Storage().getCollection('tmp_playlists_cleaned').find({}, no_cursor_timeout=True)
+        
+        if not limit is None:
+            playlists = playlists.limit(limit)
+            limit = -1
         
         # --- playlist ---
         counter = 0
@@ -41,7 +47,7 @@ class DataGenerator(ADataGenerator):
                 if self.writeTrack(None, track['track_uri']):
                     playlistTracks.append(track['track_uri'])
 
-            if len(playlistTracks) > 0:
+            if len(playlistTracks) > MIN_TRACK_COUNT:
                 self.write('playlist', [
                     playlist['_id'],
                     playlist['username'],
@@ -67,8 +73,6 @@ class DataGenerator(ADataGenerator):
                     user['id'],
                     track['track_uri']
                 ])
-
-
 
     def writeTrack(self, track = None, trackUri = None):
         ''' Exports track with tags and artists. 
@@ -141,6 +145,14 @@ class DataGenerator(ADataGenerator):
                         tag['count'] / 100
                     ])
 
+        # --- album ---
+        if ('album' in track) and not (track['album'] is None):
+            self.write('track_album', [
+                trackId,
+                track['album']['uri'],
+                track['album']['name'],
+            ])
+
         return True
 
     def writeArtist(self, artist):
@@ -163,11 +175,12 @@ class DataGenerator(ADataGenerator):
                 artist['uri'],
                 genre,
             ])
+    
+
 
 
 if __name__ == "__main__":
-    generator = DataGenerator('data/tmp/')
-    generator.writePlaylists(2)
-    #generator.writeUsers(5)
+    generator = DataGenerator('data/full_model/')
+    generator.writePlaylists()
     generator.closeHandlers()
     print('data written')

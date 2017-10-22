@@ -117,6 +117,37 @@ def traverseTrackTag(filePath):
             },
             line['tagCount'] or 0)
 
+def traverseTrackAlbum(filePath):
+     with open(filePath, 'r', encoding="utf-8") as inFile:
+        fieldnames = ['trackId', 'albumId', 'albumName']
+        for line in csv.DictReader(inFile, fieldnames=fieldnames, delimiter=',', quotechar='|'):
+            yield ({
+                'type': 'track',
+                'id': line['trackId']
+            },
+            {
+                'type': 'album',
+                'name': line['albumName'],
+                'id': line['albumId']
+            },
+            0)
+
+
+def traverseArtistGenre(filePath):
+     with open(filePath, 'r', encoding="utf-8") as inFile:
+        fieldnames = ['artistId', 'genre']
+        for line in csv.DictReader(inFile, fieldnames=fieldnames, delimiter=',', quotechar='|'):
+            yield ({
+                'type': 'artist',
+                'id': line['artistId']
+            },
+            {
+                'type': 'genre',
+                'name': line['genre'],
+                'id': 'genre::' + line['genre']
+            },
+            0)
+
 
 def traverseTypes(fileName):
     '''Reads type file

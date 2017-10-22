@@ -6,7 +6,7 @@ logger = getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
-from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes, traverseUserTrackInPlaylistsObj
+from gemsearch.core.data_loader as data_loader
 
 from gemsearch.core.type_counter import TypeCounter
 from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
@@ -49,10 +49,10 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
     
     if SHOULD_GENERATE_GRAPH:
         if USE_USER_IN_QUERY:
-            trainingPlaylists = playlistEval.traverseAndSplitPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+            trainingPlaylists = playlistEval.traverseAndSplitPlaylists(data_loader.traversePlaylists(dataDir+'playlist.csv'))
             playlistEval.writeTestLists(outDir+'test_playlists.json')
         else:
-            playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+            playlistEval.addPlaylists(data_loader.traversePlaylists(dataDir+'playlist.csv'))
 
         print('------------- generate graph -------------')
         with Timer(logger=logger, message='graph generation') as t:
@@ -62,16 +62,18 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             )
             graphGenerator = GraphGenerator(outDir+'graph.txt', idManager)
 
-            # graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
+            # graphGenerator.add(data_loader.traverseTrackFeatures(dataDir+'track_features.json'))
             # add tracks without features
-            for track, feature, weight in traverseTrackFeatures(dataDir+'track_features.json'):
+            for track, feature, weight in data_loader.traverseTrackFeatures(dataDir+'track_features.json'):
                 idManager.getId(track)
 
-            graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
-            graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
+            graphGenerator.add(data_loader.traverseTrackArtist(dataDir+'track_artist.csv'))
+            graphGenerator.add(data_loader.traverseTrackTag(dataDir+'track_tag.csv'))
+            # graphGenerator.add(data_loader.traverseTrackAlbum(dataDir+'track_album.csv'))
+            # graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))
 
             if USE_USER_IN_QUERY:
-                graphGenerator.add(traverseUserTrackInPlaylistsObj(trainingPlaylists))
+                graphGenerator.add(data_loader.traverseUserTrackInPlaylistsObj(trainingPlaylists))
 
             graphGenerator.close_generation()
     else:
@@ -79,7 +81,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
         if USE_USER_IN_QUERY:
             playlistEval.loadTestLists(outDir+'test_playlists.json')
         else:
-            playlistEval.addPlaylists(traversePlaylists(dataDir+'playlist.csv'))
+            playlistEval.addPlaylists(data_loader.traversePlaylists(dataDir+'playlist.csv'))
 
     if SHOULD_INDEX_ES:
         with Timer(logger=logger, message='elastic search writer') as t:
@@ -87,7 +89,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             es_clear_indices()
 
             # insert all types
-            es_load_all_types(traverseTypes(outDir+'types.csv'), 'music_index', 'music_type', dismissTypes = ['user'])
+            es_load_all_types(data_loader.traverseTypes(outDir+'types.csv'), 'music_index', 'music_type', dismissTypes = ['user'])
 
     
     # config for embedder factory
