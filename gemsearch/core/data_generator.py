@@ -136,7 +136,7 @@ class DataGenerator(ADataGenerator):
             self.writeArtist(artist)
 
         # --- tags ---
-        if 'tags' in track:
+        if 'tags' in track and not track['tags'] is None:
             for tag in track['tags']:
                 # clean tag name                
                 tagName = clean_tag(tag)
