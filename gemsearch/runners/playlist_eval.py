@@ -6,7 +6,7 @@ logger = getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
-from gemsearch.core.data_loader as data_loader
+import gemsearch.core.data_loader as data_loader
 
 from gemsearch.core.type_counter import TypeCounter
 from gemsearch.query.elastic_search_filler import es_clear_indices, es_load_all_types
@@ -18,11 +18,20 @@ from deepwalk.runner import startDeepwalk
 from gemsearch.embedding.node2vec import Node2vec
 from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.utils.timer import Timer
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_15000/'
+parser = ArgumentParser("playlist eval",
+                          formatter_class=ArgumentDefaultsHelpFormatter,
+                          conflict_handler='resolve')
+parser.add_argument('--tags', default=True, type=bool, help='Wether to embed tags.')
+parser.add_argument('--album', default=False, type=bool, help='Wether to embed albums.')
+parser.add_argument('--genre', default=False, type=bool, help='Wether to embed artist genres.')
+args = parser.parse_args()
+
+dataDir = 'data/full_model/'
 outDir = 'data/rec/'
 
 SHOULD_GENERATE_GRAPH = True
@@ -31,6 +40,7 @@ SHOULD_INDEX_ES = True
 TEST_PLAYLIST_SPLIT=0.2
 PRECISION_AT=[1, 5, 10]
 USE_USER_IN_QUERY = True
+        
 # ---- /config ----
 
 logger.info('started playlist eval with config: %s', {
@@ -40,9 +50,10 @@ logger.info('started playlist eval with config: %s', {
     'SHOULD_INDEX_ES': SHOULD_INDEX_ES,
     'TEST_PLAYLIST_SPLIT': TEST_PLAYLIST_SPLIT,
     'PRECISION_AT': PRECISION_AT,
-    'USE_USER_IN_QUERY': USE_USER_IN_QUERY
+    'USE_USER_IN_QUERY': USE_USER_IN_QUERY,
+    'ARGS': args
 })
-
+ 
 with Timer(logger=logger, message='playlist_eval runner') as t:
 
     playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, precisionAt=PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
@@ -68,9 +79,12 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
                 idManager.getId(track)
 
             graphGenerator.add(data_loader.traverseTrackArtist(dataDir+'track_artist.csv'))
-            graphGenerator.add(data_loader.traverseTrackTag(dataDir+'track_tag.csv'))
-            # graphGenerator.add(data_loader.traverseTrackAlbum(dataDir+'track_album.csv'))
-            # graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))
+            if args.tags:
+                graphGenerator.add(data_loader.traverseTrackTag(dataDir+'track_tag.csv'))
+            if args.album:
+                graphGenerator.add(data_loader.traverseTrackAlbum(dataDir+'track_album.csv'))
+            if args.genre:
+                graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))
 
             if USE_USER_IN_QUERY:
                 graphGenerator.add(data_loader.traverseUserTrackInPlaylistsObj(trainingPlaylists))
@@ -95,35 +109,15 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
     # config for embedder factory
     configs = [
         dict(
-            method='node2vec',
-            number_walks=5, walk_length=5, window_size=5, 
-            representation_size=64, weighted = True
-        ),
-        dict(
-            method='node2vec',
-            number_walks=20, walk_length=20, window_size=5, 
-            representation_size=64, weighted = True
-        ),
-        dict(
-            method='node2vec',
-            number_walks=20, walk_length=20, window_size=10, 
-            representation_size=64, weighted = True
-        ),
-        dict(
             method='deepwalk',
             number_walks=20, walk_length=20, window_size=10, 
             representation_size=64, weighted = True
         ),
         dict(
             method='deepwalk',
-            number_walks=20, walk_length=20, window_size=5, 
+            number_walks=30, walk_length=30, window_size=10, 
             representation_size=64, weighted = True
         ),
-        dict(
-            method='deepwalk',
-            number_walks=5, walk_length=5, window_size=5, 
-            representation_size=64, weighted = True
-        )
     ]
 
     results = {}
@@ -171,3 +165,4 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
     # print total result json
     print('------------- done -------------')
     pprint(results)
+ 
