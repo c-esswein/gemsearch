@@ -20,7 +20,7 @@ class DataGenerator(ADataGenerator):
     def writePlaylists(self, limit = None):
         ''' Exports playlists and contained tracks.
         '''
-        playlists = Storage().getCollection('tmp_playlists_cleaned').find({}, no_cursor_timeout=True)
+        playlists = Storage().getCollection('playlists').find({}, no_cursor_timeout=True)
         
         if not limit is None:
             playlists = playlists.limit(limit)
