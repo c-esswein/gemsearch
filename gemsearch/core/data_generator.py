@@ -91,14 +91,17 @@ class DataGenerator(ADataGenerator):
             track = tracksRepo.getTrack(trackUri)
 
         if track is None:
-            raise Exception('Precondition violation: track is null')
+            print('track not found: ' + str(trackUri))
+            return 
+            # raise Exception('Precondition violation: track is null')
 
         if len(track['name'].strip()) < 1:
             # exclude track with empty name
             return False
 
         # --- features ---
-        features = tracksRepo.getFeatures(track['_id'])
+        # feature export is currently disabled
+        features = None # tracksRepo.getFeatures(track['_id'])
         if features:
             self.writeJson('track_features', {
                 'id': trackId,
@@ -108,7 +111,7 @@ class DataGenerator(ADataGenerator):
                 }
             })
         else:
-            print('missing feature for track: ' + str(trackId))
+            # print('missing feature for track: ' + str(trackId))
             # TODO dummy feature...
             self.writeJson('track_features', {
                 'id': trackId,
@@ -169,6 +172,7 @@ class DataGenerator(ADataGenerator):
 
         if dbArtist is None:
             print('Artist not found: ' + str(artist['uri']))
+            return
 
         for genre in dbArtist['genres']:
             self.write('artist_genre', [
