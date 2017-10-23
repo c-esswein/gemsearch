@@ -5,7 +5,7 @@ import os
 import sys
 import random
 from io import open
-from argparse import ArgumentParser, FileType, ArgumentDefaultsHelpFormatter, Namespace
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, Namespace
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 import logging
