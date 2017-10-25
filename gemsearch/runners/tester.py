@@ -4,7 +4,7 @@
 from pprint import pprint
 import csv
 
-outDir = 'data/rec/'
+outDir = 'data/full_model/'
 trainingPath = outDir+'media_lite_training.csv'
 testPath = outDir+'media_lite_test.csv'
 
@@ -16,6 +16,8 @@ def traverseUserTrack(filePath):
 
 users = {}
 tracks = {}
+
+# traverse training and build track list and user track count
 for line in traverseUserTrack(trainingPath):
     if not (line['userId'] in users):
         users[line['userId']] = 0
@@ -25,18 +27,22 @@ for line in traverseUserTrack(trainingPath):
     tracks[line['trackId']] = True
 
 testUsers = {}
+# traverse test
 for line in traverseUserTrack(testPath):
     if not (line['userId'] in testUsers):
         testUsers[line['userId']] = 0
     
+    # test count
     testUsers[line['userId']] += 1
 
+    # check if user is in training
     if not (line['userId'] in users):
         print('user is missing in training: ' + str(line['userId']))    
 
 
 for user in users:
     if users[user] < 10:
+        print('user has not enough training samples:')
         pprint(users[user])
     if not user in testUsers:
         print('missing user in testUsers: ' + str(user))
