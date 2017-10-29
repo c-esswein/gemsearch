@@ -139,13 +139,13 @@ def process_list(listPath, outputFileName):
 
 if __name__ == '__main__':
     from .skip_ids import SKIP_IDS
-    from gemsearch.storage.Tracks import Tracks
+    from gemsearch.storage.Storage import Storage
 
-    tracks = Tracks()
+    tracks = Storage().getCollection('tracks')
     missed = 0
     found = 0
     for trackId in SKIP_IDS:
-        track = tracks.getTrackById(trackId)
+        track = tracks.find_one({'_id': trackId})
         if track is None:
             continue
 
@@ -157,7 +157,7 @@ if __name__ == '__main__':
             print('found: ' + str(trackId) + ' len: ' + str(len(tags)))
             found += 1
 
-        tracks.update_one({'_id': track['_id']}, {'tags': tags})
+        tracks.update_one({'_id': track['_id']}, {'$set': {'tags': tags}})
 
         # print('processed: ' + str(trackId))
 
