@@ -1,12 +1,12 @@
-''' Playlist evaluation runner: Extracts query from playlist name
-and tries to predict playlist tracks.
+''' User recommender evaluation runner. Uses collaborative filtering
+to implement simple user-track recommender.
 '''
 from gemsearch.utils.logging import getLogger
 logger = getLogger(__name__)
 
 from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.id_manager import IdManager
-from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseTypes, traverseUserTrackInPlaylists
+import gemsearch.core.data_loader as data_loader
 
 from gemsearch.core.type_counter import TypeCounter
 
@@ -20,7 +20,7 @@ import gemsearch.evaluation.my_media_lite_evaluator as my_media_lite_eval
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/full_model/'
+dataDir = 'data/graph_50/'
 outDir = 'data/rec/'
 
 SHOULD_CREATE_GRAPH = True
@@ -47,26 +47,25 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
 
     if SHOULD_CREATE_GRAPH:
         logger.info('------------- split training data -------------')
-        trainingUserTrack = userEval.addUserTracks(traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
+        trainingUserTrack = userEval.addUserTracks(data_loader.traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
         userEval.writeTestData(outDir+'user_eval.pk')
 
         logger.info('------------- generate graph -------------')
         with Timer(logger=logger, message='graph generation') as t:
-
+            idManager = IdManager(outDir+'types.csv', 
+                typeHandlers = [TypeCounter()]
+            )
             graphGenerator = GraphGenerator(
-                outDir+'graph.txt', 
-                IdManager(outDir+'types.csv', 
-                    typeHandlers = [TypeCounter()]
-                )
+                outDir+'graph.txt', idManager
             )
 
-            # graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
+            # graphGenerator.add(data_loader.traverseTrackFeatures(dataDir+'track_features.json'))
             # add tracks without features
             for track, feature, weight in data_loader.traverseTrackFeatures(dataDir+'track_features.json'):
                 idManager.getId(track)
 
-            graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
-            graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
+            graphGenerator.add(data_loader.traverseTrackArtist(dataDir+'track_artist.csv'))
+            graphGenerator.add(data_loader.traverseTrackTag(dataDir+'track_tag.csv'))
             graphGenerator.add(data_loader.traverseTrackAlbum(dataDir+'track_album.csv'))
             graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))                
             graphGenerator.add(trainingUserTrack)
