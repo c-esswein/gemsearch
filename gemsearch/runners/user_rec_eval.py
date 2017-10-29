@@ -20,7 +20,7 @@ import gemsearch.evaluation.my_media_lite_evaluator as my_media_lite_eval
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
+dataDir = 'data/full_model/'
 outDir = 'data/rec/'
 
 SHOULD_CREATE_GRAPH = True
