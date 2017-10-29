@@ -60,11 +60,18 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
                 )
             )
 
-            graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
+            # graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
+            # add tracks without features
+            for track, feature, weight in data_loader.traverseTrackFeatures(dataDir+'track_features.json'):
+                idManager.getId(track)
+
             graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
             graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
+            graphGenerator.add(data_loader.traverseTrackAlbum(dataDir+'track_album.csv'))
+            graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))                
             graphGenerator.add(trainingUserTrack)
             graphGenerator.close_generation()
+
 
         if SHOULD_EVAL_BASELINE:        
             # write files for MyMediaLite
