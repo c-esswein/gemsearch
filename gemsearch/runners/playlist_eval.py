@@ -26,10 +26,11 @@ from pprint import pprint
 parser = ArgumentParser("playlist eval",
                           formatter_class=ArgumentDefaultsHelpFormatter,
                           conflict_handler='resolve')
-parser.add_argument('--tags', default=True, type=bool, help='Wether to embed tags.')
+parser.add_argument('--tags', default=False, type=bool, help='Wether to embed tags.')
 parser.add_argument('--album', default=False, type=bool, help='Wether to embed albums.')
 parser.add_argument('--genre', default=False, type=bool, help='Wether to embed artist genres.')
 args = parser.parse_args()
+
 
 dataDir = 'data/full_model/'
 outDir = 'data/rec/'
@@ -165,4 +166,3 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
     # print total result json
     print('------------- done -------------')
     pprint(results)
- 

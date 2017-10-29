@@ -94,6 +94,8 @@ def crawlMissingTracks(skip = 0):
 
 
 def continueCrawling(skip):
+    ''' Continue crawling starting from skip.
+    '''
     global currentSkip
     try:
         crawlMissingTracks(skip)
@@ -102,7 +104,6 @@ def continueCrawling(skip):
         slack_error_message('track crawler crashed (will continue): ', e)
         time.sleep(120)
         continueCrawling(currentSkip)
-
 
 if __name__ == '__main__':
     from gemsearch.utils.slack import slack_send_message, slack_error_message

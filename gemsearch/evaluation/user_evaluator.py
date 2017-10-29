@@ -133,7 +133,7 @@ class UserEvaluator:
         '''        
         # get recommendation tracks
         maxPrecisionAt = max(self._precisionAt)
-        limit = len(training) + maxPrecisionAtt
+        limit = len(training) + maxPrecisionAt
         recResult = recFunction(geCalc, userId, limit)
         
         # remove training tracks

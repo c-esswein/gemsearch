@@ -20,11 +20,11 @@ import gemsearch.evaluation.my_media_lite_evaluator as my_media_lite_eval
 from pprint import pprint
 
 # ---- config ----
-dataDir = 'data/graph_50/'
-outDir = 'data/tmp/'
+dataDir = 'data/full_model/'
+outDir = 'data/rec/'
 
 SHOULD_CREATE_GRAPH = True
-SHOULD_EVAL_BASELINE = True
+SHOULD_EVAL_BASELINE = False
 
 TEST_SPLIT=0.2
 PRECISION_AT=[1, 5]
@@ -88,10 +88,6 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
     # config for embedder factory
     configs = [
         dict(
-            number_walks=5, walk_length=5, window_size=5, 
-            representation_size=64
-        ),
-        dict(
             number_walks=20, walk_length=20, window_size=10, 
             representation_size=64
         ),
@@ -100,31 +96,6 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
             representation_size=128
         )
     ]
-    
-    ''' dict(
-        number_walks=20, walk_length=5, window_size=5, 
-        representation_size=64
-    ),
-    dict(
-        number_walks=5, walk_length=20, window_size=5, 
-        representation_size=64
-    ),
-    dict(
-        number_walks=20, walk_length=20, window_size=5, 
-        representation_size=64
-    ),
-    dict(
-        number_walks=20, walk_length=20, window_size=10, 
-        representation_size=64
-    ),
-    dict(
-        number_walks=10, walk_length=10, window_size=5, 
-        representation_size=16
-    ),
-    dict(
-        number_walks=10, walk_length=10, window_size=5, 
-        representation_size=32
-    ) '''
 
     results = []
     
@@ -138,7 +109,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
             config['output'] = outDir+'deepwalk.em'
             config['workers'] = 3
             config['seed'] = 42
-            config['max_memory_data_size'] = 70000 # TODO: adapt mem size
+            config['max_memory_data_size'] = 7000000 # TODO: adapt mem size
 
             model = startDeepwalk(config)
             # model.save(outDir+'word2vecModel_'+name+'.p')
