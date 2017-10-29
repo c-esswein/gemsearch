@@ -7,11 +7,12 @@ logger = getLogger(__name__)
 
 from gemsearch.embedding.embed_new_users import embedNewUsers
 import time
-
+from gemsearch.settings import GEMSEARCH_API_KEY, GEMSEARCH_API_URL
+import requests
 
 # ---- config ----
 dataDir = 'data/tmp_extend/'
-outDir = 'data/tmp/'
+outDir = 'data/api/'
 
 # ---- /config ----
 
@@ -23,13 +24,16 @@ logger.info('started new user watcher service with config: %s', {
 
 while (True):
     try:
-        if embedNewUsers() > 0:
+        embeddedUserCount = embedNewUsers(dataDir, outDir)
+        if embeddedUserCount > 0:
             logger.info('new users embedded, restart API')
-            # TODO: restart api...
-            # import os
-            # os.system("sudo /etc/init.d/gemsearch restart")
+            r = requests.get(str(GEMSEARCH_API_URL) + '/reload_embedding?token=' + str(GEMSEARCH_API_KEY))
+            result = r.json()
+            from pprint import pprint
+            pprint(result)
     except Exception as e:
         logger.error('Error: %s', e)
+        break # TODO: remove?
 
     time.sleep(30)
 

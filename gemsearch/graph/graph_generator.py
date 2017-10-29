@@ -3,11 +3,11 @@
 
 
 class GraphGenerator():
-    _edges = []
 
     def __init__(self, storagePath, idManager):
         self._storagePath = storagePath
         self._idManager = idManager
+        self._edges = []
 
     def addEdge(self, id1, id2, weight = 1):
         self._edges.append((id1, id2, weight))

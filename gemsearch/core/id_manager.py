@@ -4,8 +4,6 @@ import csv
 from gemsearch.core.data_loader import traverseTypes
 
 class IdManager():
-    _lookupDict = {}
-    _idCounter = 0
 
     def __init__(self, outputFile, typeHandlers = [], extendExistingFile = False):
         fileMode = 'w'
@@ -16,6 +14,9 @@ class IdManager():
         self._typeWriter = csv.writer(self._typeFile, delimiter=',', lineterminator='\n',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         self._typeHandlers = typeHandlers
+        
+        self._lookupDict = {}
+        self._idCounter = 0
 
     def getId(self, item):
         ''' Returns numeric id for given item.
@@ -49,11 +50,16 @@ class IdManager():
         for typeDef in traverseTypes(filePath):
             self._lookupDict[typeDef['id']] = typeDef['embeddingIndex']
             self._idCounter = typeDef['embeddingIndex']
+        
+        # increase id counter to make sure next id is valid
+        self._idCounter += 1
 
 class NewTypeCollector():
     ''' Collects new types.
     '''
-    _newTypes = []
+
+    def __init__(self):
+        self._newTypes = []
 
     def addItem(self, idCounter, uidObj, type, name):
         self._newTypes.append({
@@ -67,7 +73,7 @@ class NewTypeCollector():
         pass
 
     def getAddedEmbeddingIds(self):
-        return [typeDef['embeddingIndex'] for typeDef in self._newIds]
+        return [typeDef['embeddingIndex'] for typeDef in self._newTypes]
 
     def getAddedTypes(self):
         return self._newTypes

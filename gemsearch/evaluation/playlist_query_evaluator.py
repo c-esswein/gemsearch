@@ -15,10 +15,12 @@ Collects playlists, takes random test split and tries to extract query from play
 class PlaylistQueryEvaluator:
 
     name = 'Playlist Query Evaluator'
-    _playlists = []
-    _testSplit = 0
-    _precisionAt = 0
-    _hasExtractedQueries = False
+        
+    def __init__(self):
+        self._playlists = []
+        self._testSplit = 0
+        self._precisionAt = 0
+        self._hasExtractedQueries = False
 
     def __init__(self, testSplit = 0.2, precisionAt = [1], useUserContext = False):
         self._testSplit = testSplit

@@ -8,8 +8,9 @@ from gemsearch.graph.graph_generator import GraphGenerator
 from gemsearch.core.type_counter import TypeCounter
 from gemsearch.core.data_generator import DataGenerator
 from gemsearch.core.id_manager import IdManager, NewTypeCollector
-from gemsearch.core.data_loader import traversePlaylists, traverseTrackArtist, traverseTrackFeatures, traverseTrackTag, traverseUserTrack
+import gemsearch.core.data_loader as data_loader
 from gemsearch.api.user import getNewUsersForEmbedding, setUsersState
+from gemsearch.query.elastic_search_filler import es_load_all_types
 
 from gemsearch.utils.timer import Timer
 from deepwalk.runner import extendModel
@@ -23,8 +24,8 @@ def embedNewUsers(dataDir, outDir):
 
     graphFile = outDir+'graph.txt' # existing
     typeFile = outDir+'types.csv' # existing
-    existingModel = outDir+'word2vecModel.p'
-    outputFile = outDir+'deepwalk_extended.em'
+    existingModel = outDir+'word2vecModel.p' # existing
+    outputFile = outDir+'embedding.em' # existing TODO:
 
     # --------------- export new data (user + new music) ---------------
     logger.info('Collect new users')    
@@ -55,13 +56,16 @@ def embedNewUsers(dataDir, outDir):
         graphFile, idManager
     )
     if os.path.isfile(dataDir+'track_features.json'):
-        graphGenerator.add(traverseTrackFeatures(dataDir+'track_features.json'))
-    if os.path.isfile(dataDir+'track_artist.json'):
-        graphGenerator.add(traverseTrackArtist(dataDir+'track_artist.csv'))
-    if os.path.isfile(dataDir+'track_tag.json'):
-        graphGenerator.add(traverseTrackTag(dataDir+'track_tag.csv'))
-    if os.path.isfile(dataDir+'user_tracks.json'):
-        graphGenerator.add(traverseUserTrack(dataDir+'user_tracks.csv'))
+        # graphGenerator.add(data_loader.traverseTrackFeatures(dataDir+'track_features.json'))
+        # add tracks without features
+        for track, feature, weight in data_loader.traverseTrackFeatures(dataDir+'track_features.json'):
+            idManager.getId(track)
+    if os.path.isfile(dataDir+'track_artist.csv'):
+        graphGenerator.add(data_loader.traverseTrackArtist(dataDir+'track_artist.csv'))
+    if os.path.isfile(dataDir+'track_tag.csv'):
+        graphGenerator.add(data_loader.traverseTrackTag(dataDir+'track_tag.csv'))
+    if os.path.isfile(dataDir+'user_tracks.csv'):
+        graphGenerator.add(data_loader.traverseUserTrack(dataDir+'user_tracks.csv'))
     graphGenerator.close_generation(extendExistingFile = True)
 
     # --------------- Extend existing model ---------------    
@@ -71,14 +75,16 @@ def embedNewUsers(dataDir, outDir):
     logger.info('Extend existing model')
     newModel = extendModel(existingModel, newNodes, newEdges, dict(
         input=graphFile, output=outputFile,
-        number_walks=10, walk_length=5,
+        number_walks=10, walk_length=5, representation_size=64 #TODO: share config with api_embed
     ))
     
     logger.info('Save new model')
-    newModel.save(outDir+'word2vecModel_new.p')
+    newModel.save(existingModel) # override existing
 
     # set user states
     setUsersState(newUsers, 'EMBEDDED')
+
+    # TODO: recreate 3D model!
 
     # --------------- Insert new types into elastic search ---------------    
     logger.info('Insert new types into es')    

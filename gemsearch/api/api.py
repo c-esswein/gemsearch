@@ -12,8 +12,7 @@ from gemsearch.api.metadata import resolve_items_meta
 from gemsearch.api.graph import Graph
 from gemsearch.api.positions import calc_viz_data, cluster_items
 import gemsearch.api.user as userApi
-
-app = Flask(__name__)
+from gemsearch.settings import GEMSEARCH_API_KEY
 
 # ---------- config ----------
 dataFolder = os.environ.get('GEMSEARCH_API_FOLDER', 'data/api/')
@@ -21,18 +20,46 @@ VIZ_EMBEDDING_FILE = dataFolder + 'pca.em.npy'
 
 
 # ---------- init ----------
+app = Flask(__name__)
+geCalc = None
+vizGeCalc = None
 
-print('initialize geCalc')
-geCalc = GeCalc()
-geCalc.load_node2vec_data(dataFolder+'node2vec.em', dataFolder+'types.csv')
+def initializeApi():
+    global geCalc
+    global vizGeCalc
+    
+    print('initialize geCalc')
+    geCalc = GeCalc()
+    geCalc.load_node2vec_data(dataFolder+'embedding.em', dataFolder+'types.csv')
 
-print('initialize graph geCalc')
-vizGeCalc = GeCalc()
-vizGeCalc.lookup = geCalc.lookup
-vizGeCalc.embedding = np.load(VIZ_EMBEDDING_FILE)
-print('initialize geCalc finished')
+    print('initialize graph geCalc')
+    vizGeCalc = GeCalc()
+    vizGeCalc.lookup = geCalc.lookup
+    vizGeCalc.embedding = np.load(VIZ_EMBEDDING_FILE)
+    print('initialize geCalc finished')
 
 # ---------- / init ----------
+
+@app.route("/api/reload_embedding")
+def reloadEmbedding():
+    ''' Reloads embedding.
+    '''
+    token = request.args.get('token')
+    if not token == GEMSEARCH_API_KEY:
+        return make_response(jsonify({
+            'success': False,
+            'errors': [
+                'Invalid api token'
+            ]
+        }), 400)
+
+    
+    initializeApi()
+
+    return jsonify({
+        'success': True,
+        'data': []
+    })  
 
 @app.route("/api/query")
 def query():
@@ -275,8 +302,7 @@ def sync_user():
                 'userStatus': user['userStatus'],
                 'latest_sync': user['latest_sync'],
                 'syncedTracks': len(user['tracks']),
-                'missingTrackCount': missingTrackCount,
-                'syncedTracks': syncedTracks,
+                'missingTrackCount': missingTrackCount
             }
         })
     except Exception as exc:
@@ -372,6 +398,10 @@ def get_graph_neighbors(nodeId):
         'success': True,
         'nodes': resolve_items_meta(items)
     })
+
+
+# ----------------- startup -----------------
+initializeApi()
 
 if __name__ == "__main__":
     app.run()

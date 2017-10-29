@@ -70,7 +70,7 @@ class DataGenerator(ADataGenerator):
         for track in user['tracks']:
             if self.writeTrack(None, track['track_uri']):
                 self.write('user_tracks', [
-                    user['id'],
+                    user['userName'],
                     track['track_uri']
                 ])
 
@@ -186,5 +186,6 @@ class DataGenerator(ADataGenerator):
 if __name__ == "__main__":
     generator = DataGenerator('data/full_model/')
     generator.writePlaylists()
+    generator.writeUsers()
     generator.closeHandlers()
     print('data written')

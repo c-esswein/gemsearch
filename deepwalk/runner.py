@@ -134,6 +134,7 @@ def extendModel(prevModelPath, newNodes, newEdges, params):
 
   args = _extendWithDefaultConfig(params)
   logger.info('started deepwalk extend with config: %s', args)  
+  logger.info('for extending newNodes: %s, newEdges: %s', len(newNodes), len(newNodes))  
 
   logger.info('Load previous model and graph')  
   # load model and graph

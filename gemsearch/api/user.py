@@ -5,7 +5,6 @@ import spotipy
 from gemsearch.storage.Storage import Storage
 from pymongo import UpdateOne
 from pymongo.bulk import BulkWriteError
-from pprint import pprint
 import hashlib
 from datetime import datetime
 
@@ -78,9 +77,7 @@ def syncUserMusic(userName, token):
         print(bwe.details)
         raise
 
-    pprint(bulkResult)
-    missingTracks = 0
-    # TODO: return number of insert / upsert tracks --> unkown tracks
+    missingTracks = bulkResult.upserted_count
 
     return len(tracks), missingTracks
 
@@ -92,7 +89,6 @@ def getSpotifyUserMusic(sp):
     offset = 0
     limit = 50
     while True:
-        print('get ' + str(offset))
         response = sp.current_user_saved_tracks(limit=limit, offset=offset)
         tracks.extend(response['items'])
 
@@ -124,7 +120,7 @@ def getMissingTracks(userName):
         },
         
         # find uncrawled tracks --> check for missing track['gemsearch_status']
-        { "$match" : { 'gemsearch_status' : { '$exists': False} } },
+        { "$match" : { 'trackData.gemsearch_status' : { '$exists': False} } },
         
         #{ "$project": {
         #    "track_id" : "$tracks.track_id",
@@ -146,8 +142,10 @@ def getNewUsersForEmbedding():
     ''' Returns all new users which are not yet embedded but 
     ready (all tracks crawled).
     '''
-    newUsers = Storage().getCollection('users').find({'userStatus': {'$in': ['SPOTIFY_SYNCED', 'PARTIAL_EMBEDDED']}})
-    # check if new tracks are already crawled:
+    userCol = Storage().getCollection('users')
+    newUsers = userCol.find({'userStatus': {'$in': ['SPOTIFY_SYNCED', 'PARTIAL_EMBEDDED']}})
+
+    # make sure all tracks are crawled (remove others)
     res = []
     for user in newUsers:
         if getMissingTracks(user['userName']) < 1:

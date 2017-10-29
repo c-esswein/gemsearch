@@ -5,14 +5,13 @@ import json
 import csv
 from gemsearch.core.data_loader import traverseTypes
 
-class ADataGenerator():
-
-    _handlers = {} 
-
-    # map to mark object ids written   
-    _idWritten = {}
+class ADataGenerator(object):
 
     def __init__(self, dataDir):
+        self._handlers = {} 
+        # map to mark object ids written   
+        self._idWritten = {}
+
         self._dataDir = dataDir
 
     def _getHandler(self, fileName):

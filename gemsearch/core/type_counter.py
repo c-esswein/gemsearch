@@ -6,7 +6,8 @@ class TypeCounter:
     '''Counts number of entities for each type and prints statistics.
     '''
 
-    _counter = {}
+    def __init__(self):
+        self._counter = {}
 
     def addItem(self, idCounter, uidObj, type, name):
         if not type in self._counter:

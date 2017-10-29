@@ -25,10 +25,12 @@ from gemsearch.utils.JSONEncoder import JSONEncoder
 class UserEvaluator:
 
     name = 'User Evaluator'
-    _users = {}
-    _testSplit = 0
-    _precisionAt = 0
-    _minTracksPerUser = 0
+    
+    def __init__(self):
+        self._users = {}
+        self._testSplit = 0
+        self._precisionAt = 0
+        self._minTracksPerUser = 0
 
     def __init__(self, testSplit = 0.2, precisionAt = [1], minTracksPerUser = 10):
         self._testSplit = testSplit

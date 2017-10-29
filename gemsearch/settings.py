@@ -25,4 +25,14 @@ SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
 '''
 LASTFM_API_KEY = os.environ.get('LASTFM_API_KEY')
 
+'''Host of elastic search. Use different hosts for evaluation and api.
+'''
 GEMSEARCH_ELASTICSEARCH_HOST = os.environ.get('GEMSEARCH_ELASTICSEARCH_HOST') or 'localhost'
+
+'''API Key to make sure protected routes can only be called by known clients.
+'''
+GEMSEARCH_API_KEY = os.environ.get('GEMSEARCH_API_KEY')
+
+'''Url to running api to reload embedding e.g.
+'''
+GEMSEARCH_API_URL = os.environ.get('GEMSEARCH_API_URL')

@@ -31,11 +31,11 @@ def crawlTrackArtists(sp, track, artistCol):
 def crawlNewTracks():
     ''' Finds all unprocessed tracks and starts crawlers.
     '''
-    trackRepo = Tracks()
-    trackCol = trackRepo.getTracks()
-    artistCol = Storage().getCollection('artists')
+    storage = Storage()
+    trackCol = storage.getCollection('tracks')
+    artistCol = storage.getCollection('artists')
 
-    batchLimit = 100
+    batchLimit = 10000
     tracks = trackCol.find({ 
         'gemsearch_status' : { '$exists': False }
     }).limit(batchLimit)
