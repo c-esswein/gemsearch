@@ -157,7 +157,8 @@ if __name__ == '__main__':
             print('found: ' + str(trackId) + ' len: ' + str(len(tags)))
             found += 1
 
-        # TODO: store
-        # tracks.update_one({'_id': track['_id']}, {'tags': tags})
+        tracks.update_one({'_id': track['_id']}, {'tags': tags})
 
-        print('processed: ' + str(trackId))
+        # print('processed: ' + str(trackId))
+
+    print('done')
