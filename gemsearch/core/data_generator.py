@@ -22,7 +22,7 @@ class DataGenerator(ADataGenerator):
         '''
         playlists = Storage().getCollection('playlists').find({}, no_cursor_timeout=True)
         
-        if not limit is None:
+        if limit is not None:
             playlists = playlists.limit(limit)
             limit = -1
         
@@ -55,10 +55,13 @@ class DataGenerator(ADataGenerator):
                     playlistTracks
                 ])
 
-    def writeUsers(self, limit):
+    def writeUsers(self, limit = None):
         ''' Exports all users and contained tracks.
         '''
-        users = Storage().getCollection('users').find({}, no_cursor_timeout=True).limit(limit)
+        users = Storage().getCollection('users').find({}, no_cursor_timeout=True)
+        if limit is not None:
+            users = users.limit(limit)
+
         for user in users:
             self.writeUser(user)
 
@@ -179,8 +182,6 @@ class DataGenerator(ADataGenerator):
                 artist['uri'],
                 genre,
             ])
-    
-
 
 
 if __name__ == "__main__":

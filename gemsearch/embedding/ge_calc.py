@@ -63,6 +63,16 @@ class GeCalc:
                 return item
         return None
 
+    def get_embedding_for_id(self, id):
+        ''' Returns embedding vector of given id.
+        '''
+        searchItem = self.get_item_by_item_id(id)
+        if searchItem is None:
+            raise ValueError('item id not found: ' + id)
+        itemVec = self.embedding[searchItem['embeddingIndex']]
+
+        return itemVec
+
     def query_by_ids(self, ids, typeFilter = None, limit = 20, offset = 0):
         '''Query by obj ids.
         '''
@@ -72,10 +82,7 @@ class GeCalc:
             return []
 
         for id in ids:
-            searchItem = self.get_item_by_item_id(id)
-            if searchItem is None:
-                raise ValueError('item id not found: ' + id)
-            itemVec = self.embedding[searchItem['embeddingIndex']]
+            itemVec = self.get_embedding_for_id(id)
             
             if searchVec is not None:
                 searchVec = searchVec + itemVec

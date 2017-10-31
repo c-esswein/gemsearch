@@ -114,11 +114,11 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             number_walks=20, walk_length=20, window_size=10, 
             representation_size=64, weighted = True
         ),
-        dict(
-            method='deepwalk',
-            number_walks=30, walk_length=30, window_size=10, 
-            representation_size=64, weighted = True
-        ),
+        #dict(
+        #    method='deepwalk',
+        #    number_walks=30, walk_length=30, window_size=10, 
+        #    representation_size=64, weighted = True
+        #),
     ]
 
     results = {}
