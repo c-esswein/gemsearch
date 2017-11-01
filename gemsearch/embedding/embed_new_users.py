@@ -25,7 +25,7 @@ def embedNewUsers(dataDir, outDir):
     graphFile = outDir+'graph.txt' # existing
     typeFile = outDir+'types.csv' # existing
     existingModel = outDir+'word2vecModel.p' # existing
-    outputFile = outDir+'embedding.em' # existing TODO:
+    outputFile = outDir+'embedding.em' # existing
 
     # --------------- export new data (user + new music) ---------------
     logger.info('Collect new users')    
@@ -81,10 +81,21 @@ def embedNewUsers(dataDir, outDir):
     logger.info('Save new model')
     newModel.save(existingModel) # override existing
 
+    
+    # recreate 3D model and weighted graph
+    with Timer(logger=logger, message='weight assigning for graph') as t:
+        geCalc = GeCalc()
+        geCalc.load_node2vec_data(outputFile, typeFile)
+
+        assign_edge_weights(graphFile, outDir+'graph_w.txt', geCalc)
+
+    with Timer(logger=logger, message='pca dimension reduction') as t:
+        embedding = geCalc.embedding
+        reduced = dim_reducer.pca(embedding)
+        np.save(outDir+'pca.em', reduced)
+
     # set user states
     setUsersState(newUsers, 'EMBEDDED')
-
-    # TODO: recreate 3D model!
 
     # --------------- Insert new types into elastic search ---------------    
     logger.info('Insert new types into es')    

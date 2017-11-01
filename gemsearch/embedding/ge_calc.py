@@ -32,26 +32,32 @@ class GeCalc:
         '''
         return self.lookup[index]
 
-    def get_items_from_embedding_indices(self, indices, typeFilter = None, limit = sys.maxsize, offset = 0):
-        '''Maps embedding indices to items. Optional type Filter can be applied.
+    def get_items_from_embedding_indices(self, indices, typeFilter = None, limit = sys.maxsize, offset = 0, skipIds = []):
+        '''Maps embedding indices to items. Optional type Filter can be applied. Items are skiped if id is in skipIds.
         '''
         result = []
         found = 0
         for itemIndex in indices:
             itemInfo = self.get_item_info_by_index(itemIndex)
+
             # filter type based on typeFilter
-            if (typeFilter is None) or (itemInfo['type'] in typeFilter):
-                # valid item
+            if (typeFilter is not None) and (itemInfo['type'] not in typeFilter):
+                continue
+            
+            # check if item should be skiped
+            if itemInfo['id'] in skipIds:
+                continue
 
-                # check offset
-                if offset > 0:
-                    offset -= 1
-                    continue
+            # check offset
+            if offset > 0:
+                offset -= 1
+                continue
 
-                result.append(itemInfo)
-                found += 1
-                if found == limit:
-                    break
+            # valid item            
+            result.append(itemInfo)
+            found += 1
+            if found == limit:
+                break
 
         return result
 
@@ -73,7 +79,7 @@ class GeCalc:
 
         return itemVec
 
-    def query_by_ids(self, ids, typeFilter = None, limit = 20, offset = 0):
+    def query_by_ids(self, ids, typeFilter = None, limit = 20, offset = 0, skipIds = []):
         '''Query by obj ids.
         '''
         searchVec = None
@@ -89,13 +95,13 @@ class GeCalc:
             else:
                 searchVec = itemVec
 
-        return self.query_by_vec(searchVec, typeFilter, limit, offset)
+        return self.query_by_vec(searchVec, typeFilter, limit, offset, skipIds)
 
-    def query_by_vec(self, searchVec, typeFilter = None, limit = 20, offset = 0):
+    def query_by_vec(self, searchVec, typeFilter = None, limit = 20, offset = 0, skipIds = []):
         ''' Query by embeddings searchVec
         '''
         result = find_similar_vecs(searchVec, self.embedding)
-        result_items = self.get_items_from_embedding_indices(result, typeFilter, limit, offset)
+        result_items = self.get_items_from_embedding_indices(result, typeFilter, limit, offset, skipIds)
 
         return result_items
 

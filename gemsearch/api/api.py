@@ -27,6 +27,10 @@ vizGeCalc = None
 def initializeApi():
     global geCalc
     global vizGeCalc
+    global _graphHelper
+    
+    # reset weighted graph helper
+    _graphHelper = None
     
     print('initialize geCalc')
     geCalc = GeCalc()
@@ -80,11 +84,16 @@ def query():
     if types is not None:
         types = types.split('|')
 
+    # limit + offset
     limit = request.args.get('limit') or 20
     limit = int(limit)
-
     offset = request.args.get('offset') or 0
     offset = int(offset)
+
+    # user context
+    userContext = request.args.get('user')
+    if userContext is not None and userContext != 'undefined':
+        idList.append(userContext)
 
     try:
         result = geCalc.query_by_ids(idList, types, limit, offset)
@@ -123,12 +132,18 @@ def queryViz():
     if types is not None:
         types = types.split('|')
 
+    # limit + offset
     limit = request.args.get('limit') or 20
-    limit = int(limit)
-
+    limit = int(limit)    
     offset = request.args.get('offset') or 0
     offset = int(offset)
 
+    # user context
+    userContext = request.args.get('user')
+    if userContext is not None and userContext != 'undefined':
+        idList.append(userContext)
+
+    # cluster distance
     minClusterDistance = request.args.get('minClusterDistance') or 0.05
     minClusterDistance = float(minClusterDistance)
 
@@ -146,7 +161,7 @@ def queryViz():
             'clusters': clusteredResult,
             'boundingBox': boundingBox.tolist()
         })
-    except ValueError as exc:
+    except Exception as exc:
         logger.error('query viz error', exc_info=True)
         return jsonify({
             'success': False,
@@ -247,6 +262,58 @@ def suggest_item(term):
         'success': True,
         'data': resolve_items_meta(resultItems)
     })
+
+
+@app.route("/api/recommendations")
+def recommendations():
+    ''' Return recommendations for given user.
+    '''
+
+    # type filter
+    types = request.args.get('types')
+    if types is not None:
+        types = types.split('|')
+
+    # limit + offset
+    limit = request.args.get('limit') or 20
+    limit = int(limit)
+    offset = request.args.get('offset') or 0
+    offset = int(offset)
+
+    # user context
+    userContext = request.args.get('user')
+    if userContext is None or userContext == 'undefined':
+        return jsonify({
+            'success': False,
+            'errors': [
+                'User is not set'
+            ]
+        })
+
+    try:
+        # loader user training tracks
+        skipIds = []
+        if 'track' in types:
+            # IMPROVE: also skip artists
+            user = userApi.getUser(userContext)
+            skipIds = [track['track_uri'] for track in user['tracks']]
+
+        result = geCalc.query_by_ids([userContext], types, limit, offset, skipIds)
+        resolvedItems = resolve_items_meta(result)
+
+        return jsonify({
+            'success': True,
+            'data': resolvedItems
+        })
+    except ValueError as exc:
+        logger.error('query error', exc_info=True)        
+        return jsonify({
+            'success': False,
+            'errors': [
+                str(exc)
+            ]
+        })
+
 
 # ------- user routes -------
 

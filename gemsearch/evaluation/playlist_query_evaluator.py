@@ -102,14 +102,14 @@ class PlaylistQueryEvaluator:
     def evaluate(self, geCalc):
         '''Starts evaluation.
         '''
+        if not self._hasExtractedQueries:
+            self.extractQueries()
+            
         playlistCount = len(self._playlists)
         logger.info('Started playlist evaluation with %s playlists', playlistCount)
 
         if playlistCount < 1:
             raise Exception('No Playlists collected to test!')
-
-        if not self._hasExtractedQueries:
-            self.extractQueries()
         
         # evaluation functions to run for every playlist
         evaluationFuncs = [
