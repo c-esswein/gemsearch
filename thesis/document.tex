@@ -27,114 +27,83 @@
 	\end{abstract}
 	
 	\section{Introduction}
+	In recent years music streaming platforms are getting more popular which enables users to access huge collections of music. With this trend it has also changed how users search and explore music\cite{lee2016look}. For example Spotify\footnote{\url{http://www.spotify.com}} with currently 140 million active users has over 30 millions songs to offer (as of June 2017)	\cite{aboutSpotify}. As a consequence of this huge collection of songs, the primary objective for user is not to find specific songs anymore but to find songs matching seeding criteria. Similar songs to / similar to this artist / genre / tags.
+	
+	
 	While exploring new music, users are typically limited to recommender systems which are proposing items either based on their listening history or on content similarities (aka find similar artists, songs). Combining both methods models a “query-based recommendation” which enables users to filter content based on their preferences.
 	The ecosystem of music can be represented as an heterogeneous graph using all available data about users, tracks, artists, genres, tags, … . Using graph embedding techniques a low-dimensional vector representation is learned and provide simple method to calculate similarities. Search queries, either single terms or combinations of items in the music graph, can be encoded using the same vector space. As a result, not only exact results are found, but also similar items.
 	
 	The goal of this thesis is to embed the Spotify dataset into a latent representation to enable recommendations based on queries. After providing the first search results, the user should be assisted while exploring the results and in the refinement of his search terms. Traditional list based aggregations of search results can only model a one dimensional similarity for the items. Instead of a list, the low-dimensional vector representation should be exploited to generate 3D representations of the suggested items. Combined with the graph representation, query suggestions can be provided.
 	
+
+	% Additionally the assignment of scores is a hard task --> how to compare. having / not having. Approaches try to predict tags through audio features -> lack to compare different seeds. how to compare artists with tracks
 	
-	Spotify...
-	\cite{aboutSpotify} Active users: Over 140 million (as of June 2017)
-	Number of songs: Over 30 million
-	
-	Challenges of music search
-	Through streaming services huge music databases are available for users. Primary objective for user is mainly not to find specific songs but to find songs matching seeding criteria. Similar songs to / similar to this artist / genre / tags. When using naive approaches with simple attribute matching complete annotated metadata is required. Otherwise song can not appear when querying for tag it has not assigned to. Especially when it comes to genres and tags it is unfeasible to manually annotate every entity. Additionally the assignment of scores is a hard task --> how to compare. having / not having. Approaches try to predict tags through audio features -> lack to compare different seeds. how to compare artists with tracks
-	
+	When using naive approaches with simple attribute matching complete annotated metadata is required. Otherwise song can not appear when querying for tag it has not assigned to. Especially when it comes to genres and tags it is unfeasible to manually annotate every entity. 
 	Desired search engine needs to learn representation. tags in training phase but while predicting new connections have to be drawn.
-	
-	
-	
+
+
 	
 	\section{Related work}
 	
 	music search \cite{chen2016query}
 	
-	3D interface
+	3D interface \cite{lamere2007using}
 	
 	
 	\section{Graph Embedding}
-	Graph embedding techniques aiming to transform graph structures into low a dimensional vector space. More formally, given a graph $ G = (V,E) $ with vertices $ V $ and edges $ E $ "a graph embedding is a mapping $ f : v_{i} \rightarrow y_{i} \in \mathbb{R}^{d} $ $ \forall i \in [n] $ such that $ d \ll |V| $ and the function $ f $ preserves some proximity measure defined on graph $ G $ "\cite{goyal2017graph}.
-	Advantages are to have a coherent search space for diverse element types. Embedding can be used for easy higher-order proximity calculation. Similar items should be near in vector space.
+	Graph embedding techniques aiming to transform graph structures into low a dimensional vector space. More formally, given a graph $ G = (V,E) $ with vertices $ V $ and edges $ E $ "a graph embedding is a mapping $ f : v_{i} \rightarrow y_{i} \in \mathbb{R}^{d} $ $ \forall i \in [n] $ such that $ d \ll |V| $ and the function $ f $ preserves some proximity measure defined on graph $ G $ "\cite{goyal2017graph}. The final result is therefore a vector for each node in the initial graph. Having this coherent search space makes it much easier to calculate higher-order proximities between heterogeneous nodes. Similar items can be retrieved using nearest-neighboring searches.
 	
-	Existing embedding algorithms can be categorized into factorization based, random walk based and deep walking based methods. Time complexity and properties which are preserved mainly random walk base methods are interesting ($ O(|V|) $). Here DeepWalk and node2vec are two examples both 
-	
-	
-	Through advances in the field of natural language processing in the recent years...
-	
-	both node2vec and deepwalk are making use use word2vec a popular method to 
-	
-	
-	random walks ---
-	
-	Deepwalk:
-	\cite{perozzi2014deepwalk}
-	Uses short random walks over edges to generate sentences and therefore constructs an artificial language based on the graph structure. Word2Vec is used in the reference implementation to 
-	
-	
+	Existing embedding algorithms can in general be categorized into factorization based, random walk based and deep walking based methods. Concerning time complexity and preserved higher order proximities, mainly random walk base methods are interesting (time complexity of $ O(|V|) $). Short random walks over edges are used to generate sentences which reflect the graph structure. Using this walks as training data, a representation for each word is learned. In the field of natural language processing this method is known as word embedding and especially popular with \emph{Word2vec}\cite{mikolov2013efficient}. Both \emph{Deepwalk}\cite{perozzi2014deepwalk} and \emph{node2vec}\cite{grover2016node2vec} are making use in their reference implementations of \emph{Word2vec} to embed arbitrary graph structures with random walks. For this work \emph{Deepwalk} was chosen because despite that \emph{node2vec} retrieves better embeddings in theory it is not possible to extend the graph structure after its initial creation as explained in the next section.
 	
 	\subsection{Model extension}
 	In real world scenarios the dataset is not fixed and during runtime more data is collected which needs to be included into the model. New data can either consists of new edges, e.g. new user-track relations produced by playing history, but also of new vertices when tracks or users are added. Especially if new users do not suffer from the cold start problem because initial data is available (eg through connecting with other services, see \ref{sec:impl_spotify_connect}), a fast method is desirable. A naive approach could simply recreate the whole embedding, but this is not scalable for bigger sets. 
 	
 	The random walk based embedding techniques are mostly online algorithms which can consume new walks as they are produced. This property is very powerful in general because for huge datasets not all walks have to be generated in advanced or even kept in memory. Unfortunately both reference implementations for \emph{node2vec} and \emph{DeepWalk} do not provide interfaces to store the internal state, retrieve intermediate embeddings or continue learning. Even worse, such interfaces could only improve node proximities performance through adding edges. In order to be able to include new vertices, the internal data structures must be extended. For \emph{node2vec} such an extension is not possible because the probability distribution of random walks is not uniform and precomputed before walk generation. For doing this the whole graph has to be known and no graph structure can be added afterwards because it would invalidate previous transition probabilities.
 	
-	However \emph{DeepWalk} uses a uniform distribution over random walks and as previously noted uses \emph{Word2vec} to compute the actual embedding. \\
+	However \emph{DeepWalk} uses a uniform distribution over random walks and as previously noted uses \emph{Word2vec} to compute the actual embedding. Using  \emph{Word2vec} in the backend makes it possible to store the current computational model and later restore it for further learning and additional also allows to extend the current vocabulary, in this case adding new nodes, during runtime. Together the desired options are available to partially extend the existing graph and retrieve the new embedding.
 	
-	Collect new vertices and edges and append to existing graph. Create new random walks over added vertices and edges. Load existing \emph{Word2vec} model, extend with new vocabulary, aka added nodes, and continue learning with additional walks. \\
-	
-	
+	In order to extend an existing embedding, first new vertices and edges have to be collected and appended to the existing graph. Then new random walks are generated but only over added vertices and edges. This new training data has only a small size compared to the initial data set and is proportional to the number of added structure. Then finally the existing \emph{Word2vec} model can be loaded, extended with new nodes, and learning is continued with new walks. \\
 	
 	
 	% Scalability:
-	With this method new graph structure can be added with much less effort than relearning the complete model. Unfortunately even small changes can influence the whole embedding and create a complete new vector space. For big datasets the new model has to be updated which may invalidate all created indexes.
+	With this method new graph structure can be added with much less effort than relearning the complete model. Unfortunately even small changes can influence the whole embedding and create a complete new vector space. The scalability is therefore questionable because for big datasets the new model has to be updated completely which may invalidate all created indexes. Furthermore only graph structure can be extended but not modified or removed.
 	
 	% TODO: check percentage when adding node...
+	% TODO: compare time between initial learning and extending
 	
 	\section{Personalized queries}
+	The increasing availability of huge music datasets through streaming platforms requires more sophisticated search methods to access desired tracks. Especially on streaming platforms users expect to filter and consume music with predefined seeds like genres, context based scenarios or similar items of "x". This content based filters are in contrast to personal recommendations which are only based on historic listening behavior. To combine those two concepts and to allow users to specify arbitrary search intension a flexible query system is required.
 	
-	any term of the graph is included in the final embedding
-	nearest neighbor descibe simliar items
+	The music corpus can be modeled in a heterogeneous graph with tracks, artists, album and tags as nodes and relationships as edges. Using graph embedding techniques as describe in the previous section, a vector space with preserved proximities is created. Each item from the graph is included in the final embedding and can therefore be used as query term. Nearest neighbors represent similar items with decreasing confidence on higher distances. Because every query is formulated with vectors, also the combination of different search terms is possible. The retrieved items have mixed item types which means that not only tracks are returned but also artists for example. This is very powerful because neither user nor system have to decide at first hand the item type but can also easily apply filters. Another benefit is, that similarity measures between different item types are possible.\\
+	% tags -> enricht query language and graph structure. Does not need to be complete
 	
-	any item or even combinations can be used as seed to retrieve nearest neighbors.
+	Until now the user itself was not included into the system. If user feedback is available, e.g. through historic track listening behavior or positive feedback on items, this data can be included into the graph. This improves the available graph structure and therefore may improve the embedding quality and additional makes it possible to model a user preference on queries. For each user initiated search query, the user context is added and influences results with personal recommendations. Using the user without additional seed items, even general recommendations are retrieved with the same system.
 	
+	% add query definition with math syntax?
 	
-	also user is included
-	adding user to query includes user perceptions
-	
-	
-	results contains mixed item types --> powerful because user has not to decide at first hand but can also easily apply filter.
-	
-	\subsection{Exploration and search refinement}
+	\subsection{Search refinement}
+	% TODO: cite...
 	
 	% extend query
-	Searching for music is not a single action process where a user formulates query and then consumes the results. The search 
-	Refine seaech while exploring. click ON item and add to query. Nö search Term has to be modified actively by User. Throigh Processing Resultat are getting more preciely 
+	Searching for music is not a single action process where a user formulates query intension and then consumes the results. The search can be seen as a process where query refinements are always part of it. Therefore it is necessary that users are not only able to extend queries but also be supported with suggested terms. The user should feel like navigating through a virtual result space instead of jumping to unconnected places after manually modifying requirements. Having a search query which is represented as an vector it can partially constructed as a combination of multiple search term vectors. This means that any of proposed items can be used to further extend the query and refine the search.
 	
+	For example suppose that you first search for a music genre you are interested in and then find an artists in the results which matches your search intension. Adding this artist to the current query will not limit new results to the added artists but will return items which are similar to the genre and artist. Using this technique the user has not actively adapt the query through reformulating it and still gets more precisely results. \\
+	
+	\subsection{Result representation and exploration}
+	% TODO: cite...
 	
 	% 3D
-	Traditional list views represent results in one dimension. only ordering can be observed by user. Even in this single dimension the distance between consecutively items is not expressed.
-	Therefore 3D view where result items are ..  Two additonal items and also distance measure. Using an explorative interface clusters can be... even better. 
-	Conglomeration of multiple result items --> very similar. User has oly to inspect one to deside wether he is intereseted in others or not. Much faster exploration. 
+	The most common visualization for recommendations is a list of items which is ordered by relevance for the user. Only the ordering can be observed and therefore it represents a very limited one dimensional view where even distance measures between consecutive items are not visible. To create at least a sense of vision for distances to the most significant items, it is common to spread the results among multiple result pages. 
+	When having an embedding where similarities between arbitrary items can be expressed using vectors, much more advanced interfaces are possible. Using dimension reducing methods the embedding can be compressed to three dimensions. Instead of using a list, the retrieved recommendations items can then easily visualized in a 3D scene. Using such an interface does not only express distance measure between items but also allows the user to explore the result space more easily. Less accurate items are positioned around the center hit and the direction in three dimension can be chosen to explorer additional items. This means that the query is refined while exploring indirectly.
 	
-	Common to spread results over multiple result pages to provide vision for distance. CITE
+	Similar items are positioned very nearby and when applying distance based clustering, accumulations of items can be represented as single but annotated clusters. For exploration, only one item has to be inspected for deciding whether the whole cluster is in interest or not. Postfiltering to remove variants of very similar items is then not necessary anymore while all items are still available.
 	
+	Through advantages in browser technology just in time visualizations of 3D scenes can be created directly on websites without complex precomputations. Also users are nowadays more familiar with interactive and multidimensional interfaces. Enhanced result views could therefore may replace simple lists.
 	
-	\section{Implementation}
-	In the following details of implementing a graph .. are described.
+	\section{geMsearch}
+	\emph{geMsearch} is a prototype which implements the proposed method for personalized music search. An embedded music corpus is searchable through a web client an retrieved items are represented in a list or 3D view. Besides the offline evaluation this makes it possible to test the implementation in a real world scenario. 
 	
-	\subsection{Graph embedding}
-	Using graph -> create embedding
-	
-	
-	For client also 3D representation has to be created...
-	
-	
-	\subsection{Web client}
-	In order to test the implementation in a real world scenario, a web client to search and explorer the music results was created.
-	
-	
-	search suggestions Elasticsearch.
-	
-	Search queries are send to the API server instance and evaluated on the embedded graph. User filters can further restrict the search results for certain element types, like tracks, tags or artists. Before sending results to the client, additional metadata like artist names for tracks and album covers are queried from a simple document store (MongoDb intance) and added to the response.
+	% Search queries are send to the API server instance and evaluated on the embedded graph. User filters can further restrict the search results for certain element types, like tracks, tags or artists. Before sending results to the client, additional metadata like artist names for tracks and album covers are queried from a simple document store (MongoDB instance) and added to the response.
 	
 	
 	\begin{figure}[ht]
@@ -142,35 +111,13 @@
 		\caption{Web client search suggestions}
 		\label{fig:web_client}
 	\end{figure}
+		
 	
-	
-	Search results are mostly displayed in list views to users. This representation has only the ordering as a one dimensional context information about the results. This is why the web client additionally implements a 3D view to view and explorer the search results.
-	
-	CLUSTER
-	
-	
-	\subsection{Spotify connect}
+	% \subsection{Spotify connect}
 	\label{sec:impl_spotify_connect}
-	Initial dataset had only random users. To overcome the cold start problem and making the client usable, users can connect with their spotify account.
+	To overcome the cold start problem for user profiles and making the client usable, users can connect with their Spotify account. The official Spotify API supports the OAuth protocol with different scopes which makes it possible to access personal playlists, playing history and saved tracks. To create a personal preference profile, \emph{geMsearch} only accesses the saved tracks because it requires much less preprocessing and computational effort than the whole playing history which is potential very big and contains much more noise. After a user has connected with his account, the music library is loaded and compared with known tracks in the current database. Missing songs are crawled to include metadata from Spotify about the track and artist, as well as user curated tags from Last.fm. After this data is collected, the graph can be extended and included into the existing embedding.
 	
-	User can connect with his Spotify account using OAuth. His music library is synced. Missing songs are added to the crawling list and later added to the graph. Then current embedding is extended to add user, possible additional songs and his preferences as user-track edges.
-	Finally he can use the client with personalized results.
-	
-	
-	
-	Most Evaluation are based in offline ethods and lacking .... For online big dataset ist reqired. 
-	
-	Two challenges. Creating a Personal Profile (having Data + cold start). Andreas include new Users into model
-	Spotify hast n usrres and is famius. Provides API with oauth connector
-	Accessibg listening histoty ist possible but big  m and requres much more preprocessing and cimpitaional Power. 
-	Tolassify User Stores music ist used instead. Tracks are ecplivity marked by User and modeling positive Feedback mich better. 
-	
-	After User authiruzed Access token ist used to sync music. Nö complete music Database -- compare eith Database. New Songs Mist be crawled -- fast, No huge dataset
-	User needs to bei integrated into existing embedfing. Find new Songs and Users. Append as discussed in x. 
-	
-	
-	
-	System can only recommend known nodes. Getting better + icludes more tracks over time with users. Pretrained with Playlists as discussed in Evaluation. 
+	For sure this approach can only recommend and present known items in the database which clearly does not reflect all tracks from Spotify. The initial model is pretrained and evaluated with playlists as discussed in the next section and with every user this dataset is extended and improved.
 	
 	\section{Experiments}
 	Estimating the quality of the presented approach was one of the key challenges because there exist no dataset which directly maps search queries with user context to results. Even having a working prototype client to test the system on real users, representative user studies require fairly big and diverse users bases. The test cases somehow needs to allow the users to estimate the results without being biased through available options or the test environment. A/B test can model fair and solid results but require scopes in terms of number of users and participation which are only available on commercial platforms. Therefore the common approach in research is to make use of crawled playlists which were manually created by users. As presented in \cite{kamehkhosh2017user}, this evaluations are comparable to user studies but require much less effort. Additionally, offline experiments can be easily repeated with adapted implementations and input parameters which helps during implementation and optimization to observe and benchmark the outcome. \\
@@ -179,7 +126,7 @@
 	
 	
 	\subsection{Dataset and graph generation}
-	The initial dataset was constructed from a crawled Spotify playlists by DBIS [CITE]. This data consists of playlists with an user context and contained tracks with artist and audio features. In order to enrich the available query terms and gather more graph structure, social curated track tags were crawled from Last.fm \footnote{https://www.last.fm/api/show/track.getTags} and artist genres from Spotify.
+	The initial dataset was constructed from a crawled Spotify playlists by DBIS at the University of Innsbruck\cite{pichl2017improving}. This data consists of playlists with an user context and contained tracks with artist and audio features. In order to enrich the available query terms and gather more graph structure, social curated track tags were crawled from Last.fm \footnote{https://www.last.fm/api/show/track.getTags} and artist genres from Spotify.
 	
 	Table \ref{table:node_count} and \ref{table:edge_count} show which and how many elements and connections are contained in the graph.
 	
@@ -191,10 +138,10 @@
 			\caption{Node count by type:}
 			\label{table:node_count}
 			\begin{tabular}{l|l}
-				Playlists & 21,323  \\
+				Playlists & 24,359  \\
 				Users     & xxx     \\
-				Tracks    & 671,903 \\
-				Artists   & 83,789  \\
+				Tracks    & 872,521 \\
+				Artists   & 110,377  \\
 				Tags      & xxx
 			\end{tabular}
 			
@@ -235,7 +182,7 @@
 	
 	\subsection{Track recommendation evaluation}
 	\label{subsec:track_rec_eval}
-	Queries are constructed using seeding elements combined with user context. Without seeds, the user alone can be used to query for recommendations. To perform a classic evaluation on user track recommendations, the playlists were used to construct historic track listening data, which is split into a training and test set. Using the test data, a new graph is generated and embedded. To compare the results, baseline scores are computed using \cite{Gantner2011MyMediaLite}.
+	Queries are constructed using seeding elements combined with user context. Without seeds, the user alone can be used to query for recommendations. To perform a classic evaluation on user track recommendations, the playlists were used to construct historic track listening data, which is split into a training and test set. Using the test data, a new graph is generated and embedded. To compare the results, baseline scores are computed using \emph{MyMediaLite} \cite{Gantner2011MyMediaLite}.
 	
 	% TODO: table with results
 	
@@ -244,12 +191,45 @@
 	
 	
 	\section{Conclusion}
-	This work presented an approach to use graph embedding techniques to create a low dimensional vector embedding of music data.
+	This work presented an approach to use graph embedding techniques to create a low dimensional vector space of music data. This embedding was used to create query-bases music recommendations and evaluated against playlist track predictions. Combined with a 3D representation of the result item it improved the way how user find and explorer new music. 
+	This approach is not limited to music and may be also used in different domains where application data can be represented as graph but metadata for single items is sparse.
 	
+	There is still potential for future work in order to improve the embedding itself and also the query mechanism. Weighted graphs seemed to be a promising approach to improve the embedded proximities in early tests. It could also be possible to even include audio features as graph nodes.
 	
 	% References
 	\bibliographystyle{dbis}
 	\bibliography{bibtex}
+
+
+	\newpage
+	\appendix
+	\section{Implementation Details}
+	
+	
+	Evaluation:
+	in Pyhton
+	Graph is generated, embedded 
+	
+	
+	ElasticSearch for autocomplete im client and query extraction for playlist evaluation
+	
+	MongoDb as a document store for metadata in order to enrich search results. User data is also stored here
+	
+	
+	Client
+	written in TypeScript to have static type checking and advanced autocomplete suggestions in editor
+	React with Redux 
+	ThreeJs to render 3D scene
+	
+	
+	explain spotify connector:
+	having two microservices besides API to not block resources with long running tasks for further requests. 
+	Crawler: Watches DB for new tracks through music library sync and makes sure that all neccessary metadata is available. For new tracks spotifiy track data and artists are crawled, then tags are retrieved from Last.fm.
+	
+	Embedder: Waits until crawlers are finished and then extends existing graph with new data. The changes are collected and then existing model is retrained to retrieve new embedding which then replaces existing.
+	
+	
+	
 	
 	
 \end{document}
