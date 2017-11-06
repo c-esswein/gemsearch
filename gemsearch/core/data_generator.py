@@ -13,8 +13,6 @@ from gemsearch.core.name_cleaning import clean_playlist_name, clean_tag
 # minimum of tracks a playlist should have after cleaning
 MIN_TRACK_COUNT = 4
 
-# TODO integrate albums
-
 class DataGenerator(ADataGenerator):
 
     def writePlaylists(self, limit = None):
@@ -24,6 +22,7 @@ class DataGenerator(ADataGenerator):
         
         if limit is not None:
             playlists = playlists.limit(limit)
+        else:
             limit = -1
         
         # --- playlist ---

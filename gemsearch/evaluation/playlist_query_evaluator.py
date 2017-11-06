@@ -123,6 +123,8 @@ class PlaylistQueryEvaluator:
         if self._useUserContext:
             evaluationFuncs.append(query_methods.rec_query_tracks_with_user)
             evaluationFuncs.append(query_methods.rec_tracks_with_user)
+            evaluationFuncs.append(query_methods.rec_first_two_query_tracks_with_user)
+            evaluationFuncs.append(query_methods.rec_first_two_query_tracks_with_user_scaled)
 
         # init metrics
         stats = {}

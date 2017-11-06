@@ -12,7 +12,9 @@ es = Elasticsearch(
 
 def search(queryStr, limit=10):
     res = es.search(index="_all", size=limit, body={
-        "query": {"match" : {"name" : {"query": queryStr, "fuzziness": "AUTO"}}},
+        "query": {
+            "match" : {"name" : {"query": queryStr, "fuzziness": "AUTO"}}
+        },
         "highlight" : {
             "fields" : {
                 "name" : {}

@@ -35,11 +35,11 @@ args = parser.parse_args()
 dataDir = 'data/full_model/'
 outDir = 'data/rec/'
 
-SHOULD_GENERATE_GRAPH = True
-SHOULD_INDEX_ES = True
+SHOULD_GENERATE_GRAPH = False
+SHOULD_INDEX_ES = False
 
 TEST_PLAYLIST_SPLIT=0.2
-PRECISION_AT=[1, 5, 10]
+PRECISION_AT=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
 USE_USER_IN_QUERY = True
         
 # ---- /config ----

@@ -26,13 +26,8 @@ class UserEvaluator:
 
     name = 'User Evaluator'
     
-    def __init__(self):
-        self._users = {}
-        self._testSplit = 0
-        self._precisionAt = 0
-        self._minTracksPerUser = 0
-
     def __init__(self, testSplit = 0.2, precisionAt = [1], minTracksPerUser = 10):
+        self._users = {}        
         self._testSplit = testSplit
         self._precisionAt = precisionAt
         self._minTracksPerUser = minTracksPerUser
@@ -42,7 +37,7 @@ class UserEvaluator:
         is returned.
         '''
         
-        # load complete data
+        # load complete data as user->track[] map
         users = {}
         for (user, track, weight) in userTracksTraverser:
             userId = user['id']
