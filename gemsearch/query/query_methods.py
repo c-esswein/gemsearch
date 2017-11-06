@@ -30,7 +30,7 @@ def rec_query_tracks_with_user_scaled(geCalc, playlist, limit):
     queryIds = playlist['extracted_queries']['simple_first_match']
     queryVecs = [geCalc.get_embedding_for_id(vec) for vec in queryIds]
     
-    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5)
+    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5).tolist()
     queryVecs.append(userVec)
     
     results = geCalc.query_by_vec(
@@ -80,7 +80,7 @@ def rec_first_two_query_tracks_with_user_scaled(geCalc, playlist, limit):
     queryIds = playlist['extracted_queries']['simple_first_two_match']
     queryVecs = [geCalc.get_embedding_for_id(vec) for vec in queryIds]
     
-    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5)
+    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5).tolist()
     queryVecs.append(userVec)
     
     results = geCalc.query_by_vec(
