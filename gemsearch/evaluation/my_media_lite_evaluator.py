@@ -12,7 +12,7 @@ from gemsearch.utils.proc import execute_cmd
 
 from gemsearch.settings import USE_WINDOWS_BASH
 # PATH_MY_MEDIA_LITE = '../my_media_lite/bin/item_recommendation'
-PATH_MY_MEDIA_LITE = '../my_media_lite_build/item_recommendation.exe'
+PATH_MY_MEDIA_LITE = '../my_media_lite_build/item_recommendation'
 
 
 def writeUserRating(filePath, userTrack):
