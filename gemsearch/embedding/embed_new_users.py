@@ -12,6 +12,10 @@ import gemsearch.core.data_loader as data_loader
 from gemsearch.api.user import getNewUsersForEmbedding, setUsersState
 from gemsearch.query.elastic_search_filler import es_load_all_types
 
+from gemsearch.embedding.ge_calc import GeCalc
+from gemsearch.graph.weight_assigner import assign_edge_weights
+from gemsearch.embedding import dim_reducer
+
 from gemsearch.utils.timer import Timer
 from deepwalk.runner import extendModel
 import os.path
