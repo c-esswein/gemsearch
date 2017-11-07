@@ -159,8 +159,9 @@ def setUsersState(users, newState):
     userCol = Storage().getCollection('users')
 
     for user in users:
-        user['userStatus'] = newState
-        userCol.update_one({'_id': user['_id']}, user)
+        userCol.update_one({'_id': user['_id']}, {'$set': {
+            'userStatus': newState
+        }})
 
 
 if __name__ == '__main__':
