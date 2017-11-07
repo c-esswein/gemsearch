@@ -30,11 +30,12 @@ def rec_query_tracks_with_user_scaled(geCalc, playlist, limit):
     queryIds = playlist['extracted_queries']['simple_first_match']
     queryVecs = [geCalc.get_embedding_for_id(vec) for vec in queryIds]
     
-    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5).tolist()
+    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5)
     queryVecs.append(userVec)
+    queryVec = sum_vecs(queryVecs)
     
     results = geCalc.query_by_vec(
-        queryVecs, 
+        queryVec, 
         typeFilter = ['track'], 
         limit = limit
     )
@@ -80,11 +81,13 @@ def rec_first_two_query_tracks_with_user_scaled(geCalc, playlist, limit):
     queryIds = playlist['extracted_queries']['simple_first_two_match']
     queryVecs = [geCalc.get_embedding_for_id(vec) for vec in queryIds]
     
-    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5).tolist()
+    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5)
     queryVecs.append(userVec)
+
+    queryVec = sum_vecs(queryVecs)
     
     results = geCalc.query_by_vec(
-        queryVecs, 
+        queryVec, 
         typeFilter = ['track'], 
         limit = limit
     )
@@ -145,3 +148,14 @@ def query_by_mean_vecs(geCalc, queryIds, limit):
         limit = limit
     )
     return results
+
+def sum_vecs(vecs):
+    searchVec = None
+
+    for vec in vecs:        
+        if searchVec is not None:
+            searchVec = searchVec + vec
+        else:
+            searchVec = vec
+
+    return searchVec
