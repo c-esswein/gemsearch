@@ -63,7 +63,7 @@
 	With this method new graph structure can be added with much less effort than relearning the complete model. Unfortunately even small changes can influence the whole embedding and create a complete new vector space. The scalability is therefore questionable because for big datasets the new model has to be updated completely which may invalidate all created indexes. Furthermore only graph structure can be extended but not modified or removed.
 	
 	% TODO: check percentage when adding node...
-	% TODO: compare time between initial learning and extending
+	% TODO: compare time between initial learning and extending: 3mins extending, 30min full model
 	
 	\section{Personalized queries}
 	The increasing availability of huge music datasets through streaming platforms requires more sophisticated search methods to access desired tracks. Especially on streaming platforms users expect to filter and consume music with predefined seeds like genres, context based scenarios or queries to find similar items of "x". This content based filters are in contrast to personal recommendations which are only based on historic listening behavior. To combine those two concepts and to allow users to specify arbitrary search intension, a flexible query system is required.
