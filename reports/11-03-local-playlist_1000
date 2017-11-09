@@ -1,0 +1,221 @@
+C:\Users\cessw\Anaconda3\envs\tensorflow\lib\site-packages\gensim\utils.py:860: UserWarning: detected Windows; aliasing chunkize to chunkize_serial
+  warnings.warn("detected Windows; aliasing chunkize to chunkize_serial")
+2017-11-03 09:36:54,942 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2017-11-03 09:36:55,152 - __main__ - INFO - started playlist eval with config: {'USE_USER_IN_QUERY': True, 'TEST_PLAYLIST_SPLIT': 0.2, 'ARGS': Namespace(album=True, genre=True, tags=True), 'outDir': 'data/graph_1000_eval/', 'dataDir': 'data/graph_1000/', 'SHOULD_INDEX_ES': True, 'SHOULD_GENERATE_GRAPH': True, 'SHOULD_EMBED': True, 'PRECISION_AT': [1, 5, 10]}
+2017-11-03 09:36:55,154 - __main__ - INFO - %%% playlist_eval runner...
+2017-11-03 09:36:55,281 - gemsearch.evaluation.playlist_query_evaluator - INFO - Splitted playlists for training (522) and test (92), total (653)
+2017-11-03 09:36:55,283 - gemsearch.evaluation.playlist_query_evaluator - INFO - dropped because of invalid split (user in test but not in training) 39
+------------- generate graph -------------
+2017-11-03 09:36:55,307 - __main__ - INFO - %%% graph generation...
+2017-11-03 09:38:38,074 - gemsearch.core.type_counter - INFO - Collected items by type:
+2017-11-03 09:38:38,076 - gemsearch.core.type_counter - INFO - album: 19396
+2017-11-03 09:38:38,078 - gemsearch.core.type_counter - INFO - artist: 12340
+2017-11-03 09:38:38,080 - gemsearch.core.type_counter - INFO - tag: 96431
+2017-11-03 09:38:38,082 - gemsearch.core.type_counter - INFO - track: 56928
+2017-11-03 09:38:38,084 - gemsearch.core.type_counter - INFO - genre: 1126
+2017-11-03 09:38:38,087 - gemsearch.core.type_counter - INFO - user: 269
+2017-11-03 09:38:38,089 - gemsearch.core.type_counter - INFO - -- Total: 186490 --
+2017-11-03 09:38:38,091 - __main__ - INFO - %%% graph generation done in 102.779s
+
+
+2017-11-03 09:38:38,094 - __main__ - INFO - %%% elastic search writer...
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 186221}
+2017-11-03 09:40:05,190 - __main__ - INFO - %%% elastic search writer done in 87.093s
+
+
+2017-11-03 09:40:05,192 - __main__ - INFO - %%% embedding 20_20_10_64_deepwalk...
+2017-11-03 09:40:05,194 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/graph_1000_eval/graph.txt', log='INFO', max_memory_data_size=7000000, method='deepwalk', number_walks=20, output='data/graph_1000_eval/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=20, weighted=True, window_size=10, workers=3)
+2017-11-03 09:40:16,460 - deepwalk - INFO - make_consistent: made consistent in 1.668994665145874s
+2017-11-03 09:40:17,200 - deepwalk - INFO - remove_self_loops: removed 0 loops in 0.7372872829437256s
+2017-11-03 09:40:17,201 - deepwalk.runner - INFO - Number of nodes: 186490
+2017-11-03 09:40:17,203 - deepwalk.runner - INFO - Number of walks: 3729800
+2017-11-03 10:58:39,971 - gensim.models.keyedvectors - INFO - storing 186490x64 projection weights into data/graph_1000_eval/deepwalk.em
+2017-11-03 10:59:36,168 - __main__ - INFO - %%% embedding 20_20_10_64_deepwalk done in 4770.973s
+
+
+2017-11-03 10:59:36,170 - __main__ - INFO - %%% ge calc initializing...
+2017-11-03 10:59:59,493 - __main__ - INFO - %%% ge calc initializing done in 23.321s
+
+
+2017-11-03 10:59:59,495 - __main__ - INFO - ------------- evaluation -------------
+2017-11-03 10:59:59,496 - __main__ - INFO - %%% evaluation...
+2017-11-03 10:59:59,498 - gemsearch.evaluation.playlist_query_evaluator - INFO - Extract queries from playlist names (result is cached)
+2017-11-03 11:00:07,731 - gemsearch.evaluation.playlist_query_evaluator - INFO - For evaluation 88 of 92 playlists are left
+2017-11-03 11:00:07,733 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 88 playlists
+2017-11-03 11:07:09,896 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 88 playlists (testsplit=0.2)
+[{'key': 'rec_random_tracks@1',
+  'values': {'avg_hits': 0.0,
+             'avg_hits_on_has_hits': 0,
+             'has_hits': 0,
+             'precision': 0.0,
+             'precision_on_has_hits': 0,
+             'recall': 0.0}},
+ {'key': 'rec_random_tracks@10',
+  'values': {'avg_hits': 0.011363636363636364,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 1,
+             'precision': 0.0011363636363636365,
+             'precision_on_has_hits': 0.1,
+             'recall': 0.00047348484848484844}},
+ {'key': 'rec_random_tracks@5',
+  'values': {'avg_hits': 0.011363636363636364,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 1,
+             'precision': 0.002272727272727273,
+             'precision_on_has_hits': 0.2,
+             'recall': 0.00047348484848484844}},
+ {'key': 'rec_tracks_with_user@10',
+  'values': {'avg_hits': 0.18181818181818182,
+             'avg_hits_on_has_hits': 2.6666666666666665,
+             'has_hits': 6,
+             'precision': 0.018181818181818184,
+             'precision_on_has_hits': 0.26666666666666666,
+             'recall': 0.009332905817734926}},
+ {'key': 'rec_tracks_with_user@5',
+  'values': {'avg_hits': 0.11363636363636363,
+             'avg_hits_on_has_hits': 1.6666666666666667,
+             'has_hits': 6,
+             'precision': 0.022727272727272728,
+             'precision_on_has_hits': 0.3333333333333333,
+             'recall': 0.005233084070854357}},
+ {'key': 'rec_query_tracks_with_user@10',
+  'values': {'avg_hits': 0.29545454545454547,
+             'avg_hits_on_has_hits': 3.7142857142857144,
+             'has_hits': 7,
+             'precision': 0.029545454545454545,
+             'precision_on_has_hits': 0.37142857142857144,
+             'recall': 0.018423814908644018}},
+ {'key': 'rec_query_tracks_with_user@1',
+  'values': {'avg_hits': 0.03409090909090909,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 3,
+             'precision': 0.03409090909090909,
+             'precision_on_has_hits': 1.0,
+             'recall': 0.0019722480560076467}},
+ {'key': 'rec_tracks_with_user@1',
+  'values': {'avg_hits': 0.03409090909090909,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 3,
+             'precision': 0.03409090909090909,
+             'precision_on_has_hits': 1.0,
+             'recall': 0.000916233363629318}},
+ {'key': 'rec_query_tracks_with_user@5',
+  'values': {'avg_hits': 0.17045454545454544,
+             'avg_hits_on_has_hits': 2.142857142857143,
+             'has_hits': 7,
+             'precision': 0.03409090909090909,
+             'precision_on_has_hits': 0.42857142857142855,
+             'recall': 0.010031063868834155}},
+ {'key': 'rec_query_tracks_with_user_mean@1',
+  'values': {'avg_hits': 0.06818181818181818,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 6,
+             'precision': 0.06818181818181818,
+             'precision_on_has_hits': 1.0,
+             'recall': 0.003602682838616342}},
+ {'key': 'rec_query_tracks_with_user_mean@10',
+  'values': {'avg_hits': 0.6931818181818182,
+             'avg_hits_on_has_hits': 3.388888888888889,
+             'has_hits': 18,
+             'precision': 0.06931818181818182,
+             'precision_on_has_hits': 0.33888888888888885,
+             'recall': 0.03884597276286709}},
+ {'key': 'rec_query_tracks_with_user_mean@5',
+  'values': {'avg_hits': 0.36363636363636365,
+             'avg_hits_on_has_hits': 2.4615384615384617,
+             'has_hits': 13,
+             'precision': 0.07272727272727274,
+             'precision_on_has_hits': 0.49230769230769234,
+             'recall': 0.021660379327200996}},
+ {'key': 'rec_query_tracks_with_user_scaled@10',
+  'values': {'avg_hits': 1.1363636363636365,
+             'avg_hits_on_has_hits': 4.166666666666667,
+             'has_hits': 24,
+             'precision': 0.11363636363636363,
+             'precision_on_has_hits': 0.4166666666666667,
+             'recall': 0.06730426718583542}},
+ {'key': 'rec_query_tracks_with_user_scaled@5',
+  'values': {'avg_hits': 0.625,
+             'avg_hits_on_has_hits': 2.619047619047619,
+             'has_hits': 21,
+             'precision': 0.125,
+             'precision_on_has_hits': 0.5238095238095238,
+             'recall': 0.03698276212117469}},
+ {'key': 'rec_first_two_query_tracks_mean@10',
+  'values': {'avg_hits': 1.2840909090909092,
+             'avg_hits_on_has_hits': 4.708333333333333,
+             'has_hits': 24,
+             'precision': 0.12840909090909094,
+             'precision_on_has_hits': 0.47083333333333344,
+             'recall': 0.07803099059388495}},
+ {'key': 'rec_first_two_query_tracks@10',
+  'values': {'avg_hits': 1.2840909090909092,
+             'avg_hits_on_has_hits': 4.708333333333333,
+             'has_hits': 24,
+             'precision': 0.12840909090909094,
+             'precision_on_has_hits': 0.47083333333333344,
+             'recall': 0.07803099059388495}},
+ {'key': 'rec_query_tracks@10',
+  'values': {'avg_hits': 1.2954545454545454,
+             'avg_hits_on_has_hits': 5.428571428571429,
+             'has_hits': 21,
+             'precision': 0.12954545454545452,
+             'precision_on_has_hits': 0.5428571428571428,
+             'recall': 0.07701354566567718}},
+ {'key': 'rec_query_tracks@5',
+  'values': {'avg_hits': 0.6704545454545454,
+             'avg_hits_on_has_hits': 3.1052631578947367,
+             'has_hits': 19,
+             'precision': 0.13409090909090907,
+             'precision_on_has_hits': 0.6210526315789473,
+             'recall': 0.040837898393554055}},
+ {'key': 'rec_query_tracks_with_user_scaled@1',
+  'values': {'avg_hits': 0.13636363636363635,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 12,
+             'precision': 0.13636363636363635,
+             'precision_on_has_hits': 1.0,
+             'recall': 0.009752888309473988}},
+ {'key': 'rec_first_two_query_tracks@5',
+  'values': {'avg_hits': 0.6931818181818182,
+             'avg_hits_on_has_hits': 2.9047619047619047,
+             'has_hits': 21,
+             'precision': 0.1386363636363636,
+             'precision_on_has_hits': 0.5809523809523809,
+             'recall': 0.041097922038602304}},
+ {'key': 'rec_first_two_query_tracks_mean@5',
+  'values': {'avg_hits': 0.6931818181818182,
+             'avg_hits_on_has_hits': 2.9047619047619047,
+             'has_hits': 21,
+             'precision': 0.1386363636363636,
+             'precision_on_has_hits': 0.5809523809523809,
+             'recall': 0.041097922038602304}},
+ {'key': 'rec_first_two_query_tracks@1',
+  'values': {'avg_hits': 0.1590909090909091,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 14,
+             'precision': 0.1590909090909091,
+             'precision_on_has_hits': 1.0,
+             'recall': 0.009869517261330212}},
+ {'key': 'rec_first_two_query_tracks_mean@1',
+  'values': {'avg_hits': 0.1590909090909091,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 14,
+             'precision': 0.1590909090909091,
+             'precision_on_has_hits': 1.0,
+             'recall': 0.009869517261330212}},
+ {'key': 'rec_query_tracks@1',
+  'values': {'avg_hits': 0.17045454545454544,
+             'avg_hits_on_has_hits': 1.0,
+             'has_hits': 15,
+             'precision': 0.17045454545454544,
+             'precision_on_has_hits': 1.0,
+             'recall': 0.010816486958299908}}]
+2017-11-03 11:07:10,257 - __main__ - INFO - %%% evaluation done in 430.759s
+
+
+------------- done -------------
+2017-11-03 11:07:10,259 - __main__ - INFO - %%% playlist_eval runner done in 5415.103s
+
+

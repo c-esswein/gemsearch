@@ -1,0 +1,27 @@
+2017-11-08 16:59:37,783 - gemsearch.evaluation.my_media_lite_evaluator - INFO - started evalRandom
+running: bash.exe -c "../my_media_lite_build/item_recommendation.exe --training-file=data/full_model_rec/media_lite_training.csv --recommender=Random --measures=prec@5,prec@10,recall@5,recall@10 --test-ratio=0,2"
+loading_time 3.25
+memory 149
+training data: 1180 users, 729464 items, 1330223 events, sparsity 99.84546
+test data:     1169 users, 252658 items, 332382 events, sparsity 99.88746
+Random 
+training_time 00:00:00 .prec@5 0,00017 prec@10 0,00017 recall@5 0 recall@10 0,00001 num_items 850253 num_lists 1169 testing_time 00:08:46.4328418
+memory 184
+2017-11-08 17:08:28,214 - gemsearch.evaluation.my_media_lite_evaluator - INFO - started evalMostPopular
+running: bash.exe -c "../my_media_lite_build/item_recommendation.exe --training-file=data/full_model_rec/media_lite_training.csv --recommender=MostPopular --measures=prec@5,prec@10,recall@5,recall@10 --test-ratio=0,2"
+loading_time 3
+memory 149
+training data: 1180 users, 730215 items, 1331265 events, sparsity 99.8455
+test data:     1170 users, 251659 items, 331340 events, sparsity 99.88747
+MostPopular by_user=False 
+training_time 00:00:00.0369986 .prec@5 0,02 prec@10 0,01872 recall@5 0,00115 recall@10 0,00175 num_items 850253 num_lists 1170 testing_time 00:07:04.7676250
+memory 187
+2017-11-08 17:15:36,702 - gemsearch.evaluation.my_media_lite_evaluator - INFO - started evalUserKNN
+running: bash.exe -c "../my_media_lite_build/item_recommendation.exe --training-file=data/full_model_rec/media_lite_training.csv --recommender=UserKNN --measures=prec@5,prec@10,recall@5,recall@10 --test-ratio=0,2"
+loading_time 3.1
+memory 149
+training data: 1180 users, 730189 items, 1330741 events, sparsity 99.84555
+test data:     1174 users, 251820 items, 331864 events, sparsity 99.88775d
+UserKNN k=80 correlation=Cosine q=1 weighted=False alpha=0,5 (only for BidirectionalConditionalProbability) 
+training_time 00:00:05.0764976 .prec@5 0,12709 prec@10 0,10468 recall@5 0,01498 recall@10 0,0201 num_items 850253 num_lists 1174 testing_time 02:04:52.9140402
+memory 192
