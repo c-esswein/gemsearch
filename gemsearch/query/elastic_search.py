@@ -10,11 +10,14 @@ es = Elasticsearch(
     http_auth=('elastic', 'changeme')
 )
 
-def search(queryStr, limit=10):
+def search(queryStr, limit=10, itemType = None):
+    query = {"match" :{"name" : {"query": queryStr, "fuzziness": "AUTO"}}}
+
+    if itemType is not None:
+        query = {"bool": {"must": [{"match": {"type": itemType}}, query]}}
+
     res = es.search(index="_all", size=limit, body={
-        "query": {
-            "match" : {"name" : {"query": queryStr, "fuzziness": "AUTO"}}
-        },
+        "query": query,
         "highlight" : {
             "fields" : {
                 "name" : {}
@@ -23,8 +26,18 @@ def search(queryStr, limit=10):
     })
     return [hit for hit in res['hits']['hits']]
 
-def suggest(prefix, limit=10):
-    return search(prefix, limit)
+
+
+
+def suggest(prefix, limit=10, itemType = None):
+    ''' Get autocomplete suggestions for given prefix. If prefix starts with "#" return item types
+    are limited to tags when itemType is not set.
+    '''
+    if itemType is None and prefix.startswith('#'):
+        itemType = 'tag'
+        prefix = prefix[1:]
+
+    return search(prefix, limit, itemType)
 
     '''res = es.search(index="_all", body={
         "suggest": {
@@ -85,7 +98,11 @@ def extract_multiple_queries_from_name(name, limit=1, resultIds = None):
 
     # check if at least one alpha numeric char is left
     if not re.search('[a-zA-Z0-9]', subName):
-        return resultIds        
+        return resultIds
 
     # continue extracting
     return extract_multiple_queries_from_name(subName, limit, resultIds)
+
+if __name__ == '__main__':
+    from pprint import pprint
+    pprint(suggest('#test'))

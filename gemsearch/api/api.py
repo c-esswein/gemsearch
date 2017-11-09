@@ -28,10 +28,10 @@ def initializeApi():
     global geCalc
     global vizGeCalc
     global _graphHelper
-    
+
     # reset weighted graph helper
     _graphHelper = None
-    
+
     print('initialize geCalc')
     geCalc = GeCalc()
     geCalc.load_node2vec_data(dataFolder+'embedding.em', dataFolder+'types.csv')
@@ -57,13 +57,13 @@ def reloadEmbedding():
             ]
         }), 400)
 
-    
+
     initializeApi()
 
     return jsonify({
         'success': True,
         'data': []
-    })  
+    })
 
 @app.route("/api/query")
 def query():
@@ -76,7 +76,7 @@ def query():
         return jsonify({
             'success': True,
             'data': []
-        })    
+        })
     idList = ids.split('|')
 
     # type filter
@@ -104,7 +104,7 @@ def query():
             'data': resolvedItems
         })
     except ValueError as exc:
-        logger.error('query error', exc_info=True)        
+        logger.error('query error', exc_info=True)
         return jsonify({
             'success': False,
             'errors': [
@@ -124,7 +124,7 @@ def queryViz():
         return jsonify({
             'success': True,
             'data': []
-        })    
+        })
     idList = ids.split('|')
 
     # type filter
@@ -134,7 +134,7 @@ def queryViz():
 
     # limit + offset
     limit = request.args.get('limit') or 20
-    limit = int(limit)    
+    limit = int(limit)
     offset = request.args.get('offset') or 0
     offset = int(offset)
 
@@ -181,7 +181,7 @@ def itemsNearViz():
         return jsonify({
             'success': True,
             'data': []
-        })    
+        })
     vec = np.array(vecStr.split(','))
 
     # type filter
@@ -241,8 +241,11 @@ def get_object_id(id):
 def suggest_item(term):
     ''' Get autocomplete suggestions for given term.
     '''
+
+    typeFilter = request.args.get('typeFilter') or None
+
     try:
-        result = es_suggest(term)
+        result = es_suggest(term, itemType=typeFilter)
     except Exception as exc:
         return jsonify({
             'success': False,
@@ -306,7 +309,7 @@ def recommendations():
             'data': resolvedItems
         })
     except ValueError as exc:
-        logger.error('query error', exc_info=True)        
+        logger.error('query error', exc_info=True)
         return jsonify({
             'success': False,
             'errors': [
@@ -360,7 +363,7 @@ def sync_user():
     try:
         # sync music
         syncedTracks, missingTrackCount = userApi.syncUserMusic(userName, token)
-        user = userApi.getUser(userName)    
+        user = userApi.getUser(userName)
 
         return jsonify({
             'success': True,
@@ -373,7 +376,7 @@ def sync_user():
             }
         })
     except Exception as exc:
-        logger.error('query error', exc_info=True)        
+        logger.error('query error', exc_info=True)
         return jsonify({
             'success': False,
             'errors': [
@@ -434,10 +437,10 @@ def get_graph_helper():
         def typeRestrictor(nodeId):
             item = lookup[nodeId]
             return item['type'] != 'feature' and item['type'] != 'tag'
-            
+
         _graphHelper = Graph()
         _graphHelper.load_from_edge_list(dataFolder + 'graph_w.txt', typeRestrictor)
-    
+
     return _graphHelper
 
 @app.route("/api/graph")
@@ -453,7 +456,7 @@ def get_graph_neighbors(nodeId):
     types = request.args.get('types')
     if types is not None:
         types = types.split('|')
-    
+
     depth = int(request.args.get('depth') or 1)
 
     node = geCalc.get_item_by_item_id(nodeId)
