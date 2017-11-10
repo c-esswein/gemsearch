@@ -6,25 +6,17 @@ import gemsearch.evaluation.my_media_lite_evaluator as my_media_lite_eval
 import gemsearch.core.data_loader as data_loader
 
 # ---- config ----
-dataDir = 'data/graph_100/'
-outDir = 'data/user_rec/'
+dataDir = 'data/full_model/'
+outDir = 'data/full_model_rec/'
+extractData = False
 # ---- /config ----
 
-# userTracks = data_loader.traverseUserTrackInPlaylists(dataDir+'playlist.csv')
+if extractData:
+    userTracks = data_loader.traverseUserTrackInPlaylists(dataDir+'playlist.csv')
 
-logger.info('start writing data file')
-# my_media_lite_eval.writeUserRatingEdges(outDir+'media_lite_training.csv', userTracks)
+    logger.info('start writing data file')
+    my_media_lite_eval.writeUserRatingEdges(outDir+'media_lite_training.csv', userTracks)
 
-try:
-    my_media_lite_eval.evalRandom(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
-except Exception as e:
-    pass
-try:
-    my_media_lite_eval.evalMostPopular(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
-except Exception as e:
-    pass
-try:
-    my_media_lite_eval.evalUserKNN(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
-except Exception as e:
-    pass
-
+my_media_lite_eval.evalRandom(outDir+'media_lite_training.csv', crossValidation=True)
+my_media_lite_eval.evalMostPopular(outDir+'media_lite_training.csv', crossValidation=True)
+my_media_lite_eval.evalUserKNN(outDir+'media_lite_training.csv', crossValidation=True)

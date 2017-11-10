@@ -3,6 +3,7 @@
 import re
 
 MIN_TAG_COUNT = 5 # minimum last fm tag count for track
+MIN_NAME_LENGTH = 3 # minimum alpha chars a name must contain
 
 def clean_playlist_name(name):
     '''Simple playlist name cleaning.
@@ -13,7 +14,7 @@ def clean_playlist_name(name):
     if not re.search('[a-zA-Z]', name):
         return False
 
-    if len(name) < 3:
+    if len(name) < MIN_NAME_LENGTH:
         return False
         
     return name
@@ -35,7 +36,7 @@ def clean_tag_name(name):
     name = re.sub(r'[\-\"]', '', name)
     name = name.strip()
 
-    if len(name) < 3:
+    if len(name) < MIN_NAME_LENGTH:
         return False
 
     name = name.lower()

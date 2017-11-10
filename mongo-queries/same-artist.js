@@ -21,8 +21,8 @@ playlists.find({}).forEach(function(playlist){
         var track = tracks.findOne({'uri': pTrack.track_uri});
         
         if (track) {
-            var trackArtist = track.artists[0].id;
             validTrackCounter++;
+            var trackArtist = track.artists[0].id;
 
             if (!artist) {
                 artist = trackArtist;
@@ -41,6 +41,8 @@ playlists.find({}).forEach(function(playlist){
 
     if (!sameArtist && validTrackCounter > 3) {
         goodPlaylistCtr++;
+
+        print(playlist['key']);
     }
 });
 

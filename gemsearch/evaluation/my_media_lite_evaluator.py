@@ -12,7 +12,7 @@ from gemsearch.utils.proc import execute_cmd
 
 from gemsearch.settings import USE_WINDOWS_BASH
 # PATH_MY_MEDIA_LITE = '../my_media_lite/bin/item_recommendation'
-PATH_MY_MEDIA_LITE = '../my_media_lite_build/item_recommendation'
+PATH_MY_MEDIA_LITE = '../my_media_lite_build/item_recommendation.exe'
 
 
 def writeUserRating(filePath, userTrack):
@@ -56,7 +56,7 @@ def executeMyMediaLite(trainingFilePath, recommenderMethod, testFilePath = None,
     args = [PATH_MY_MEDIA_LITE]
     args.append("--training-file=%s" % trainingFilePath)
     args.append("--recommender=%s" % recommenderMethod)
-    args.append("--measures=\"prec@5\"")
+    args.append("--measures=prec@5,prec@10,recall@5,recall@10")
 
     if testFilePath is None and crossValidation is None:
         raise Exception('Either testFilePath or number of folds for crossValidation must be set')

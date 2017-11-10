@@ -105,7 +105,6 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
 
             # insert all types
             es_load_all_types(data_loader.traverseTypes(outDir+'types.csv'), 'music_index', 'music_type', dismissTypes = ['user'])
-
     
     # config for embedder factory
     configs = [
