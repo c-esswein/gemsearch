@@ -33,14 +33,14 @@ args = parser.parse_args()
 
 
 dataDir = 'data/full_model/'
-outDir = 'data/rec/'
+outDir = 'data/rec_all/'
 
-SHOULD_GENERATE_GRAPH = False
-SHOULD_INDEX_ES = False
-SHOULD_EMBED = False
+SHOULD_GENERATE_GRAPH = True
+SHOULD_INDEX_ES = True
+SHOULD_EMBED = True
 
 TEST_PLAYLIST_SPLIT=0.2
-PRECISION_AT=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15]
+PRECISION_AT=[1, 5, 10, 15]
 USE_USER_IN_QUERY = True
         
 # ---- /config ----
@@ -160,5 +160,6 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
         resList.sort(key=lambda runRes: runRes['values']['precision'])
         pprint(resList)
 
-
+    playlistEval.writeTestLists(outDir+'test_playlists_queries.json')
+    
     print('------------- done -------------')

@@ -11,6 +11,8 @@ es = Elasticsearch(
 )
 
 def search(queryStr, limit=10, itemType = None):
+    ''' Search with given query string. Item type can be limited to single type.
+    '''
     query = {"match" :{"name" : {"query": queryStr, "fuzziness": "AUTO"}}}
 
     if itemType is not None:
@@ -25,8 +27,6 @@ def search(queryStr, limit=10, itemType = None):
         }
     })
     return [hit for hit in res['hits']['hits']]
-
-
 
 
 def suggest(prefix, limit=10, itemType = None):
@@ -105,4 +105,4 @@ def extract_multiple_queries_from_name(name, limit=1, resultIds = None):
 
 if __name__ == '__main__':
     from pprint import pprint
-    pprint(suggest('#test'))
+    pprint(suggest('a', itemType= 'album'))
