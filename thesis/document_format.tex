@@ -6,6 +6,7 @@
 \graphicspath{{./images/}}
 \usepackage{float}
 \usepackage{amssymb}
+\usepackage{booktabs}
 
 % Copyright
 %\setcopyright{none}
@@ -33,7 +34,7 @@
 
 \begin{abstract}
 	While exploring new music, users are typically limited to recommender systems which are proposing items either based on their listening history or on content similarities. Combining both methods models a "query-based recommendation" which enables users to filter content based on their preferences.
-	The ecosystem of music can be represented as an heterogeneous graph using all available data about users, tracks, artists, genres, tags,... . Using graph embedding techniques a low-dimensional vector representation is learned and provide simple method to calculate similarities. Search queries, either single terms or combinations of items in the music graph, can be encoded using the same vector space. Therefore, not only exact results are found, but also similar items.
+	The ecosystem of music can be represented as an heterogeneous graph using all available data like tracks, artists, genres, tags and users. Using graph embedding techniques a low-dimensional vector representation is learned and provides a simple method to calculate similarities. Search queries, either single terms or combinations of items in the music graph, can be encoded using the same vector space. Therefore, not only exact results are found, but also similar items.
 	
 	This work presents an approach to create a music search with Spotify data where new users can connect with their existing accounts. The retrieved results are not only presented in a list but instead the learned vector representation is exploited to generate 3D representations.
 \end{abstract}
@@ -48,7 +49,7 @@ In recent years music streaming platforms are getting more popular which enables
 While exploring new music, users are typically limited to recommender systems which are proposing items either based on their listening history or on content similarities (aka find similar artists, songs). Combining both methods models a "query-based recommendation" which enables users to filter content based on their preferences.
 
 When using naive approaches with simple attribute matching queries, complete annotated metadata is required. Otherwise songs can not appear when querying for tags which they are not assigned to. Especially when it comes to genres and tags for tracks it is unfeasible to manually annotate every entity. A desired search engine needs to learn the representation with some tags in the training phase but while predicting new connections have to be drawn.
-The ecosystem of music can be represented as an heterogeneous graph using all available data about users, tracks, artists, genres, tags,... . Using graph embedding techniques a low-dimensional vector representation is learned and provide simple method to calculate similarities. Search queries, either single terms or combinations of items in the music graph, can be encoded using the same vector space. As a result, not only exact results are found, but also similar items. \\
+The ecosystem of music can be represented as an heterogeneous graph using all available data like tracks, artists, genres, tags and users. Using graph embedding techniques a low-dimensional vector representation is learned and provides simple method to calculate similarities. Search queries, either single terms or combinations of items in the music graph, can be encoded using the same vector space. As a result, not only exact results are found, but also similar items. \\
 
 This work presents an approach to embed the Spotify dataset into a latent representation to enable recommendations based on queries. After providing the first search results, the user should be assisted while exploring the remaining items and in the refinement of his search terms. Traditional list based aggregations of search results can only model a one dimensional view for the items. Instead of a list, the low-dimensional vector representation should be exploited to generate 3D representations of the suggested items. Combined with the graph representation, query suggestions can be provided.
 
@@ -57,10 +58,11 @@ This work presents an approach to embed the Spotify dataset into a latent repres
 
 \section{Related work}
 
-music search \cite{chen2016query}
+In \cite{chen2016query} a very similar approach is presented where query-based music recommendations are created with embedded graphs. The main difference is that the music graph was modeled as a bipartite graph with users in one and all other items in the other set. This allows to create next track recommendations based on recent seed tracks but does not model a full qualified search because music items themselves are not connected. 
 
-3D interface \cite{lamere2007using}
+To evaluate the performance of my query recommendations, playlist names are used to predict their tracks. On the same dataset \cite{chungexploiting} presented a text-based method to embed and query for tracks. Here similarities between items are only based on co-occurring songs. \\
 
+Alternative representation and exploration models for music are mainly complex and require additional hardware. \cite{lamere2007using} presented a 3D interface to visualize similarities between tracks. Each item is represented as a single item but no clusters are used and album covers are only involved in separate visualizations. The music space is mapped on a virtual landscape in \cite{knees2007exploring} which makes it possible to observe audio based similarities and clusters but the interface is rather complex.
 
 \section{Graph Embedding}
 Graph embedding techniques aiming to transform graph structures into low a dimensional vector space. More formally, given a graph $ G = (V,E) $ with vertices $ V $ and edges $ E $ "a graph embedding is a mapping $ f : v_{i} \rightarrow y_{i} \in \mathbb{R}^{d} $ $ \forall i \in [n] $ such that $ d \ll |V| $ and the function $ f $ preserves some proximity measure defined on graph $ G $ "\cite{goyal2017graph}. The final result is therefore a vector for each node in the initial graph. Having this coherent search space makes it much easier to calculate higher-order proximities between heterogeneous nodes. Similar items can be retrieved using nearest-neighboring searches.
@@ -107,24 +109,30 @@ For example suppose that you first search for a music genre you are interested i
 
 % 3D
 The most common visualization for recommendations is a list of items which is ordered by relevance for the user. Only the ordering can be observed and therefore it represents a very limited one dimensional view where even distance measures between consecutive items are not visible. To create at least a sense of vision for distances to the most significant items, it is common to spread the results among multiple result pages. 
-When having an embedding where similarities between arbitrary items can be expressed using vectors, much more advanced interfaces are possible. Using dimension reducing methods the embedding can be compressed to three dimensions. Instead of using a list, the retrieved recommendations items can then easily visualized in a 3D scene. Using such an interface does not only express distance measure between items but also allows the user to explore the result space more easily. Less accurate items are positioned around the center hit and the direction in three dimension can be chosen to explorer additional items. This means that the query is refined while exploring indirectly.
+When having an embedding where similarities between arbitrary items can be expressed using vectors, much more advanced interfaces are possible. Using dimension reducing methods like the Principal component analysis (PCA), the embedding can be compressed to three dimensions. Instead of using a list, the retrieved recommendations items can then easily visualized in a 3D scene. Each track, artist or album has a corresponding position vector and is representable as interactive 3D object. Using such an interface does not only express distance measure between items but also allows the user to explore the result space more easily. Less accurate items are positioned around the center hit and the direction in three dimension can be chosen to explorer additional items. This means that the query itself is refined while exploring the result space indirectly and without active user involvement.
 
-Similar items are positioned very nearby and when applying distance based clustering, accumulations of items can be represented as single but annotated clusters. For exploration, only one item has to be inspected for deciding whether the whole cluster is in interest or not. Postfiltering to remove variants of very similar items is then not necessary anymore while all items are still available.
+Similar items are positioned very nearby and when applying distance based clustering, accumulations of items can be represented as single but annotated clusters. For exploration, only one item has to be inspected for deciding whether the whole cluster is in interest or not. Postfiltering to remove variants of very similar items is then not necessary anymore while all items are still available. Additionally this also simplifies the visualization because more items can be displayed on less space without introducing noise.\\
 
-Through advantages in browser technology just in time visualizations of 3D scenes can be created directly on websites without complex precomputations. Also users are nowadays more familiar with interactive and multidimensional interfaces. Enhanced result views could therefore may replace simple lists.
+It is crucial to simplify the inspection of single items such that big collections are explorable in reasonable time. Album covers as textures for 3D objects improve the vision because known items can be recognized and the discovery or desired tracks is more efficient\cite{libeks2011you}. To provide detail information about selected items (e.g. artist name for track, genres), directly connected neighbors can be retrieved from the initial graph structure. Finally music samples have to be provided to rate and consume discovered tracks. \\
+
+Through advantages in browser technology just in time visualizations of 3D scenes can be created directly on websites without complex precomputations or add-ons. Also users are nowadays more familiar with interactive and multidimensional interfaces. Enhanced result views could therefore may replace simple lists.
 
 \section{geMsearch}
-\emph{geMsearch} is a prototype which implements the proposed method for personalized music search. An embedded music corpus is searchable through a web client and retrieved items are represented in a list or 3D view. Besides the offline evaluation this makes it possible to test the implementation in a real world scenario. 
+\emph{geMsearch} is a prototype which implements the proposed method for personalized music search. An embedded music corpus is searchable through a web client and retrieved items are represented in a list or 3D view which can be seen in figure \ref{fig:web_client} and \ref{fig:web_client_3d}. Besides the offline evaluation this makes it possible to test the implementation in a real world scenario. 
 
-% Search queries are send to the API server instance and evaluated on the embedded graph. User filters can further restrict the search results for certain element types, like tracks, tags or artists. Before sending results to the client, additional metadata like artist names for tracks and album covers are queried from a simple document store (MongoDB instance) and added to the response.
-
+Supported with autocomplete suggestion the user can select any item of the graph to formulate single or combined queries. To provide recommendations, this selection is send to the API server instance and evaluated on the embedded graph. User filters can further restrict the search results for certain element types, like tracks, tags or artists. Before sending results to the client, additional metadata like artist names for tracks and album covers are queried from a simple document store and added to the response. Because of its popularity and easy to use API the data highly depends on the Spotify API. This ensures a high availability of metadata as well as album covers and makes it possible to play short sound samples for each track.\\
 
 \begin{figure}[ht]
-	{\includegraphics[width=200px]{web_client.png}}	
-	\caption{Web client search suggestions}
+	{\includegraphics[width=250px]{web_client.png}}	
+	\caption{Web client list results}
 	\label{fig:web_client}
 \end{figure}
 
+\begin{figure}[ht]
+	{\includegraphics[width=250px]{web_client_3d.png}}	
+	\caption{Web client 3D view and player bar}
+	\label{fig:web_client_3d}
+\end{figure}
 
 % \subsection{Spotify connect}
 \label{sec:impl_spotify_connect}
@@ -142,56 +150,50 @@ Manually curated playlists can easily obtained, they have an user context and ar
 The initial dataset was constructed from a crawled Spotify playlists by DBIS at the University of Innsbruck\cite{pichl2017improving}. This data consists of playlists with an user context and contained tracks with artist and audio features. In order to enrich the available query terms and gather more graph structure, social curated track tags were crawled from \emph{Last.fm} \footnote{\url{https://www.last.fm/api/show/track.getTags}} and artist genres from Spotify.
 %  \emph{Last.fm}\footnote{\url{www.last.fm}}
 
-% TODO: describe tags from last fm
+Because both the playlists and the \emph{Last.fm} tags where unfiltered user produced data, in a preprocessing was necessary. All playlists with less than four tracks or names without an alphanumeric title are removed. Within the dataset 12 tracks are most common in a playlist. To match same tags on different tracks, the names are transformed to lowercase and special characters are removed. Tags with less than four characters, or without more than five user assignments on a given track are also cleaned.
 
-% TODO: cleaning, remove tags with less than x count
+Table \ref{table:node_count} and \ref{table:edge_count} show which and how many elements and connections are contained in the graph after preprocessing.
 
-Table \ref{table:node_count} and \ref{table:edge_count} show which and how many elements and connections are contained in the graph.
-
-%% TODO: update numbers
 \begin{table}[H]
-	\begin{minipage}{.5\textwidth}
-		
-		\centering
-		\caption{Node count by type:}
-		\label{table:node_count}
-		\begin{tabular}{l|l}
-			Playlists & 24,359  \\
-			Users     & xxx     \\
-			Tracks    & 872,521 \\
-			Artists   & 110,377  \\
-			Tags      & xxx
-		\end{tabular}
-		
-	\end{minipage}
-	\begin{minipage}{.5\textwidth}
-		
-		\centering
-		\caption{Edge count by types (undirected):}
-		\label{table:edge_count}
-		\begin{tabular}{l|l}
-			Playlist-User & 21,323  \\
-			User-Tracks     & xxx     \\
-			Track-Artists    & 671,903 \\
-			Track-Tags   & 83,789
-		\end{tabular}
-		
-	\end{minipage}
+	\caption{Node count by type:}
+	\label{table:node_count}
+	\begin{tabular}{l|l}
+		Playlists & 21,336  \\
+		Users     & 1,180     \\
+		Tracks    & 852,293 \\
+		Artists   & 110,377  \\
+		Tags      & 395,587    \\
+		Albums    & 189,174    \\
+		Genres	  & 1,520	\\\hline
+		Total nodes & 1,571,467
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\caption{Edge count by types (undirected):}
+	\label{table:edge_count}
+	\begin{tabular}{l|l}
+		Playlist-User   & 21,323  \\
+		User-Tracks     & 1,662,605     \\
+		Track-Album		& 852,293 \\
+		Track-Artists   & 1,027,918 \\
+		Track-Tags   	& 9,341,603 \\
+		Artist-Genre	& 148,705  \\\hline
+		Total edges 	& 13,054,447
+	\end{tabular}
 \end{table}
 
 
-
-As expected, the more structural data is available the better the results perform, both for the \emph{playlist evaluation} and \emph{track recommendation evaluation}.
-
 \subsection{Playlist evaluation}
 \label{subsec:playlist_eval}
-For using the playlists as ground truth, known terms need to be extracted from the name as a first step. match with known terms and construct query. Using this terms a query can be constructed including the user. To evaluate the performance the IR measurements precision@k and recall@k are used.
-
-
-% TODO: cleaning, remove list with less than x count, same on names
+To predict playlist tracks based on the playlist title, two steps are required. First a query must be constructed from the title and then this query can be used to retrieve recommendations. For the query extraction, contained terms are matched against known terms in the database. 
+ 
+ To evaluate the performance the information retrieval measurements precision@k and recall@k are used.
 
 problems: many names are noisy and do not describe content in any sense. results are compared with random predictor.
 
+
+% TODO: elastic search is used to tranform text into queries.
 --> Query expansion
 
 % TODO: table with results
@@ -200,9 +202,16 @@ problems: many names are noisy and do not describe content in any sense. results
 
 % TODO: influence of embedding parameters: number of walks + dimensions
 
+
+% todo: describe that many playlists only contain one artist because for spotify it is usual to be able to synchronize offline on mobile devices. Only text-based approaches are therfore much more powerful but do not reflect desired result. For music discovery mixed artists are much more powerful.
+
+% TODO: multi artist test
+
 \subsection{Track recommendation evaluation}
 \label{subsec:track_rec_eval}
 Queries are constructed using seeding elements combined with user context. Without seeds, the user alone can be used to query for recommendations. To perform a classic evaluation on user track recommendations, the playlists were used to construct historic track listening data, which is split into a training and test set. Using the test data, a new graph is generated and embedded. To compare the results, baseline scores are computed using \emph{MyMediaLite} \cite{Gantner2011MyMediaLite}.
+
+% TODO: describe mymedialite recommender
 
 % TODO: table with results
 
@@ -210,9 +219,20 @@ Queries are constructed using seeding elements combined with user context. Witho
 % TODO: describe results
 
 
+
+\begin{tabular}{ccc}\toprule
+	&& \\ \midrule[wd]
+	&& \\ \cmidrule[wd](trim){<Spalte a> - <Spalte b>}
+	&&\\ \bottomrule[wd]
+\end{tabular}
+
+
+
+As expected, the more structural data is available the better the results perform, both for the \emph{playlist evaluation} and \emph{track recommendation evaluation}.
+
 \section{Conclusion}
 This work presented an approach to use graph embedding techniques to create a low dimensional vector space of music data. This embedding was used to create query-bases music recommendations and evaluated against playlist track predictions. Combined with a 3D representation of the result item it improved the way how user find and explorer new music. 
-This approach is not limited to music and may be also used in different domains where application data can be represented as graph but metadata for single items is sparse.
+This method is not limited to music and may be also used in different domains where application data can be represented as graph but metadata for single items is sparse.
 
 There is still potential for future work in order to improve the embedding itself and also the query mechanism. Weighted graphs seemed to be a promising approach to improve the embedded proximities in early tests. It could also be possible to even include audio features as graph nodes.
 
