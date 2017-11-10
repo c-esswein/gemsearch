@@ -8,14 +8,14 @@ from gemsearch.core.data_loader import traverseTypes
 class GeCalc:
     '''Class to load and query embeddings.
     '''
-    
+
     embedding = None    # embeddings array
     lookup = None       # type lookup, maps embedding key to type data
 
     def load_lookup(self, typeFile):
         '''Loads type mapping.
         '''
-        
+
         self.lookup = list(traverseTypes(typeFile))
 
     def load_node2vec_data(self, embeddingFile, typeFile):
@@ -43,7 +43,7 @@ class GeCalc:
             # filter type based on typeFilter
             if (typeFilter is not None) and (itemInfo['type'] not in typeFilter):
                 continue
-            
+
             # check if item should be skiped
             if itemInfo['id'] in skipIds:
                 continue
@@ -53,7 +53,7 @@ class GeCalc:
                 offset -= 1
                 continue
 
-            # valid item            
+            # valid item
             result.append(itemInfo)
             found += 1
             if found == limit:
@@ -89,7 +89,7 @@ class GeCalc:
 
         for id in ids:
             itemVec = self.get_embedding_for_id(id)
-            
+
             if searchVec is not None:
                 searchVec = searchVec + itemVec
             else:
@@ -113,7 +113,7 @@ class GeCalc:
 
         while len(result) < limit:
             randomIndex = random.randint(0, maxIndex - 1)
-            itemInfo = self.get_item_info_by_index(randomIndex)            
+            itemInfo = self.get_item_info_by_index(randomIndex)
             if (typeFilter is None) or (itemInfo['type'] in typeFilter):
                 result.append(itemInfo)
 
@@ -162,7 +162,8 @@ def cos_cdist(matrix, vector):
     '''Compute the cosine distances between each row of matrix and vector.
     '''
     v = vector.reshape(1, -1)
-    return scipy.spatial.distance.cdist(matrix, v, 'cosine').reshape(-1)
+    return scipy.spatial.distance.cdist(matrix, v, 'euclidean').reshape(-1)
+
 
 def find_similar_vecs(searchVec, vecs):
     '''Sorts vecs according to similarity to searchVec.
@@ -175,7 +176,17 @@ if __name__ == '__main__':
     from gemsearch.utils.timer import Timer
     from pprint import pprint
 
-    tmpDir = 'data/tmp/'
+    testVecs = np.array([[1,1,1], [1, 2, 3], [1, 2, 4], [1, 3, 3], [2, 2, 3], [5,5,5], [8,8,8], [9,2,4]])
+    searchVec = np.array([1,1,1])
+
+    res = cos_cdist(testVecs, searchVec)
+    # np.absolute(
+    pprint(res)
+    sortedI = np.argsort(res)
+    pprint(sortedI)
+    pprint(list(testVecs[i] for i in sortedI))
+
+    ''' tmpDir = 'data/tmp/'
     ge = GeCalc()
     
     with Timer(message='Data loading') as t:
@@ -188,5 +199,4 @@ if __name__ == '__main__':
 
     print('\nResults:\n')
     with Timer(message='Query') as t:
-        result_items = ge.query_by_ids(searchId, ['track'], 10)
-    
+        result_items = ge.query_by_ids(searchId, ['track'], 10) '''
