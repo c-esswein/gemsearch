@@ -58,13 +58,16 @@ class PlaylistQueryEvaluator:
             for playlist in self._playlists:
                 outFile.write(json.dumps(playlist, cls=JSONEncoder) + '\n')
 
-    def loadTestLists(self, filePath):
+    def loadTestLists(self, filePath, containsQueries = False):
         '''read stored test playlists as test lists.
         '''
         with open(filePath, 'r', encoding="utf-8") as inFile:
             for line in inFile:
                 playlist = json.loads(line)
                 self._playlists.append(playlist)
+
+        if containsQueries:
+            self._hasExtractedQueries = True
 
     def extractQueries(self):
         ''' Extracts and stores queries from playlist names
