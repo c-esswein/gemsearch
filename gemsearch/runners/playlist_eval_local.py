@@ -35,9 +35,9 @@ args = parser.parse_args()
 dataDir = 'data/full_model/'
 outDir = 'data/rec_all/'
 
-SHOULD_GENERATE_GRAPH = True
-SHOULD_INDEX_ES = True
-SHOULD_EMBED = True
+SHOULD_GENERATE_GRAPH = False
+SHOULD_INDEX_ES = False
+SHOULD_EMBED = False
 
 TEST_PLAYLIST_SPLIT=0.2
 PRECISION_AT=[1, 5, 10, 15]
@@ -142,7 +142,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             # model.save(outDir+'word2vecModel_'+name+'.p')
     
     else:
-        playlistEval.loadTestLists(outDir+'test_playlists.json')
+        playlistEval.loadTestLists(outDir+'test_playlists.json', True)
 
     # load embedding
     with Timer(logger=logger, message='ge calc initializing') as t:
@@ -160,6 +160,6 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
         resList.sort(key=lambda runRes: runRes['values']['precision'])
         pprint(resList)
 
-    playlistEval.writeTestLists(outDir+'test_playlists_queries.json')
+    # playlistEval.writeTestLists(outDir+'test_playlists_queries.json')
     
     print('------------- done -------------')
