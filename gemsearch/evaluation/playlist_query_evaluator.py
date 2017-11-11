@@ -128,7 +128,8 @@ class PlaylistQueryEvaluator:
         if self._useUserContext:
             evaluationFuncs.append(query_methods.rec_query_tracks_with_user)
             evaluationFuncs.append(query_methods.rec_tracks_with_user)
-            evaluationFuncs.append(query_methods.rec_first_two_query_tracks_with_user)
+            evaluationFuncs.append(
+                query_methods.rec_first_two_query_tracks_with_user)
             evaluationFuncs.append(query_methods.rec_first_two_query_tracks_with_user_scaled)
             evaluationFuncs.append(query_methods.rec_multiple_queries_tracks_with_user)
 
@@ -160,7 +161,7 @@ class PlaylistQueryEvaluator:
 
                     hits = checkMatchesAt(recItems, playlist['tracks'], precisionAt)
                     playlistTrackCount = len(playlist['tracks'])
-                    
+
                     stats[statName]['precision'] += hits / precisionAt
                     stats[statName]['recall'] += hits / playlistTrackCount
                     stats[statName]['avg_hits'] += hits
@@ -199,7 +200,7 @@ def checkMatchesAt(recResult, testTracks, firstN):
     ''' Counts matches of test in recResult within first n elements
     '''
     hits = 0
-    for i in range(0, firstN):
+    for i in range(0, min(firstN, len(recResult))):
         if recResult[i]['id'] in testTracks:
             hits += 1
 
