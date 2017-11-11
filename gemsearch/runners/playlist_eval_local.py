@@ -42,7 +42,7 @@ SHOULD_EMBED = False
 TEST_PLAYLIST_SPLIT=0.2
 PRECISION_AT=[1, 5, 10, 15]
 USE_USER_IN_QUERY = True
-        
+
 # ---- /config ----
 
 logger.info('started playlist eval with config: %s', {
@@ -56,11 +56,11 @@ logger.info('started playlist eval with config: %s', {
     'SHOULD_EMBED': SHOULD_EMBED,
     'ARGS': args
 })
- 
+
 with Timer(logger=logger, message='playlist_eval runner') as t:
 
     playlistEval = PlaylistQueryEvaluator(testSplit=TEST_PLAYLIST_SPLIT, precisionAt=PRECISION_AT, useUserContext=USE_USER_IN_QUERY)
-    
+
     if SHOULD_EMBED:
         if SHOULD_GENERATE_GRAPH:
             if USE_USER_IN_QUERY:
@@ -72,7 +72,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             print('------------- generate graph -------------')
             with Timer(logger=logger, message='graph generation') as t:
 
-                idManager = IdManager(outDir+'types.csv', 
+                idManager = IdManager(outDir+'types.csv',
                         typeHandlers = [TypeCounter()]
                 )
                 graphGenerator = GraphGenerator(outDir+'graph.txt', idManager)
@@ -109,14 +109,14 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
                 # insert all types
                 es_load_all_types(data_loader.traverseTypes(outDir+'types.csv'), 'music_index', 'music_type', dismissTypes = ['user'])
 
-        
+
         # config for embedder factory
         config = dict(
             method='deepwalk',
-            number_walks=20, walk_length=20, window_size=10, 
+            number_walks=20, walk_length=20, window_size=10,
             representation_size=64, weighted = True
         )
-        
+
         name = str(config['number_walks']) +'_'+ str(config['walk_length']) +'_'+ str(config['window_size'])
         name += '_'+ str(config['representation_size'])
         name += '_'+ str(config['method'])
@@ -140,7 +140,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
                 # model = deepwalk.node2vec.embeddFromConfig(config)
 
             # model.save(outDir+'word2vecModel_'+name+'.p')
-    
+
     else:
         playlistEval.loadTestLists(outDir+'test_playlists.json', True)
 
@@ -161,5 +161,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
         pprint(resList)
 
     # playlistEval.writeTestLists(outDir+'test_playlists_queries.json')
-    
+
     print('------------- done -------------')
+    from gemsearch.utils.slack import slack_send_message
+    slack_send_message('playlist eval local is done')
