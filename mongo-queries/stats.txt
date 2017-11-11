@@ -40,8 +40,11 @@ Playlist Dataset:
     Single Artist in Playlist:
         10.177 -> 0,48%
 
-     Playlist with multiple Artists & more than 3 tracks:
-        10.672
+    same artist: (updated to recent)
+        10.998
+
+     Playlist with multiple Artists & more than 3 tracks: (updated to recent)
+        12.873
 
 
 

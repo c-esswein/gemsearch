@@ -28,7 +28,8 @@ parser = ArgumentParser("playlist eval",
                           conflict_handler='resolve')
 parser.add_argument('--tags', default=True, type=bool, help='Wether to embed tags.')
 parser.add_argument('--album', default=True, type=bool, help='Wether to embed albums.')
-parser.add_argument('--genre', default=True, type=bool, help='Wether to embed artist genres.')
+parser.add_argument(
+    '--genre', default=True, type=bool, help='Wether to embed artist genres.')
 args = parser.parse_args()
 
 
@@ -40,7 +41,7 @@ SHOULD_INDEX_ES = False
 SHOULD_EMBED = False
 
 TEST_PLAYLIST_SPLIT=0.2
-PRECISION_AT=[1, 5, 10, 15]
+PRECISION_AT=[1, 10, 15]
 USE_USER_IN_QUERY = True
 
 # ---- /config ----
@@ -142,7 +143,7 @@ with Timer(logger=logger, message='playlist_eval runner') as t:
             # model.save(outDir+'word2vecModel_'+name+'.p')
 
     else:
-        playlistEval.loadTestLists(outDir+'test_playlists.json', True)
+        playlistEval.loadTestLists(outDir + 'test_playlists_queries.json', True)
 
     # load embedding
     with Timer(logger=logger, message='ge calc initializing') as t:
