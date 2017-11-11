@@ -162,7 +162,7 @@ def cos_cdist(matrix, vector):
     '''Compute the cosine distances between each row of matrix and vector.
     '''
     v = vector.reshape(1, -1)
-    return scipy.spatial.distance.cdist(matrix, v, 'euclidean').reshape(-1)
+    return scipy.spatial.distance.cdist(matrix, v, 'cosine').reshape(-1)
 
 
 def find_similar_vecs(searchVec, vecs):
