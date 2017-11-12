@@ -5,12 +5,14 @@ import sys
 import scipy.spatial.distance
 from gemsearch.core.data_loader import traverseTypes
 
+
 class GeCalc:
     '''Class to load and query embeddings.
     '''
 
-    embedding = None    # embeddings array
-    lookup = None       # type lookup, maps embedding key to type data
+    def __init__(self):
+        self.embedding = None  # embeddings array
+        self.lookup = None  # type lookup, maps embedding key to type data
 
     def load_lookup(self, typeFile):
         '''Loads type mapping.
@@ -25,7 +27,9 @@ class GeCalc:
         self.load_lookup(typeFile)
 
         if len(self.embedding) != len(self.lookup):
-            raise Exception('Embeddings ({}) and type-mappings ({}) size does not match'.format(len(self.embedding), len(self.lookup)))
+            raise Exception(
+                'Embeddings ({}) and type-mappings ({}) size does not match'.
+                format(len(self.embedding), len(self.lookup)))
 
     def get_item_info_by_index(self, index):
         '''Get item by embedding index.
@@ -46,7 +50,8 @@ class GeCalc:
             itemInfo = self.get_item_info_by_index(itemIndex)
 
             # filter type based on typeFilter
-            if (typeFilter is not None) and (itemInfo['type'] not in typeFilter):
+            if (typeFilter is
+                    not None) and (itemInfo['type'] not in typeFilter):
                 continue
 
             # check if item should be skiped
@@ -84,7 +89,12 @@ class GeCalc:
 
         return itemVec
 
-    def query_by_ids(self, ids, typeFilter = None, limit = 20, offset = 0, skipIds = []):
+    def query_by_ids(self,
+                     ids,
+                     typeFilter=None,
+                     limit=20,
+                     offset=0,
+                     skipIds=[]):
         '''Query by obj ids.
         '''
         searchVec = None
@@ -102,15 +112,21 @@ class GeCalc:
 
         return self.query_by_vec(searchVec, typeFilter, limit, offset, skipIds)
 
-    def query_by_vec(self, searchVec, typeFilter = None, limit = 20, offset = 0, skipIds = []):
+    def query_by_vec(self,
+                     searchVec,
+                     typeFilter=None,
+                     limit=20,
+                     offset=0,
+                     skipIds=[]):
         ''' Query by embeddings searchVec
         '''
         result = find_similar_vecs(searchVec, self.embedding)
-        result_items = self.get_items_from_embedding_indices(result, typeFilter, limit, offset, skipIds)
+        result_items = self.get_items_from_embedding_indices(
+            result, typeFilter, limit, offset, skipIds)
 
         return result_items
 
-    def random_query_results(self, typeFilter = None, limit = 20):
+    def random_query_results(self, typeFilter=None, limit=20):
         '''Returns random entries with given optional typeFilter
         '''
         maxIndex = len(self.lookup)
@@ -124,25 +140,26 @@ class GeCalc:
 
         return result
 
-
     def get_distance(self, nodeAId, nodeBId):
         '''Returns distance between two nodes.
         '''
         return scipy.spatial.distance.cosine(self.embedding[nodeAId],
                                              self.embedding[nodeBId])
 
-    def get_graph_embedding(self, typeFilter = None):
+    def get_graph_embedding(self, typeFilter=None):
         '''Get 3D graph coordinates for all items.
         '''
         # todo typeFilter
         # todo real 3d vecs
-        return self.embedding[:,0:3].flatten()
+        return self.embedding[:, 0:3].flatten()
 
     def get_lookup(self):
         #TODO: still used by api?
         return self.lookup
 
+
 # ------------- static functions ------------
+
 
 def read_embedding_file(file_name):
     '''Load embedding.
@@ -183,7 +200,7 @@ if __name__ == '__main__':
     from pprint import pprint
 
     testVecs = np.array([[8, 8, 8], [1, 1, 1], [1, 2, 3], [1, 2, 4], [1, 3, 3],
-                                  [2, 2, 3], [5, 5, 5], [9, 2, 4]])
+                         [2, 2, 3], [5, 5, 5], [9, 2, 4]])
     searchVec = np.array([1, 1, 1])
 
     res = cos_cdist(testVecs, searchVec)
@@ -193,7 +210,6 @@ if __name__ == '__main__':
     sortedI = np.argsort(res)
     pprint(sortedI)
     pprint(list(testVecs[i] for i in sortedI))
-
     ''' tmpDir = 'data/tmp/'
     ge = GeCalc()
     
