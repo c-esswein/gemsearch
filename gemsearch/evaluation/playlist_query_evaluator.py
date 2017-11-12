@@ -187,10 +187,6 @@ class PlaylistQueryEvaluator:
                 stats[statName]['avg_hits_on_has_hits'] = 0
 
         logger.info('Playlist evaluation finished: total %s playlists (testsplit=%s)', playlistCount, self._testSplit)
-        ''' for statName in sorted(stats.keys()):
-            logger.info('___ method: %s', statName)
-            for metric in stats[statName]:
-                logger.info('%s: %s', metric, stats[statName][metric]) '''
 
         return stats
 

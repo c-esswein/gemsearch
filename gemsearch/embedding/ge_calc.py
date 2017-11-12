@@ -32,7 +32,12 @@ class GeCalc:
         '''
         return self.lookup[index]
 
-    def get_items_from_embedding_indices(self, indices, typeFilter = None, limit = sys.maxsize, offset = 0, skipIds = []):
+    def get_items_from_embedding_indices(self,
+                                         indices,
+                                         typeFilter=None,
+                                         limit=sys.maxsize,
+                                         offset=0,
+                                         skipIds=[]):
         '''Maps embedding indices to items. Optional type Filter can be applied. Items are skiped if id is in skipIds.
         '''
         result = []
@@ -123,7 +128,8 @@ class GeCalc:
     def get_distance(self, nodeAId, nodeBId):
         '''Returns distance between two nodes.
         '''
-        return scipy.spatial.distance.cosine(self.embedding[nodeAId], self.embedding[nodeBId])
+        return scipy.spatial.distance.cosine(self.embedding[nodeAId],
+                                             self.embedding[nodeBId])
 
     def get_graph_embedding(self, typeFilter = None):
         '''Get 3D graph coordinates for all items.
@@ -176,12 +182,14 @@ if __name__ == '__main__':
     from gemsearch.utils.timer import Timer
     from pprint import pprint
 
-    testVecs = np.array([[1,1,1], [1, 2, 3], [1, 2, 4], [1, 3, 3], [2, 2, 3], [5,5,5], [8,8,8], [9,2,4]])
-    searchVec = np.array([1,1,1])
+    testVecs = np.array([[8, 8, 8], [1, 1, 1], [1, 2, 3], [1, 2, 4], [1, 3, 3],
+                                  [2, 2, 3], [5, 5, 5], [9, 2, 4]])
+    searchVec = np.array([1, 1, 1])
 
     res = cos_cdist(testVecs, searchVec)
     # np.absolute(
     pprint(res)
+    pprint(np.absolute(res))
     sortedI = np.argsort(res)
     pprint(sortedI)
     pprint(list(testVecs[i] for i in sortedI))
