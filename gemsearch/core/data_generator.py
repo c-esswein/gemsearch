@@ -15,16 +15,16 @@ MIN_TRACK_COUNT = 4
 
 class DataGenerator(ADataGenerator):
 
-    def writePlaylists(self, limit = None):
+    def writeDbPlaylists(self, limit=None):
         ''' Exports playlists and contained tracks.
         '''
         playlists = Storage().getCollection('playlists').find({}, no_cursor_timeout=True)
-        
+
         if limit is not None:
             playlists = playlists.limit(limit)
         else:
             limit = -1
-        
+
         # --- playlist ---
         counter = 0
         for playlist in playlists:
@@ -34,25 +34,30 @@ class DataGenerator(ADataGenerator):
             if counter % 100 == 0:
                 print('written {}/{}'.format(counter, limit))
 
-            # clean playlist name
-            playlistName = clean_playlist_name(playlist['name'])
-            if not playlistName:
-                continue
+            self.writePlaylist(playlist)
+
+    def writePlaylist(self, playlist):
+        ''' Export given playlist.
+        '''
+        # clean playlist name
+        playlistName = clean_playlist_name(playlist['name'])
+        if not playlistName:
+            continue
 
 
-            # --- tracks ---
-            playlistTracks = []
-            for track in playlist['tracks']:
-                if self.writeTrack(None, track['track_uri']):
-                    playlistTracks.append(track['track_uri'])
+        # --- tracks ---
+        playlistTracks = []
+        for track in playlist['tracks']:
+            if self.writeTrack(None, track['track_uri']):
+                playlistTracks.append(track['track_uri'])
 
-            if len(playlistTracks) > MIN_TRACK_COUNT:
-                self.write('playlist', [
-                    playlist['_id'],
-                    playlist['username'],
-                    playlistName,
-                    playlistTracks
-                ])
+        if len(playlistTracks) > MIN_TRACK_COUNT:
+            self.write('playlist', [
+                playlist['_id'],
+                playlist['username'],
+                playlistName,
+                playlistTracks
+            ])
 
     def writeUsers(self, limit = None):
         ''' Exports all users and contained tracks.
@@ -94,7 +99,7 @@ class DataGenerator(ADataGenerator):
 
         if track is None:
             print('track not found: ' + str(trackUri))
-            return 
+            return
             # raise Exception('Precondition violation: track is null')
 
         if len(track['name'].strip()) < 1:
@@ -122,7 +127,7 @@ class DataGenerator(ADataGenerator):
                     'valence': 1
                 }
             })
-        
+
         self.setIdWritten(trackId)
 
         # --- artists ---
@@ -140,7 +145,7 @@ class DataGenerator(ADataGenerator):
         # --- tags ---
         if 'tags' in track and not track['tags'] is None:
             for tag in track['tags']:
-                # clean tag name                
+                # clean tag name
                 tagName = clean_tag(tag)
                 if tagName:
                     self.write('track_tag', [
@@ -167,7 +172,7 @@ class DataGenerator(ADataGenerator):
         artistId = artist['uri']
         if self.checkAndSaveIfWritten(artistId):
             return
-        
+
         # load artist because track does not include artist genres
         dbArtistCol = Storage().getCollection('artists')
         dbArtist = dbArtistCol.find_one({'uri': artist['uri']})
@@ -185,7 +190,7 @@ class DataGenerator(ADataGenerator):
 
 if __name__ == "__main__":
     generator = DataGenerator('data/full_model/')
-    generator.writePlaylists()
+    generator.writeDbPlaylists()
     generator.writeUsers()
     generator.closeHandlers()
     print('data written')

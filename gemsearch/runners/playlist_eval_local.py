@@ -34,10 +34,20 @@ parser.add_argument(
     '--album', default=True, type=bool, help='Wether to embed albums.')
 parser.add_argument(
     '--genre', default=True, type=bool, help='Wether to embed artist genres.')
+parser.add_argument(
+    '--data-dir',
+    default='data/full_model/',
+    type=str,
+    help='Folder of source data.')
+parser.add_argument(
+    '--out-dir',
+    default='data/rec_all/',
+    type=str,
+    help='Folder to store results.')
 args = parser.parse_args()
 
-dataDir = 'data/full_model/'
-outDir = 'data/rec_all/'
+dataDir = args.data_dir
+outDir = args.out_dir
 
 SHOULD_GENERATE_GRAPH = False
 SHOULD_INDEX_ES = False
