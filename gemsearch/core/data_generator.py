@@ -42,8 +42,7 @@ class DataGenerator(ADataGenerator):
         # clean playlist name
         playlistName = clean_playlist_name(playlist['name'])
         if not playlistName:
-            continue
-
+            return
 
         # --- tracks ---
         playlistTracks = []
