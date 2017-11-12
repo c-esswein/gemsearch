@@ -5,6 +5,7 @@ import sys
 import scipy.spatial.distance
 from gemsearch.core.data_loader import traverseTypes
 import gensim.models
+from gensim import matutils
 
 
 class GeCalcWord2Vec:
@@ -47,6 +48,44 @@ class GeCalcWord2Vec:
         found = 0
         for embeddingIndex, weight in resWords:
             itemInfo = self.lookup[int(embeddingIndex)]
+
+            # filter type based on typeFilter
+            if (typeFilter is
+                    not None) and (itemInfo['type'] not in typeFilter):
+                continue
+
+            # check if item should be skiped
+            if itemInfo['id'] in skipIds:
+                continue
+
+            # check offset
+            if offset > 0:
+                offset -= 1
+                continue
+
+            # valid item
+            result.append(itemInfo)
+            found += 1
+            if found == limit:
+                break
+
+        if len(result) < limit:
+            print('not enough items! (geCalc.get_items_from_word2vec)')
+
+        return result
+
+    def get_items_from_embedding_indices(self,
+                                         indices,
+                                         typeFilter=None,
+                                         limit=sys.maxsize,
+                                         offset=0,
+                                         skipIds=[]):
+        '''Maps embedding indices to items. Optional type Filter can be applied. Items are skiped if id is in skipIds.
+        '''
+        result = []
+        found = 0
+        for itemIndex in indices:
+            itemInfo = self.get_item_info_by_index(itemIndex)
 
             # filter type based on typeFilter
             if (typeFilter is
@@ -112,12 +151,11 @@ class GeCalcWord2Vec:
             item = self.get_item_by_item_id(searchId)
             searchWords.append((str(item['embeddingIndex']), weight))
 
-        simEmbeddingVecs = self.word2vecWv.most_similar(searchWords, topn=1000)
-        # make sure search item itself is also contained:
-        # TODO: test effect with multiple ids!!
-        simEmbeddingVecs.insert(0, searchWords[0])
-        result_items = self.get_items_from_word2vec(
-            simEmbeddingVecs, typeFilter, limit, offset, skipIds)
+        simEmbeddingVecs = self.word2vecWv.most_similar(searchWords, topn=False)
+        bestIndices = matutils.argsort(
+            simEmbeddingVecs, topn=5000, reverse=True)
+        result_items = self.get_items_from_embedding_indices(
+            bestIndices, typeFilter, limit, offset, skipIds)
 
         return result_items
 
@@ -135,7 +173,7 @@ class GeCalcWord2Vec:
             searchWords.append(item['embeddingIndex'])
 
         simEmbeddingVecs = self.word2vecWv.most_similar_cosmul(
-            searchWords, topn=1000)
+            searchWords, topn=5000)
         result_items = self.get_items_from_word2vec(
             simEmbeddingVecs, typeFilter, limit, offset, skipIds)
 
@@ -150,7 +188,7 @@ class GeCalcWord2Vec:
         ''' Query by embeddings searchVec
         '''
         simEmbeddingVecs = self.word2vecWv.similar_by_vector(
-            searchVec, topn=1000)
+            searchVec, topn=5000)
         result_items = self.get_items_from_word2vec(
             simEmbeddingVecs, typeFilter, limit, offset, skipIds)
 
