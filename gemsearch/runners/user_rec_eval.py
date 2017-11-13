@@ -52,7 +52,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
 
         logger.info('------------- generate graph -------------')
         with Timer(logger=logger, message='graph generation') as t:
-            idManager = IdManager(outDir+'types.csv', 
+            idManager = IdManager(outDir+'types.csv',
                 typeHandlers = [TypeCounter()]
             )
             graphGenerator = GraphGenerator(
@@ -67,7 +67,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
             graphGenerator.add(data_loader.traverseTrackArtist(dataDir+'track_artist.csv'))
             graphGenerator.add(data_loader.traverseTrackTag(dataDir+'track_tag.csv'))
             graphGenerator.add(data_loader.traverseTrackAlbum(dataDir+'track_album.csv'))
-            graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))                
+            graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))
             graphGenerator.add(trainingUserTrack)
             graphGenerator.close_generation()
 
@@ -85,21 +85,23 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
     if SHOULD_EVAL_BASELINE:
         # calculate baseline performance with my media lite
         my_media_lite_eval.evalRandom(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
-        my_media_lite_eval.evalMostPopular(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
-        my_media_lite_eval.evalUserKNN(outDir+'media_lite_training.csv', outDir+'media_lite_test.csv')
+        my_media_lite_eval.evalMostPopular(outDir + 'media_lite_training.csv',
+                                           outDir + 'media_lite_test.csv')
+        my_media_lite_eval.evalUserKNN(outDir + 'media_lite_training.csv',
+                                       outDir + 'media_lite_test.csv')
 
     logger.info('------------- graph embedding -------------')
 
     # config for embedder factory
     configs = [
         dict(
-            number_walks=30, walk_length=30, window_size=10, 
+            number_walks=30, walk_length=30, window_size=10,
             representation_size=128
         )
     ]
 
     results = []
-    
+
     for config in configs:
         name = str(config['number_walks']) +'_'+ str(config['walk_length']) +'_'+ str(config['window_size'])
         name += '_'+ str(config['representation_size'])
@@ -114,7 +116,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
 
             model = startDeepwalk(config)
             # model.save(outDir+'word2vecModel_'+name+'.p')
-        
+
 
         # load embedding
         with Timer(logger=logger, message='ge calc initializing') as t:
@@ -131,6 +133,6 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
     # print total result json
     pprint(results)
 
-    logger.info('------------- done -------------')
-
-    
+    print('------------- done -------------')
+    from gemsearch.utils.slack import slack_send_message
+    slack_send_message('user eval is done')
