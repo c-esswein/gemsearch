@@ -21,7 +21,7 @@ from pprint import pprint
 
 # ---- config ----
 dataDir = 'data/full_model/'
-outDir = 'data/rec/'
+outDir = 'data/user_rec/'
 
 SHOULD_CREATE_GRAPH = True
 SHOULD_EVAL_BASELINE = False
@@ -72,10 +72,9 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
             graphGenerator.close_generation()
 
 
-        if SHOULD_EVAL_BASELINE:        
-            # write files for MyMediaLite
-            my_media_lite_eval.writeUserRatingEdges(outDir+'media_lite_training.csv', trainingUserTrack)
-            my_media_lite_eval.writeUserRating(outDir+'media_lite_test.csv', userEval.getTestPairs())
+        # write files for MyMediaLite
+        my_media_lite_eval.writeUserRatingEdges(outDir+'media_lite_training.csv', trainingUserTrack)
+        my_media_lite_eval.writeUserRating(outDir+'media_lite_test.csv', userEval.getTestPairs())
 
     else:
         # load stored test data if not in embedding mode
@@ -94,11 +93,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
     # config for embedder factory
     configs = [
         dict(
-            number_walks=20, walk_length=20, window_size=10, 
-            representation_size=64
-        ),
-        dict(
-            number_walks=20, walk_length=20, window_size=10, 
+            number_walks=30, walk_length=30, window_size=10, 
             representation_size=128
         )
     ]
@@ -115,7 +110,7 @@ with Timer(logger=logger, message='user_rec_evals runner') as t:
             config['output'] = outDir+'deepwalk.em'
             config['workers'] = 3
             config['seed'] = 42
-            config['max_memory_data_size'] = 7000000 # TODO: adapt mem size
+            config['max_memory_data_size'] = 700000000 # TODO: adapt mem size
 
             model = startDeepwalk(config)
             # model.save(outDir+'word2vecModel_'+name+'.p')
