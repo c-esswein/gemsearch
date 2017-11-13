@@ -120,7 +120,7 @@ class PlaylistQueryEvaluator:
             # query_methods.rec_random_tracks, 
             query_methods.rec_query_tracks,
             query_methods.rec_first_two_query_tracks,
-            query_methods.rec_first_two_query_tracks_mean,
+            # query_methods.rec_first_two_query_tracks_mean,
             # query_methods.rec_query_tracks_with_user_mean,
             query_methods.rec_query_tracks_with_user_scaled,
             query_methods.rec_multiple_queries_tracks,

@@ -61,15 +61,14 @@ def rec_tracks_with_user(geCalc, playlist, limit):
 def rec_query_tracks_with_user_scaled(geCalc, playlist, limit):
     ''' Uses queryIds to predict playlist track with User context.
     '''
-
     queryIds = playlist['extracted_queries']['simple_first_match']
-    queryIdsWeighted = [(queryId, 1.0) for queryId in queryIds]
+    queryVecs = [geCalc.get_embedding_for_id(vec) for vec in queryIds]
 
-    # append user
-    queryIdsWeighted.append((playlist['userId'], 0.2))
+    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5)
+    queryVecs.append(userVec)
+    queryVec = sum_vecs(queryVecs)
 
-    results = geCalc.query_by_ids_weighted(
-        queryIdsWeighted, typeFilter=['track'], limit=limit)
+    results = geCalc.query_by_vec(queryVec, typeFilter=['track'], limit=limit)
     return results
 
 
@@ -105,13 +104,14 @@ def rec_first_two_query_tracks_with_user_scaled(geCalc, playlist, limit):
     '''
 
     queryIds = playlist['extracted_queries']['simple_first_two_match']
-    queryIdsWeighted = [(queryId, 1.0) for queryId in queryIds]
+    queryVecs = [geCalc.get_embedding_for_id(vec) for vec in queryIds]
 
-    # append user
-    queryIdsWeighted.append((playlist['userId'], 0.2))
+    userVec = np.multiply(geCalc.get_embedding_for_id(playlist['userId']), 0.5)
+    queryVecs.append(userVec)
 
-    results = geCalc.query_by_ids_weighted(
-        queryIdsWeighted, typeFilter=['track'], limit=limit)
+    queryVec = sum_vecs(queryVecs)
+
+    results = geCalc.query_by_vec(queryVec, typeFilter=['track'], limit=limit)
     return results
 
 

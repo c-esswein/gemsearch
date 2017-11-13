@@ -35,6 +35,7 @@ class GeCalc:
         '''Get item by embedding index.
         '''
         return self.lookup[index]
+    
 
     def get_items_from_embedding_indices(self,
                                          indices,
