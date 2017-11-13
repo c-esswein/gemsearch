@@ -8,7 +8,8 @@ from sklearn.model_selection import train_test_split
 
 from gemsearch.query.elastic_search import extract_query_from_name, extract_multiple_queries_from_name
 from gemsearch.utils.JSONEncoder import JSONEncoder
-import gemsearch.query.query_methods as query_methods
+# import gemsearch.query.query_methods as query_methods
+import gemsearch.query.query_methods_word2vec as query_methods
 
 ''' Evaluates playlist name -> query matching.abs
 Collects playlists, takes random test split and tries to extract query from playlist name.

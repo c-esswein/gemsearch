@@ -84,8 +84,9 @@ class GeCalcWord2Vec:
         '''
         result = []
         found = 0
-        for itemIndex in indices:
-            itemInfo = self.get_item_info_by_index(itemIndex)
+        for word2vecIndex in indices:
+            itemIndex = self.word2vecWv.index2word[word2vecIndex]
+            itemInfo = self.get_item_info_by_index(int(itemIndex))
 
             # filter type based on typeFilter
             if (typeFilter is
@@ -151,7 +152,8 @@ class GeCalcWord2Vec:
             item = self.get_item_by_item_id(searchId)
             searchWords.append((str(item['embeddingIndex']), weight))
 
-        simEmbeddingVecs = self.word2vecWv.most_similar(searchWords, topn=False)
+        simEmbeddingVecs = self.word2vecWv.most_similar(
+            searchWords, topn=False)
         bestIndices = matutils.argsort(
             simEmbeddingVecs, topn=5000, reverse=True)
         result_items = self.get_items_from_embedding_indices(
