@@ -57,6 +57,8 @@ with Timer(logger=logger, message='api embedding') as t:
             # TODO: enable + share with embed_new_users
             # graphGenerator.add(data_loader.traverseUserTrack(dataDir+'user_tracks.csv'))
 
+            # TODO: no genre / albums are included
+
             graphGenerator.close_generation()
 
         if SHOULD_INDEX_ES:
