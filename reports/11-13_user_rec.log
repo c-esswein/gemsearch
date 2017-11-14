@@ -1,0 +1,62 @@
+2017-11-13 22:29:04,477 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2017-11-13 22:29:04,538 - __main__ - INFO - started user rec eval with config: {'dataDir': 'data/full_model/', 'outDir': 'data/user_rec/', 'SHOULD_CREATE_GRAPH': True, 'SHOULD_EVAL_BASELINE': False, 'TEST_SPLIT': 0.2, 'PRECISION_AT': [1, 5], 'MIN_TRACKS_PER_USER': 30}
+2017-11-13 22:29:04,538 - __main__ - INFO - %%% user_rec_evals runner... 
+2017-11-13 22:29:04,538 - __main__ - INFO - ------------- split training data -------------
+2017-11-13 22:29:12,153 - gemsearch.evaluation.user_evaluator - INFO - Generated test data for 1092 users (discarded 88). User-Track training count: 1328574
+2017-11-13 22:29:13,093 - __main__ - INFO - ------------- generate graph -------------
+2017-11-13 22:29:13,093 - __main__ - INFO - %%% graph generation... 
+2017-11-13 22:31:32,591 - gemsearch.core.type_counter - INFO - Collected items by type:
+2017-11-13 22:31:32,593 - gemsearch.core.type_counter - INFO - track: 852293
+2017-11-13 22:31:32,593 - gemsearch.core.type_counter - INFO - artist: 106581
+2017-11-13 22:31:32,593 - gemsearch.core.type_counter - INFO - tag: 395587
+2017-11-13 22:31:32,593 - gemsearch.core.type_counter - INFO - album: 189174
+2017-11-13 22:31:32,593 - gemsearch.core.type_counter - INFO - genre: 1520
+2017-11-13 22:31:32,593 - gemsearch.core.type_counter - INFO - user: 1092
+2017-11-13 22:31:32,593 - gemsearch.core.type_counter - INFO - -- Total: 1546247 --
+2017-11-13 22:31:32,594 - __main__ - INFO - %%% graph generation done in 139.5s
+
+
+2017-11-13 22:31:32,594 - gemsearch.evaluation.my_media_lite_evaluator - INFO - write user ratings file: data/user_rec/media_lite_training.csv
+2017-11-13 22:31:36,639 - gemsearch.evaluation.my_media_lite_evaluator - INFO - write user ratings file: data/user_rec/media_lite_test.csv
+2017-11-13 22:31:37,433 - __main__ - INFO - ------------- graph embedding -------------
+2017-11-13 22:31:37,434 - __main__ - INFO - %%% embedding 30_30_10_128... 
+2017-11-13 22:31:37,434 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/user_rec/graph.txt', log='INFO', max_memory_data_size=700000000, number_walks=30, output='data/user_rec/deepwalk.em', representation_size=128, seed=42, undirected=True, vertex_freq_degree=False, walk_length=30, window_size=10, workers=3)
+2017-11-13 22:32:22,163 - deepwalk - INFO - make_consistent: made consistent in 15.58561658859253s
+2017-11-13 22:32:25,141 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.976994276046753s
+2017-11-13 22:32:25,142 - deepwalk.runner - INFO - Number of nodes: 1546247
+2017-11-13 22:32:25,142 - deepwalk.runner - INFO - Number of walks: 46387410
+2017-11-13 22:32:25,142 - deepwalk.runner - INFO - Data size (walks*length): 1391622300
+2017-11-13 22:32:25,142 - deepwalk.runner - INFO - Data size 1391622300 is larger than limit (max-memory-data-size: 700000000).  Dumping walks to disk.
+2017-11-13 22:32:25,142 - deepwalk.runner - INFO - Start Walking...
+2017-11-13 23:55:33,139 - deepwalk.runner - INFO - Start Training...
+2017-11-14 07:45:17,022 - deepwalk.runner - INFO - Delete serialized walks
+2017-11-14 07:45:17,914 - gensim.models.keyedvectors - INFO - storing 1546247x128 projection weights into data/user_rec/deepwalk.em
+2017-11-14 07:47:02,596 - __main__ - INFO - %%% embedding 30_30_10_128 done in 33325.162s
+
+
+2017-11-14 07:47:02,597 - __main__ - INFO - %%% ge calc initializing... 
+2017-11-14 07:48:44,927 - __main__ - INFO - %%% ge calc initializing done in 102.292s
+
+
+2017-11-14 07:48:44,928 - __main__ - INFO - ------------- evaluation -------------
+2017-11-14 07:48:44,929 - __main__ - INFO - %%% evaluation... 
+2017-11-14 07:48:44,929 - gemsearch.evaluation.user_evaluator - INFO - Started user evaluation with 1092 users
+2017-11-14 08:13:25,040 - gemsearch.evaluation.user_evaluator - INFO - Finished user eval, results:
+2017-11-14 08:13:25,041 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @1: precision: 0.08241758241758242, recall 0.00047569274146153003
+2017-11-14 08:13:25,041 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @5: precision: 0.09084249084249131, recall 0.0036616328884380507
+2017-11-14 08:13:25,042 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @1: precision: 0.0, recall 0.0
+2017-11-14 08:13:25,042 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @5: precision: 0.00018315018315018315, recall 5.1737339872933096e-06
+2017-11-14 08:13:25,042 - __main__ - INFO - %%% evaluation done in 1480.113s
+
+
+[{'getRandomTracks @1': {'precision': 0.0, 'recall': 0.0},
+  'getRandomTracks @5': {'precision': 0.00018315018315018315,
+                         'recall': 5.1737339872933096e-06},
+  'getRecommenderTracks @1': {'precision': 0.08241758241758242,
+                              'recall': 0.00047569274146153003},
+  'getRecommenderTracks @5': {'precision': 0.09084249084249131,
+                              'recall': 0.0036616328884380507}}]
+------------- done -------------
+2017-11-14 08:13:25,568 - __main__ - INFO - %%% user_rec_evals runner done in 35061.03s
+
+
