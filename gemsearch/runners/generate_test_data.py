@@ -6,8 +6,8 @@ from gemsearch.core.data_generator import DataGenerator
 from gemsearch.storage.Storage import Storage
 from .same_artists_keys import DIVERSE_ARTIST_KEYS
 
-singleArtists = DataGenerator('data/model_single_artists/')
-multipleArtists = DataGenerator('data/model_multiple_artists/')
+singleArtists = DataGenerator('data/final_model_single_artists/')
+multipleArtists = DataGenerator('data/final_model_multiple_artists/')
 
 playlistCol = Storage().getCollection('playlists')
 playlists = playlistCol.find({}, no_cursor_timeout=True)

@@ -16,7 +16,7 @@ def clean_playlist_name(name):
 
     if len(name) < MIN_NAME_LENGTH:
         return False
-        
+
     return name
 
 def clean_tag(tag):
@@ -25,7 +25,7 @@ def clean_tag(tag):
     '''
     if tag['count'] < MIN_TAG_COUNT:
         return False
-    
+
     return clean_tag_name(tag['name'])
 
 def clean_tag_name(name):
@@ -36,7 +36,8 @@ def clean_tag_name(name):
     name = re.sub(r'[\-\"]', '', name)
     name = name.strip()
 
-    if len(name) < MIN_NAME_LENGTH:
+
+    if len(name) < MIN_NAME_LENGTH and not re.search('[0-9][0-9]', name):
         return False
 
     name = name.lower()
