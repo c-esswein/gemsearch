@@ -1055,7 +1055,9 @@ Computing Machinery]
   \ifx\acmConference@shortname\@empty
     \gdef\acmConference@shortname{#2}%
   \fi}
+% CHRIS
 \acmConference[]{Master thesis}{2018}{University of Innsbruck}
+% \acmConference[]{\@title}{2018}{University of Innsbruck}
 \def\acmBooktitle#1{\gdef\@acmBooktitle{#1}}
 \acmBooktitle{Proceedings of \acmConference@name
        \ifx\acmConference@name\acmConference@shortname\else
