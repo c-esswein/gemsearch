@@ -43,6 +43,7 @@ For further explanations look at the README files within the folders.
 * **gem** A fork of the GEM package (https://github.com/palash1992/GEM) with adaptions for Python3 and Bugfixes
 * **gemsearch** The actual Gemsearch implementation (see Section *Gemsearch package*) as Python package
 * **mongo-queries** MongoDB queries to mostly perform statistical analysis
+* **reports** Contains some log files of performed experiments and script files to process log files.
 
 
 ## Gemsearch package

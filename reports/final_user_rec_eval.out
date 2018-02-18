@@ -1,0 +1,39 @@
+nohup: ignoring input
+2018-02-06 08:22:01,401 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2018-02-06 08:22:01,446 - __main__ - INFO - started user rec eval with config: {'dataDir': 'data/full_model/', 'outDir': 'data/user_rec/', 'SHOULD_CREATE_GRAPH': False, 'SHOULD_EVAL_BASELINE': False, 'TEST_SPLIT': 0.2, 'PRECISION_AT': [1, 5, 10], 'MIN_TRACKS_PER_USER': 30, 'SHOULD_EMBED': False}
+2018-02-06 08:22:01,446 - __main__ - INFO - %%% user_rec_evals runner... 
+2018-02-06 08:22:01,446 - __main__ - INFO - No embedding + splitting, loading previous split
+2018-02-06 08:22:02,062 - __main__ - INFO - ------------- graph embedding -------------
+2018-02-06 08:22:02,062 - __main__ - INFO - %%% ge calc initializing... 
+2018-02-06 08:23:34,540 - __main__ - INFO - %%% ge calc initializing done in 92.477s
+
+
+2018-02-06 08:23:34,540 - __main__ - INFO - ------------- evaluation -------------
+2018-02-06 08:23:34,540 - __main__ - INFO - %%% evaluation... 
+2018-02-06 08:23:34,540 - gemsearch.evaluation.user_evaluator - INFO - Started user evaluation with 1092 users
+2018-02-06 08:42:29,106 - gemsearch.evaluation.user_evaluator - INFO - Finished user eval, results:
+2018-02-06 08:42:29,107 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @1: precision: 0.08241758241758242, recall 0.00047569274146153003
+2018-02-06 08:42:29,107 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @5: precision: 0.09084249084249131, recall 0.0036616328884380507
+2018-02-06 08:42:29,108 - gemsearch.evaluation.user_evaluator - INFO - method getRecommenderTracks @10: precision: 0.09468864468864438, recall 0.009087420048660292
+2018-02-06 08:42:29,108 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @1: precision: 0.0009157509157509158, recall 6.145979300341716e-06
+2018-02-06 08:42:29,108 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @5: precision: 0.0003663003663003663, recall 9.512710608249494e-06
+2018-02-06 08:42:29,108 - gemsearch.evaluation.user_evaluator - INFO - method getRandomTracks @10: precision: 0.0003663003663003663, recall 1.537832627390119e-05
+2018-02-06 08:42:29,108 - __main__ - INFO - %%% evaluation done in 1134.568s
+
+
+[{'getRandomTracks @1': {'precision': 0.0009157509157509158,
+                         'recall': 6.145979300341716e-06},
+  'getRandomTracks @10': {'precision': 0.0003663003663003663,
+                          'recall': 1.537832627390119e-05},
+  'getRandomTracks @5': {'precision': 0.0003663003663003663,
+                         'recall': 9.512710608249494e-06},
+  'getRecommenderTracks @1': {'precision': 0.08241758241758242,
+                              'recall': 0.00047569274146153003},
+  'getRecommenderTracks @10': {'precision': 0.09468864468864438,
+                               'recall': 0.009087420048660292},
+  'getRecommenderTracks @5': {'precision': 0.09084249084249131,
+                              'recall': 0.0036616328884380507}}]
+------------- done -------------
+2018-02-06 08:42:29,341 - __main__ - INFO - %%% user_rec_evals runner done in 1227.895s
+
+

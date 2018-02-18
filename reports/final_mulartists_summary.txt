@@ -1,0 +1,17 @@
+multiple artists prec@10 rec_query_tracks_with_user_scaled:
+
+model           0.031227391304347843
+tags            0.038640275387263334
+grenes          0.034826086956521736
+tags+album      0.07685025817555924
+tags+album+grs  0.08115318416523228
+album+grs       0.0861665221162185
+album           0.08842150910667815
+
+model           0.03123
+grenes          0.03483
+tags            0.04164
+album           0.06842
+tags+album      0.07685
+album+grs       0.08017
+tags+album+grs  0.08115

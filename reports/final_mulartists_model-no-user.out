@@ -1,0 +1,51 @@
+2018-02-05 22:05:11,624 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2018-02-05 22:05:11,655 - __main__ - INFO - started playlist eval with config: {'dataDir': 'data/final_model_multiple_artists/', 'outDir': 'data/final_model_out/', 'SHOULD_GENERATE_GRAPH': True, 'SHOULD_INDEX_ES': True, 'TEST_PLAYLIST_SPLIT': 0.2, 'PRECISION_AT': [10], 'USE_USER_IN_QUERY': False, 'SHOULD_EMBED': True, 'ARGS': Namespace(album=False, data_dir='data/final_model_multiple_artists/', genre=False, out_dir='data/final_model_out/', tags=False)}
+2018-02-05 22:05:11,655 - __main__ - INFO - %%% playlist_eval runner... 
+------------- generate graph -------------
+2018-02-05 22:05:13,259 - __main__ - INFO - %%% graph generation... 
+2018-02-05 22:05:33,014 - gemsearch.core.type_counter - INFO - Collected items by type:
+2018-02-05 22:05:33,014 - gemsearch.core.type_counter - INFO - track: 773751
+2018-02-05 22:05:33,014 - gemsearch.core.type_counter - INFO - artist: 104465
+2018-02-05 22:05:33,014 - gemsearch.core.type_counter - INFO - -- Total: 878216 --
+2018-02-05 22:05:33,014 - __main__ - INFO - %%% graph generation done in 19.755s
+
+
+2018-02-05 22:05:33,015 - __main__ - INFO - %%% embedding 20_20_10_64_deepwalk... 
+2018-02-05 22:05:33,015 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/final_model_out/graph.txt', log='INFO', max_memory_data_size=70000000, method='deepwalk', number_walks=20, output='data/final_model_out/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=20, weighted=True, window_size=10, workers=3)
+2018-02-05 22:05:37,393 - deepwalk - INFO - make_consistent: made consistent in 1.3828363418579102s
+2018-02-05 22:05:37,823 - deepwalk - INFO - remove_self_loops: removed 0 loops in 0.42974209785461426s
+2018-02-05 22:05:37,824 - deepwalk.runner - INFO - Number of nodes: 878216
+2018-02-05 22:05:37,824 - deepwalk.runner - INFO - Number of walks: 17564320
+2018-02-05 22:05:37,824 - deepwalk.runner - INFO - Data size (walks*length): 351286400
+2018-02-05 22:05:37,824 - deepwalk.runner - INFO - Data size 351286400 is larger than limit (max-memory-data-size: 70000000).  Dumping walks to disk.
+2018-02-05 22:05:37,824 - deepwalk.runner - INFO - Start Walking...
+2018-02-05 22:21:17,707 - deepwalk.runner - INFO - Start Training...
+2018-02-05 23:23:58,483 - deepwalk.runner - INFO - Delete serialized walks
+2018-02-05 23:23:58,987 - gensim.models.keyedvectors - INFO - storing 878216x64 projection weights into data/final_model_out/deepwalk.em
+2018-02-05 23:24:28,731 - __main__ - INFO - %%% embedding 20_20_10_64_deepwalk done in 4735.716s
+
+
+2018-02-05 23:24:28,731 - __main__ - INFO - %%% elastic search writer... 
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 878216}
+2018-02-05 23:25:36,691 - __main__ - INFO - %%% elastic search writer done in 67.959s
+
+
+2018-02-05 23:25:36,691 - __main__ - INFO - %%% ge calc initializing... 
+2018-02-05 23:25:36,691 - gensim.models.keyedvectors - INFO - loading projection weights from data/final_model_out/deepwalk.em
+2018-02-05 23:26:33,719 - gensim.models.keyedvectors - INFO - loaded (878216, 64) matrix from data/final_model_out/deepwalk.em
+2018-02-05 23:26:36,103 - __main__ - INFO - %%% ge calc initializing done in 59.412s
+
+
+2018-02-05 23:26:36,103 - __main__ - INFO - ------------- evaluation -------------
+2018-02-05 23:26:36,104 - __main__ - INFO - %%% evaluation... 
+2018-02-05 23:26:36,104 - gemsearch.evaluation.playlist_query_evaluator - INFO - Extract queries from playlist names (result is cached)
+2018-02-05 23:42:41,250 - gemsearch.evaluation.playlist_query_evaluator - INFO - For evaluation 11757 of 12195 playlists are left
+2018-02-05 23:42:41,264 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 11757 playlists
+2018-02-05 23:42:41,277 - gensim.models.keyedvectors - INFO - precomputing L2-norms of word weight vectors
+2018-02-05 23:42:42,176 - __main__ - INFO - %%% evaluation done in 966.072s
+
+
+2018-02-05 23:42:42,177 - __main__ - INFO - %%% playlist_eval runner done in 5850.521s
+
+

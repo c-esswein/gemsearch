@@ -1,0 +1,21 @@
+
+
+$ ../../../my_media_lite_build/item_recommendation.exe --training-file=media_lite_training.csv --test-file=media_lite_test.csv --measures=prec@5,prec@10,recall@5,recall@10 --recommender=WRMF
+loading_time 3.39
+memory 149
+training data: 1092 users, 729249 items, 1328574 events, sparsity 99.83316
+test data:     1092 users, 252671 items, 332682 events, sparsity 99.87943
+WRMF num_factors=10 regularization=0.015 alpha=1 num_iter=15
+training_time 00:01:21.0332300 .prec@5 0,03278 prec@10 0,02747 recall@5 0,00113 recall@10 0,00192 num_items 849814 num_lists 1092 testing_time 00:07:54.2872728
+memory 342
+
+$ ../../../my_media_lite_build/item_recommendation.exe --training-file=media_lite_training.csv --test-file=media_lite_test.csv --measures=prec@5,prec@10,recall@5,recall@10 --recommender=BPRMF
+loading_time 3.42
+memory 149
+training data: 1092 users, 729249 items, 1328574 events, sparsity 99.83316
+test data:     1092 users, 252671 items, 332682 events, sparsity 99.87943
+BPRMF num_factors=10 bias_reg=0 reg_u=0.0025 reg_i=0.0025 reg_j=0.00025 num_iter=30 LearnRate=0.05 uniform_user_sampling=True with_replacement=False update_j=True
+loss_num_sample_triples=3300
+training_time 00:03:28.1155574 .prec@5 0,01227 prec@10 0,01044 recall@5 0,00057 recall@10 0,00088 num_items 849814 num_lists 1092 testing_time 00:07:40.6701547
+memory 215
+

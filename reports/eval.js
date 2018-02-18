@@ -85,20 +85,23 @@ resRows.forEach((res) => {
   }
 
   const precAt = parseInt(res['prec+recall@'], 10);
-  methodMap[res['rec_method']][precAt] = res['precision'];
- // methodMap[res['rec_method']][precAt] = parseInt(res['has_hits'], 10) / 4139;
+  methodMap[res['rec_method']][precAt] = res['recall'];
+   // methodMap[res['rec_method']][precAt] = parseInt(res['has_hits'], 10) / 2324;
 });
 
-console.log(resRows);
 
+const precAtArr = [1, 10, 15];
 const resArr = [[
-  'method', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15
+  // 'method', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15
+  'method', ...precAtArr
 ].join(';')];
 Object.keys(methodMap).forEach((methodName, i) => {
-  resRowData = [methodName, ...methodMap[methodName]];
+  resRowData = [methodName];
+  precAtArr.forEach(precAt => {
+    resRowData.push(methodMap[methodName][precAt]);
+  });
   resArr.push(resRowData.join(';'));
 });
 
-console.log(resArr);
 
 writeArrToFile(resArr, 'graph.csv');

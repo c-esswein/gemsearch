@@ -1,0 +1,129 @@
+2018-02-01 16:48:30,959 - summa.preprocessing.cleaner - INFO - 'pattern' package not found; tag filters are not available for English
+2018-02-01 16:48:31,080 - __main__ - INFO - started playlist eval with config: {'dataDir': 'data/final_model_multiple_artists/', 'outDir': 'data/final_model_out/', 'SHOULD_GENERATE_GRAPH': True, 'SHOULD_INDEX_ES': True, 'TEST_PLAYLIST_SPLIT': 0.2, 'PRECISION_AT': [10], 'USE_USER_IN_QUERY': True, 'SHOULD_EMBED': True, 'ARGS': Namespace(album=True, data_dir='data/final_model_multiple_artists/', genre=True, out_dir='data/final_model_out/', tags=True)}
+2018-02-01 16:48:31,080 - __main__ - INFO - %%% playlist_eval runner... 
+2018-02-01 16:48:32,655 - gemsearch.evaluation.playlist_query_evaluator - INFO - Splitted playlists for training (9756) and test (2399), total (12195)
+2018-02-01 16:48:32,655 - gemsearch.evaluation.playlist_query_evaluator - INFO - dropped because of invalid split (user in test but not in training) 40
+------------- generate graph -------------
+2018-02-01 16:48:32,826 - __main__ - INFO - %%% graph generation... 
+2018-02-01 16:50:43,473 - gemsearch.core.type_counter - INFO - Collected items by type:
+2018-02-01 16:50:43,474 - gemsearch.core.type_counter - INFO - track: 773751
+2018-02-01 16:50:43,474 - gemsearch.core.type_counter - INFO - artist: 104465
+2018-02-01 16:50:43,474 - gemsearch.core.type_counter - INFO - tag: 382846
+2018-02-01 16:50:43,474 - gemsearch.core.type_counter - INFO - album: 184532
+2018-02-01 16:50:43,474 - gemsearch.core.type_counter - INFO - genre: 1520
+2018-02-01 16:50:43,474 - gemsearch.core.type_counter - INFO - user: 1116
+2018-02-01 16:50:43,474 - gemsearch.core.type_counter - INFO - -- Total: 1448230 --
+2018-02-01 16:50:43,474 - __main__ - INFO - %%% graph generation done in 130.648s
+
+
+2018-02-01 16:50:43,475 - __main__ - INFO - %%% embedding 20_20_10_64_deepwalk... 
+2018-02-01 16:50:43,475 - deepwalk.runner - INFO - started deepwalk with config: Namespace(debug=False, format='edgelist', input='data/final_model_out/graph.txt', log='INFO', max_memory_data_size=70000000, method='deepwalk', number_walks=20, output='data/final_model_out/deepwalk.em', representation_size=64, seed=42, undirected=True, vertex_freq_degree=False, walk_length=20, weighted=True, window_size=10, workers=3)
+2018-02-01 16:51:24,119 - deepwalk - INFO - make_consistent: made consistent in 13.729820013046265s
+2018-02-01 16:51:26,972 - deepwalk - INFO - remove_self_loops: removed 0 loops in 2.853391170501709s
+2018-02-01 16:51:26,973 - deepwalk.runner - INFO - Number of nodes: 1448230
+2018-02-01 16:51:26,973 - deepwalk.runner - INFO - Number of walks: 28964600
+2018-02-01 16:51:26,973 - deepwalk.runner - INFO - Data size (walks*length): 579292000
+2018-02-01 16:51:26,973 - deepwalk.runner - INFO - Data size 579292000 is larger than limit (max-memory-data-size: 70000000).  Dumping walks to disk.
+2018-02-01 16:51:26,973 - deepwalk.runner - INFO - Start Walking...
+2018-02-01 17:23:28,278 - deepwalk.runner - INFO - Start Training...
+2018-02-01 19:57:26,146 - deepwalk.runner - INFO - Delete serialized walks
+2018-02-01 19:57:26,746 - gensim.models.keyedvectors - INFO - storing 1448230x64 projection weights into data/final_model_out/deepwalk.em
+2018-02-01 19:58:22,134 - __main__ - INFO - %%% embedding 20_20_10_64_deepwalk done in 11258.659s
+
+
+2018-02-01 19:58:22,134 - __main__ - INFO - %%% elastic search writer... 
+all indexes cleared
+{'_shards': {'failed': 0, 'successful': 5, 'total': 5}, 'count': 1447114}
+2018-02-01 20:00:19,570 - __main__ - INFO - %%% elastic search writer done in 117.435s
+
+
+2018-02-01 20:00:19,570 - __main__ - INFO - %%% ge calc initializing... 
+2018-02-01 20:00:19,571 - gensim.models.keyedvectors - INFO - loading projection weights from data/final_model_out/deepwalk.em
+2018-02-01 20:02:03,696 - gensim.models.keyedvectors - INFO - loaded (1448230, 64) matrix from data/final_model_out/deepwalk.em
+2018-02-01 20:02:07,837 - __main__ - INFO - %%% ge calc initializing done in 108.266s
+
+
+2018-02-01 20:02:07,837 - __main__ - INFO - ------------- evaluation -------------
+2018-02-01 20:02:07,838 - __main__ - INFO - %%% evaluation... 
+2018-02-01 20:02:07,838 - gemsearch.evaluation.playlist_query_evaluator - INFO - Extract queries from playlist names (result is cached)
+2018-02-01 20:05:23,482 - gemsearch.evaluation.playlist_query_evaluator - INFO - For evaluation 2324 of 2399 playlists are left
+2018-02-01 20:05:23,485 - gemsearch.evaluation.playlist_query_evaluator - INFO - Started playlist evaluation with 2324 playlists
+2018-02-01 20:05:23,712 - gensim.models.keyedvectors - INFO - precomputing L2-norms of word weight vectors
+2018-02-01 21:21:33,992 - gemsearch.evaluation.playlist_query_evaluator - INFO - Playlist evaluation finished: total 2324 playlists (testsplit=0.2)
+[{'key': 'rec_tracks_with_user@10',
+  'values': {'avg_hits': 0.19664371772805508,
+             'avg_hits_on_has_hits': 1.9956331877729259,
+             'has_hits': 229,
+             'precision': 0.019664371772805563,
+             'precision_on_has_hits': 0.19956331877729314,
+             'recall': 0.003578331446805902}},
+ {'key': 'rec_query_tracks_with_user@10',
+  'values': {'avg_hits': 0.4376075731497418,
+             'avg_hits_on_has_hits': 2.3817330210772836,
+             'has_hits': 427,
+             'precision': 0.04376075731497406,
+             'precision_on_has_hits': 0.23817330210772764,
+             'recall': 0.015218048211342755}},
+ {'key': 'rec_multiple_queries_tracks_with_user@10',
+  'values': {'avg_hits': 0.4444922547332186,
+             'avg_hits_on_has_hits': 2.5954773869346734,
+             'has_hits': 398,
+             'precision': 0.04444922547332179,
+             'precision_on_has_hits': 0.2595477386934669,
+             'recall': 0.01758623027348912}},
+ {'key': 'rec_multiple_queries_tracks@10',
+  'values': {'avg_hits': 0.5804647160068847,
+             'avg_hits_on_has_hits': 4.087878787878788,
+             'has_hits': 330,
+             'precision': 0.0580464716006884,
+             'precision_on_has_hits': 0.4087878787878783,
+             'recall': 0.024236007949578853}},
+ {'key': 'rec_first_two_query_tracks_with_user@10',
+  'values': {'avg_hits': 0.6303786574870912,
+             'avg_hits_on_has_hits': 3.1917211328976034,
+             'has_hits': 459,
+             'precision': 0.06303786574870898,
+             'precision_on_has_hits': 0.31917211328975964,
+             'recall': 0.024914486589572033}},
+ {'key': 'rec_first_two_query_tracks_with_user_scaled@10',
+  'values': {'avg_hits': 0.7185886402753873,
+             'avg_hits_on_has_hits': 4.315245478036176,
+             'has_hits': 387,
+             'precision': 0.07185886402753865,
+             'precision_on_has_hits': 0.43152454780361704,
+             'recall': 0.029877163834508853}},
+ {'key': 'rec_first_two_query_tracks@10',
+  'values': {'avg_hits': 0.7194492254733219,
+             'avg_hits_on_has_hits': 4.470588235294118,
+             'has_hits': 374,
+             'precision': 0.07194492254733213,
+             'precision_on_has_hits': 0.44705882352941145,
+             'recall': 0.029752737245474392}},
+ {'key': 'rec_query_tracks@10',
+  'values': {'avg_hits': 0.7844234079173839,
+             'avg_hits_on_has_hits': 5.008241758241758,
+             'has_hits': 364,
+             'precision': 0.07844234079173827,
+             'precision_on_has_hits': 0.500824175824175,
+             'recall': 0.033912344354057204}},
+ {'key': 'rec_query_tracks_with_user_scaled@10',
+  'values': {'avg_hits': 0.7990533562822719,
+             'avg_hits_on_has_hits': 4.8359375,
+             'has_hits': 384,
+             'precision': 0.07990533562822712,
+             'precision_on_has_hits': 0.48359374999999954,
+             'recall': 0.03457293210667558}},
+ {'key': 'rec_album_or_query@10',
+  'values': {'avg_hits': 0.9053356282271945,
+             'avg_hits_on_has_hits': 5.910112359550562,
+             'has_hits': 356,
+             'precision': 0.09053356282271932,
+             'precision_on_has_hits': 0.5910112359550553,
+             'recall': 0.04062003586797863}}]
+2018-02-01 21:21:34,011 - __main__ - INFO - %%% evaluation done in 4766.174s
+
+
+------------- done -------------
+2018-02-01 21:21:34,771 - __main__ - INFO - %%% playlist_eval runner done in 16383.691s
+
+
