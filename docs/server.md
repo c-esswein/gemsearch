@@ -1,20 +1,21 @@
+# Server Overview 
 
-
-## Files
-at `/var/www/`
+## Webserver-Files
+located at `/var/www/`
 
 ## Ngnix
-config at:  `/etc/nginx/conf.d/gemsearch.conf`
+config is stored at:  `/etc/nginx/conf.d/gemsearch.conf`
 
 
 ## uwsgi
-service at: `/etc/systemd/system/gemsearch.service `
+service is configured at: `/etc/systemd/system/gemsearch.service `
 
-sudo systemctl restart gemsearch
+To restart the gemsearch api (e.g. for replacing code or the embedding) run:
+`sudo systemctl restart gemsearch`
 
 
-set context for socket file:
-sudo chcon -t httpd_sys_rw_content_t /var/www/gemsearch_api/gemsearch.sock
+If you have troubles with the permissions, set context for socket file:
+`sudo chcon -t httpd_sys_rw_content_t /var/www/gemsearch_api/gemsearch.sock`
 
 
 ## Deployment:

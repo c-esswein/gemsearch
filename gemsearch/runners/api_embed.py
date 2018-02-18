@@ -1,4 +1,5 @@
-''' Generates embedding for api.
+''' Generates embeddings (126 and 3 dimensional) for API 
+and loads data into ElasticSearch database.
 '''
 
 from gemsearch.utils.logging import getLogger
@@ -54,10 +55,9 @@ with Timer(logger=logger, message='api embedding') as t:
             graphGenerator.add(data_loader.traverseTrackArtist(dataDir+'track_artist.csv'))
             graphGenerator.add(data_loader.traverseTrackTag(dataDir+'track_tag.csv'))                
             graphGenerator.add(data_loader.traverseUserTrackInPlaylists(dataDir+'playlist.csv'))
-            # TODO: enable + share with embed_new_users
             # graphGenerator.add(data_loader.traverseUserTrack(dataDir+'user_tracks.csv'))
-
-            # TODO: no genre / albums are included
+            graphGenerator.add(data_loader.traverseTrackAlbum(dataDir+'track_album.csv'))
+            graphGenerator.add(data_loader.traverseArtistGenre(dataDir+'artist_genre.csv'))
 
             graphGenerator.close_generation()
 

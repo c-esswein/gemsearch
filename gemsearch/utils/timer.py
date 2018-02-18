@@ -1,6 +1,6 @@
 import time
 
-'''Print execution time for blocks. Usage:
+'''Prints execution time for blocks. Usage:
 from gemsearch.utils.timer import Timer
 
 with Timer(message='Processing') as t:

@@ -11,11 +11,13 @@ track tag prediction
 class TagPredictionEvaluator:
 
     name = 'Tag Prediction Evaluator'
-    _testTags = []
+        
+    def __init__(self):
+        self._testTags = []
 
-    def __init__(self, testSplit = 0.2, maxTopNAccuracy = 5):
+    def __init__(self, testSplit = 0.2, topNAccuracy = [5]):
         self._testSplit = testSplit
-        self._maxTopNAccuracy = maxTopNAccuracy
+        self._topNAccuracy = topNAccuracy
 
     def traverse(self, tagTraverser):
         tags = list(tagTraverser)
@@ -35,23 +37,37 @@ class TagPredictionEvaluator:
     def evaluate(self, geCalc):
         tagCount = len(self._testTags)
 
+        raise Exception('not implemented')
+
         logger.info('started tag prediction evaluator with %s test tags', tagCount)
 
         if (tagCount < 1):
             logger.error('No test tags set for evaluation')
             return
+        
+        # build track - tag relation
+        trackTags = {} # Map<TrackId, TagIds[]>
+        for track, tag, weight in self._testTags:
+            if not (track['id'] in trackTags):
+                trackTags[track['id']] = []
+            
+            trackTags[track['id']].append(tag['id'])
+        
+        maxTopNAccuracy = max(self._topNAccuracy)
+        for trackId in trackTags:
+            pass
+            # TODO: ....
 
-        for topNAccuracy in range(1, self._maxTopNAccuracy + 1):
+
+        for topNAccuracy in range(1, self._topNAccuracy + 1):
             logger.info('\n--- top %s accuracy ---', topNAccuracy)
             hits = 0
             randomHits = 0
             for track, tag, weight in self._testTags:
                 if evaluate_track_tag_predict(geCalc, topNAccuracy, track['id'], tag['id']):
-                    logger.debug('Hit Tag: %s', tag['id'])
                     hits += 1
                 if evaluate_track_tag_predict(geCalc, topNAccuracy, track['id'], tag['id'], randomGuess = True):
-                    logger.debug('Hit Tag: %s', tag['id'])
-                    hits += 1
+                    randomHits += 1
             
             logger.info('Avg: top %s accuracy: %s (random: %s) @ %s tags (testsplit=%s)',
                 topNAccuracy,
@@ -82,3 +98,15 @@ def evaluate_track_tag_predict(geCalc, topNAccuracy, track, tag, randomGuess = F
 
     # check if tag is in recommended tags
     return any((recTag['id'] == tag) for recTag in results)
+
+
+
+def checkMatchesAt(recResult, test, firstN):
+    ''' Count matches of test in recResult within first n elements
+    '''
+    hits = 0
+    for i in range(0, firstN):
+        if recResult[i]['id'] in test:
+            hits += 1
+
+    return hits

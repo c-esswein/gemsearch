@@ -1,4 +1,5 @@
-''' Query extraction runner: 
+''' Query extraction runner: Extracts queries from playlist titles and stores them
+into one json file.
 '''
 from gemsearch.utils.logging import getLogger
 logger = getLogger(__name__)

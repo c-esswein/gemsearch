@@ -10,7 +10,7 @@ _managerInstance = None
 
 ###################################
 # DOES NOT WORK --> terminating is buggy...
-# not in use currently, set host with .env
+# currently not in use, set host with .env
 ###################################
 
 class ElasticSearchInstance():
@@ -40,11 +40,11 @@ class ElasticSearchInstance():
             '-E', 'path.data=' + str(dataPath),
         ]
         self._esProc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-        
+
         # log contains line like this:
         # [2017-10-20T12:02:05,000][INFO ][o.e.n.Node               ] [tnU4oTl] started
 
-        logger.info('waiting for started state')        
+        logger.info('waiting for started state')
         validStart = False
         startError = False
         for stdout_line in iter(self._esProc.stdout.readline, ''):
@@ -55,7 +55,7 @@ class ElasticSearchInstance():
             if stdout_line.find('started') > -1:
                 validStart = True
                 break
-        
+
         if validStart and not startError:
             logger.info('instance ready')
         else:
@@ -75,15 +75,15 @@ class ElasticSearchInstance():
     def terminateInstance(self):
         ''' Terminate running instance.
         '''
-        logger.info('terminate elastic search instance')        
+        logger.info('terminate elastic search instance')
         if not self._esProc is None:
             self._esProc.stdout.close()
 
-            self._esProc.send_signal(signal.SIGTERM)           
+            self._esProc.send_signal(signal.SIGTERM)
             self._esProc.wait(20)
             # self._esProc.terminate()
 
-    
+
     def __del__(self):
         print('__del__ was called')
         self.terminateInstance()
@@ -97,7 +97,7 @@ def getElasticSearchConnection():
     if not _managerInstance is None:
         print('get test instance connection')
         return _managerInstance.getConnection()
-    
+
     print('get default instace')
 
     # return default connection
@@ -116,5 +116,5 @@ def getEsManager():
 
     if _managerInstance is None:
         _managerInstance = ElasticSearchInstance()
-    
+
     return _managerInstance

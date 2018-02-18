@@ -1,4 +1,4 @@
-''' Playlist evaluation runner: Extracts query from playlist name
+''' Playlist evaluation runner: Extracts queries from playlist names
 and tries to predict playlist tracks.
 '''
 from gemsearch.utils.logging import getLogger
