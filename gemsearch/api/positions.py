@@ -17,6 +17,15 @@ def calc_viz_data(items, vizEmbedding):
 
     return items
 
+def pos_rel_to(items, targetPoint):
+    for item in items:
+        item['position'] = [
+            item['position'][0] - targetPoint[0],
+            item['position'][1] - targetPoint[1],
+            item['position'][2] - targetPoint[2]
+        ]
+    return items
+
 def cluster_items(items, minClusterDistance):
     ''' Clusters items with distances smaller than minClusterDistance (percentage of bounding box)
     '''
@@ -56,7 +65,7 @@ def cluster_items(items, minClusterDistance):
                 # update position to be relative from center
                 item['position'] = np.subtract(item['position'], centerPos).tolist()
                 break
-        
+
         if not isInCluster:
             # create new cluster
             centerPos = item['position']

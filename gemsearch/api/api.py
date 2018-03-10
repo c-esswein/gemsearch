@@ -10,7 +10,7 @@ from gemsearch.embedding.ge_calc import GeCalc
 from gemsearch.query.elastic_search import suggest as es_suggest
 from gemsearch.api.metadata import resolve_items_meta
 from gemsearch.api.graph import Graph
-from gemsearch.api.positions import calc_viz_data, cluster_items
+from gemsearch.api.positions import calc_viz_data, cluster_items, pos_rel_to
 import gemsearch.api.user as userApi
 from gemsearch.settings import GEMSEARCH_API_KEY
 
@@ -154,12 +154,14 @@ def queryViz():
 
         # append 3D positions
         vizItems = calc_viz_data(resolvedItems, vizGeCalc.embedding)
+        targetPoint = vizItems[0]['position']
         clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance)
 
         return jsonify({
             'success': True,
             'clusters': clusteredResult,
-            'boundingBox': boundingBox.tolist()
+            'boundingBox': boundingBox.tolist(),
+            'targetPoint': targetPoint
         })
     except Exception as exc:
         logger.error('query viz error', exc_info=True)
@@ -178,11 +180,22 @@ def itemsNearViz():
     vecStr = request.args.get('vec')
     # no vec in query
     if vecStr is None or vecStr == '':
+
         return jsonify({
             'success': True,
             'data': []
         })
-    vec = np.array(vecStr.split(','))
+    vec = np.array([float(vecItem) for vecItem in vecStr.split(',')])
+
+    targetPointStr = request.args.get('vec')
+    # no targetPoint in query
+    if targetPointStr is None or targetPointStr == '':
+
+        return jsonify({
+            'success': True,
+            'data': []
+        })
+    targetPoint = [float(vecItem) for vecItem in targetPointStr.split(',')]
 
     # type filter
     types = request.args.get('types')
@@ -205,6 +218,7 @@ def itemsNearViz():
 
         # append 3D positions
         vizItems = calc_viz_data(resolvedItems, vizGeCalc.embedding)
+        vizItems = pos_rel_to(vizItems, targetPoint)
         clusteredResult, boundingBox = cluster_items(vizItems, minClusterDistance)
 
         return jsonify({
